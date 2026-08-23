@@ -439,7 +439,7 @@
                                         <span>SUBTOTAL CONSUMO:</span>
                                         <span class="ticket-subtotal-val">$0</span>
                                     </div>
-                                    <div id="ticket-reserva-row" style="display: flex; justify-between; margin-bottom: 1px;">
+                                    <div id="ticket-reserva-row" style="display: flex; justify-content: space-between; margin-bottom: 1px;">
                                         <span>ABONO RESERVA:</span>
                                         <span class="ticket-reserva-val">-$0</span>
                                     </div>
@@ -547,7 +547,7 @@
 
     </main>
 
-    <!-- MODAL DE CONFIGURACIÓN DE FIREBASE PARA CLOUDFLARE PAGES -->
+    <!-- MODAL DE CONFIGURACIÓN DE FIREBASE PRE-CARGADO -->
     <div id="modal-firebase-config" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-100 space-y-4">
             <div class="flex items-center justify-between border-b pb-3">
@@ -557,25 +557,25 @@
                 <button onclick="cerrarModalFirebase()" class="text-gray-400 hover:text-gray-600 text-lg font-bold">&times;</button>
             </div>
             <p class="text-xs text-gray-600 leading-relaxed">
-                Los datos ya vienen predeterminados para tu proyecto. Solo haz clic en guardar para conectar en este dispositivo.
+                Las credenciales ya vienen preconfiguradas de forma automática para conectar todos tus dispositivos.
             </p>
 
             <div class="space-y-3 text-xs">
                 <div>
                     <label class="block font-bold text-gray-700 mb-1">API Key:</label>
-                    <input type="text" id="fb-apiKey" value="AIzaSyD81SdFCXLVf-zVRwqIui8wr_gxI5EVxIA" placeholder="AIzaSy..." class="w-full border border-gray-300 rounded px-3 py-1.5 font-mono focus:ring-2 focus:ring-vitalia-green focus:outline-none">
+                    <input type="text" id="fb-apiKey" value="AIzaSyD81SdFCXLVf-zVRwqIui8wr_gxI5EVxIA" class="w-full border border-gray-300 rounded px-3 py-1.5 font-mono focus:ring-2 focus:ring-vitalia-green focus:outline-none">
                 </div>
                 <div>
                     <label class="block font-bold text-gray-700 mb-1">Project ID:</label>
-                    <input type="text" id="fb-projectId" value="vitalia-cuadre" placeholder="vitalia-pos-cloud" class="w-full border border-gray-300 rounded px-3 py-1.5 font-mono focus:ring-2 focus:ring-vitalia-green focus:outline-none">
+                    <input type="text" id="fb-projectId" value="vitalia-cuadre" class="w-full border border-gray-300 rounded px-3 py-1.5 font-mono focus:ring-2 focus:ring-vitalia-green focus:outline-none">
                 </div>
                 <div>
                     <label class="block font-bold text-gray-700 mb-1">Auth Domain:</label>
-                    <input type="text" id="fb-authDomain" value="vitalia-cuadre.firebaseapp.com" placeholder="vitalia-pos.firebaseapp.com" class="w-full border border-gray-300 rounded px-3 py-1.5 font-mono focus:ring-2 focus:ring-vitalia-green focus:outline-none">
+                    <input type="text" id="fb-authDomain" value="vitalia-cuadre.firebaseapp.com" class="w-full border border-gray-300 rounded px-3 py-1.5 font-mono focus:ring-2 focus:ring-vitalia-green focus:outline-none">
                 </div>
                 <div>
                     <label class="block font-bold text-gray-700 mb-1">App ID:</label>
-                    <input type="text" id="fb-appId" value="1:923520470959:web:d33f549ae4bea0ffb8295a" placeholder="1:123456789:web:abcdef..." class="w-full border border-gray-300 rounded px-3 py-1.5 font-mono focus:ring-2 focus:ring-vitalia-green focus:outline-none">
+                    <input type="text" id="fb-appId" value="1:923520470959:web:d33f549ae4bea0ffb8295a" class="w-full border border-gray-300 rounded px-3 py-1.5 font-mono focus:ring-2 focus:ring-vitalia-green focus:outline-none">
                 </div>
             </div>
 
@@ -596,7 +596,7 @@
         Tenedor Libre Vitalia Campestre &copy; <span id="year-copy"></span> - Sistema de Caja
     </footer>
 
-    <!-- SDKs DE FIREBASE CON EXCEPCIONES MANEJADAS 100% PARA CLOUDFLARE PAGES -->
+    <!-- SDKs DE FIREBASE CON CONEXIÓN AUTOMÁTICA PREDETERMINADA -->
     <script type="module">
         import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -606,7 +606,7 @@
         let auth = null;
         let unsubscribeSnapshot = null;
 
-        // Configuración por defecto de Firebase (O configurable por la persona)
+        // Configuración por defecto inalterable y automática para todos los dispositivos
         function obtenerFirebaseConfig() {
             const configGuardada = localStorage.getItem('vitalia_firebase_config_custom');
             if (configGuardada) {
@@ -627,7 +627,6 @@
         window.inicializarFirebaseNube = async function() {
             const config = obtenerFirebaseConfig();
             
-            // Llenar modal con valores actuales
             if (document.getElementById('fb-apiKey')) {
                 document.getElementById('fb-apiKey').value = config.apiKey || '';
                 document.getElementById('fb-projectId').value = config.projectId || '';
@@ -636,23 +635,20 @@
             }
 
             try {
-                // Prevenir duplicados de inicialización
                 const existingApps = getApps();
                 const app = existingApps.length === 0 ? initializeApp(config) : existingApps[0];
                 
                 db = getFirestore(app);
                 auth = getAuth(app);
 
-                // Autenticar anónimamente
                 await signInAnonymously(auth);
                 
-                actualizarEstadoNubeVisual(true, "Nube Sincronizada (Firebase / Cloudflare)");
+                actualizarEstadoNubeVisual(true, "Nube Sincronizada (Firebase)");
                 window.iniciarSincronizacionNube();
             } catch (err) {
                 console.warn("⚠️ Advertencia al conectar con Firebase:", err);
-                actualizarEstadoNubeVisual(false, "Modo Local (Haz clic en 'Credenciales' para conectar Nube)");
+                actualizarEstadoNubeVisual(false, "Modo Local");
                 
-                // Cargar desde cache local si falla la red
                 if (typeof cargarVentasLocalStorage === 'function') {
                     cargarVentasLocalStorage();
                 }
@@ -677,7 +673,6 @@
                     
                     window.ventasGlobalesCache = ventasRemotas;
                     
-                    // Sincronizar también con copia local de respaldo
                     if (typeof guardarVentasLocalStorage === 'function') {
                         guardarVentasLocalStorage();
                     }
@@ -694,10 +689,7 @@
         };
 
         window.guardarVentaEnNube = async function(venta) {
-            if (!db) {
-                // Si la nube falla, se mantiene guardado en LocalStorage
-                return true;
-            }
+            if (!db) return true;
             try {
                 const fechaKey = window.fechaActualGlobal || new Date().toISOString().split('T')[0];
                 const docRef = doc(db, "vitalia_pos_ventas", `fecha_${fechaKey}`, "items", String(venta.id));
@@ -705,7 +697,7 @@
                 return true;
             } catch (e) {
                 console.error("Error al guardar en Firebase:", e);
-                return true; // Continuar localmente sin bloquear la app
+                return true;
             }
         };
 
@@ -728,7 +720,6 @@
             }
         };
 
-        // Iniciar Firebase automáticamente al cargar
         window.inicializarFirebaseNube();
     </script>
 
@@ -878,12 +869,6 @@
             document.querySelectorAll('.ticket-fecha-val').forEach(el => {
                 el.textContent = `Fecha: ${fechaFormateada}`;
             });
-        }
-
-        function usarLogoSvgPorDefecto(imgEl) {
-            imgEl.onerror = null;
-            const svgLogo = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="%231b4332"/><circle cx="50" cy="50" r="42" fill="none" stroke="%23d4af37" stroke-width="3"/><path d="M35 65 L35 35 M30 35 L40 35 M35 45 L40 45" stroke="%23d4af37" stroke-width="3" stroke-linecap="round"/><path d="M60 35 Q68 45 60 55 L60 65" stroke="%23d4af37" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M50 25 C45 35 45 45 50 25 Z" fill="%232e7d32" stroke="%23d4af37" stroke-width="1.5"/></svg>`;
-            imgEl.src = svgLogo;
         }
 
         window.cargarLogoLocal = function(event) {
@@ -1150,7 +1135,7 @@
             document.getElementById('caja-tarjeta').textContent = '$' + formatMoney(totTarjeta);
             document.getElementById('caja-neto').textContent = '$' + formatMoney(totNeto);
             document.getElementById('caja-reservas').textContent = '-$' + formatMoney(totReservas);
-            document.getElementById('caja-propinas').textContent = '$' + formatMoney(totPropinas);
+            document.getElementById('caja-propinas').textContent = '$' + formatMoney(totPropina);
             document.getElementById('caja-total-general').textContent = '$' + formatMoney(totEfectivo + totTransf + totTarjeta);
             document.getElementById('caja-total-personas').textContent = totPersonas;
         }
@@ -1161,7 +1146,6 @@
             return 'bg-purple-100 text-purple-800';
         }
 
-        // REINICIAR DÍA PROTEGIDO CON CONTRASEÑA "Chinitoj0@"
         window.vaciarRegistrosDia = async function() {
             const passwordIngresada = prompt("⚠️ ACCIÓN PROTEGIDA POR SUPERVISOR\n\nPor favor ingrese la contraseña para reiniciar el día:");
             
