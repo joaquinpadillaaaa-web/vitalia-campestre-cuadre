@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tenedor Libre Vitalia Campestre - Sistema de Caja</title>
+    <title>Tenedor Libre Vitalia Campestre - Sistema de Caja & Mesas</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -55,22 +55,30 @@
         .venta-anulada .no-line-through {
             text-decoration: none !important;
         }
+
+        /* Textura de madera rústica campestre para el mapa */
+        .wood-floor-grid {
+            background-color: #fef3c7;
+            background-image: 
+                linear-gradient(90deg, rgba(146, 64, 14, 0.06) 50px, transparent 50px),
+                linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+            background-size: 100px 30px;
+        }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col font-sans">
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col font-sans">
 
-    <!-- HEADER PRINCIPAL CON LOGO OFICIAL Y ESTADO DE NUBE -->
+    <!-- HEADER PRINCIPAL -->
     <header class="bg-vitalia-dark text-white shadow-md">
         <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-3">
-                <!-- Contenedor del Logo interactivo -->
                 <div class="relative group cursor-pointer" onclick="document.getElementById('input-logo-file').click()" title="Haz clic para seleccionar tu logo local">
                     <div class="bg-white p-1 rounded-xl shadow-md border-2 border-vitalia-gold flex items-center justify-center w-12 h-12 overflow-hidden">
                         <img id="img-logo-header" src="assets/vitalia-logo.svg" alt="Logo de Vitalia Campestre" class="w-full h-full object-cover rounded-lg" onerror="usarLogoSvgPorDefecto(this)">
                     </div>
                     <div class="absolute inset-0 bg-black/60 rounded-xl flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white text-[9px] font-bold text-center p-0.5">
                         <i class="fa-solid fa-camera text-xs mb-0.5"></i>
-                        <span>Cambiar Logo</span>
+                        <span>Cambiar</span>
                     </div>
                 </div>
                 <input type="file" id="input-logo-file" accept="image/*" class="hidden" onchange="cargarLogoLocal(event)">
@@ -78,17 +86,14 @@
                 <div>
                     <h1 class="text-lg md:text-xl font-extrabold tracking-wide uppercase text-vitalia-gold">Tenedor Libre Vitalia Campestre</h1>
                     <div class="flex items-center gap-2">
-                        <p id="subtitulo-estado" class="text-xs text-green-200 flex items-center gap-1.5">
-                            <i class="fa-solid fa-spinner animate-spin"></i> Conectando a la nube...
+                        <p id="subtitulo-estado" class="text-xs text-green-200 flex items-center gap-1.5 font-bold">
+                            <i class="fa-solid fa-cloud text-green-300 animate-pulse"></i> Nube Sincronizada
                         </p>
-                        <button onclick="abrirModalFirebase()" class="text-[10px] bg-white/10 hover:bg-white/20 text-vitalia-gold px-2 py-0.5 rounded border border-vitalia-gold/40 transition flex items-center gap-1" title="Configurar credenciales de Firebase">
-                            <i class="fa-solid fa-gear"></i> Credenciales
-                        </button>
                     </div>
                 </div>
             </div>
 
-            <!-- Selector de Fecha de Trabajo -->
+            <!-- Selector de Fecha -->
             <div class="flex flex-wrap items-center gap-3">
                 <div class="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg border border-white/20">
                     <i class="fa-solid fa-calendar-day text-vitalia-gold"></i>
@@ -100,551 +105,533 @@
     </header>
 
     <!-- NAVEGACIÓN PESTAÑAS -->
-    <div class="bg-white border-b border-gray-200 shadow-sm">
+    <div class="bg-white border-b border-slate-200 shadow-xs">
         <div class="max-w-7xl mx-auto px-4 flex overflow-x-auto">
             <button id="btn-tab-1" onclick="switchTab(1)" class="py-3 px-5 font-bold text-sm border-b-2 border-vitalia-green text-vitalia-green flex items-center gap-2 whitespace-nowrap transition-all">
                 <i class="fa-solid fa-cash-register"></i> 1. Pre-cuentas & Garzones
             </button>
-            <button id="btn-tab-2" onclick="switchTab(2)" class="py-3 px-5 font-semibold text-sm border-b-2 border-transparent text-gray-500 hover:text-vitalia-green flex items-center gap-2 whitespace-nowrap transition-all">
+            <button id="btn-tab-2" onclick="switchTab(2)" class="py-3 px-5 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-vitalia-green flex items-center gap-2 whitespace-nowrap transition-all">
                 <i class="fa-solid fa-receipt"></i> 2. Cierre & Boleta POS
             </button>
-            <button id="btn-tab-3" onclick="switchTab(3)" class="py-3 px-5 font-semibold text-sm border-b-2 border-transparent text-gray-500 hover:text-vitalia-green flex items-center gap-2 whitespace-nowrap transition-all">
-                <i class="fa-solid fa-calculator"></i> 3. Cuadre Automático de Caja
+            <button id="btn-tab-3" onclick="switchTab(3)" class="py-3 px-5 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-vitalia-green flex items-center gap-2 whitespace-nowrap transition-all">
+                <i class="fa-solid fa-calculator"></i> 3. Cuadre Automático
+            </button>
+            <button id="btn-tab-4" onclick="switchTab(4)" class="py-3 px-5 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-vitalia-green flex items-center gap-2 whitespace-nowrap transition-all">
+                <i class="fa-solid fa-chair text-amber-600"></i> 4. Mesas & Mapas
             </button>
         </div>
     </div>
 
-    <!-- CONTENIDO DE PESTAÑAS -->
-    <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full">
+    <!-- CONTENIDO -->
+    <main class="max-w-7xl mx-auto px-4 py-5 flex-1 w-full space-y-4">
 
         <!-- ================= PESTAÑA 1: INGRESO DE PRE-CUENTAS ================= -->
         <div id="tab-1" class="space-y-6">
-
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- FORMULARIO DE NUEVA PRE-CUENTA -->
-                <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-                    <div class="flex items-center justify-between border-b pb-3 mb-4">
-                        <h2 class="text-lg font-bold text-vitalia-dark flex items-center gap-2">
+                <div class="lg:col-span-2 bg-white rounded-2xl shadow-xs border border-slate-200 p-6 space-y-4">
+                    <div class="flex items-center justify-between border-b pb-3">
+                        <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
                             <i class="fa-solid fa-plus-circle text-vitalia-green"></i> Nueva Pre-Cuenta para Garzón
                         </h2>
-                        <span class="text-xs font-semibold bg-green-100 text-green-800 px-2.5 py-1 rounded-full">Garzones / Pre-boleta</span>
+                        <span class="text-xs font-semibold bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-200">Garzones / Pre-boleta</span>
                     </div>
 
-                    <!-- Tramos de Personas -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                        <div class="bg-gray-50 p-3 rounded-lg border border-gray-200 hover:border-vitalia-green transition">
-                            <label class="block text-xs font-bold text-gray-600 mb-1">Adultos (13+ yrs)</label>
-                            <span class="text-xs text-vitalia-green font-extrabold block mb-2">$22.000 c/u</span>
-                            <div class="flex items-center">
-                                <button type="button" onclick="adjustQty('qty-adultos', -1)" class="bg-gray-200 text-gray-700 px-3 py-1.5 rounded-l font-bold hover:bg-gray-300">-</button>
-                                <input type="number" id="qty-adultos" value="0" min="0" class="w-full text-center font-bold text-gray-800 border-y border-gray-200 py-1.5 focus:outline-none" oninput="calcularTotalFormulario()">
-                                <button type="button" onclick="adjustQty('qty-adultos', 1)" class="bg-gray-200 text-gray-700 px-3 py-1.5 rounded-r font-bold hover:bg-gray-300">+</button>
+                    <!-- Vincular Mesa Opcional -->
+                    <div class="bg-amber-50/70 p-3 rounded-xl border border-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-chair text-amber-600 text-base"></i>
+                            <div>
+                                <label class="block font-bold text-amber-950">Vincular a Mesa del Restaurante:</label>
+                                <span class="text-amber-800" id="lbl-mesa-vinculada-desc">Ninguna mesa seleccionada (opcional)</span>
+                            </div>
+                        </div>
+                        <input type="hidden" id="input-mesa-id-vinculada" value="">
+                        <button type="button" onclick="switchTab(4)" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-3 py-1.5 rounded-lg shadow-xs transition flex items-center gap-1.5 whitespace-nowrap">
+                            <i class="fa-solid fa-map-location-dot"></i> Seleccionar en Mapa
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div class="bg-slate-50 p-3 rounded-xl border text-center">
+                            <p class="text-xs font-bold text-slate-700">Adultos (13+ yrs)</p>
+                            <p class="text-xs text-vitalia-green font-extrabold mb-2">$22.000 c/u</p>
+                            <div class="flex items-center justify-center gap-2">
+                                <button type="button" onclick="adjustQty('qty-adultos', -1)" class="w-8 h-8 bg-white border rounded-lg font-bold">-</button>
+                                <input type="number" id="qty-adultos" value="0" min="0" class="w-12 text-center font-bold bg-transparent text-sm" oninput="calcularTotalFormulario()">
+                                <button type="button" onclick="adjustQty('qty-adultos', 1)" class="w-8 h-8 bg-vitalia-green text-white rounded-lg font-bold">+</button>
                             </div>
                         </div>
 
-                        <div class="bg-gray-50 p-3 rounded-lg border border-gray-200 hover:border-vitalia-green transition">
-                            <label class="block text-xs font-bold text-gray-600 mb-1">Niños (6-12 yrs)</label>
-                            <span class="text-xs text-vitalia-green font-extrabold block mb-2">$11.000 c/u</span>
-                            <div class="flex items-center">
-                                <button type="button" onclick="adjustQty('qty-ninos', -1)" class="bg-gray-200 text-gray-700 px-3 py-1.5 rounded-l font-bold hover:bg-gray-300">-</button>
-                                <input type="number" id="qty-ninos" value="0" min="0" class="w-full text-center font-bold text-gray-800 border-y border-gray-200 py-1.5 focus:outline-none" oninput="calcularTotalFormulario()">
-                                <button type="button" onclick="adjustQty('qty-ninos', 1)" class="bg-gray-200 text-gray-700 px-3 py-1.5 rounded-r font-bold hover:bg-gray-300">+</button>
+                        <div class="bg-slate-50 p-3 rounded-xl border text-center">
+                            <p class="text-xs font-bold text-slate-700">Niños (6-12 yrs)</p>
+                            <p class="text-xs text-vitalia-green font-extrabold mb-2">$11.000 c/u</p>
+                            <div class="flex items-center justify-center gap-2">
+                                <button type="button" onclick="adjustQty('qty-ninos', -1)" class="w-8 h-8 bg-white border rounded-lg font-bold">-</button>
+                                <input type="number" id="qty-ninos" value="0" min="0" class="w-12 text-center font-bold bg-transparent text-sm" oninput="calcularTotalFormulario()">
+                                <button type="button" onclick="adjustQty('qty-ninos', 1)" class="w-8 h-8 bg-vitalia-green text-white rounded-lg font-bold">+</button>
                             </div>
                         </div>
 
-                        <div class="bg-gray-50 p-3 rounded-lg border border-gray-200 hover:border-vitalia-green transition">
-                            <label class="block text-xs font-bold text-gray-600 mb-1">Niños Chicos (4-5 yrs)</label>
-                            <span class="text-xs text-vitalia-green font-extrabold block mb-2">$5.000 c/u</span>
-                            <div class="flex items-center">
-                                <button type="button" onclick="adjustQty('qty-chicos', -1)" class="bg-gray-200 text-gray-700 px-3 py-1.5 rounded-l font-bold hover:bg-gray-300">-</button>
-                                <input type="number" id="qty-chicos" value="0" min="0" class="w-full text-center font-bold text-gray-800 border-y border-gray-200 py-1.5 focus:outline-none" oninput="calcularTotalFormulario()">
-                                <button type="button" onclick="adjustQty('qty-chicos', 1)" class="bg-gray-200 text-gray-700 px-3 py-1.5 rounded-r font-bold hover:bg-gray-300">+</button>
+                        <div class="bg-slate-50 p-3 rounded-xl border text-center">
+                            <p class="text-xs font-bold text-slate-700">Niños Chicos (4-5 yrs)</p>
+                            <p class="text-xs text-vitalia-green font-extrabold mb-2">$5.000 c/u</p>
+                            <div class="flex items-center justify-center gap-2">
+                                <button type="button" onclick="adjustQty('qty-chicos', -1)" class="w-8 h-8 bg-white border rounded-lg font-bold">-</button>
+                                <input type="number" id="qty-chicos" value="0" min="0" class="w-12 text-center font-bold bg-transparent text-sm" oninput="calcularTotalFormulario()">
+                                <button type="button" onclick="adjustQty('qty-chicos', 1)" class="w-8 h-8 bg-vitalia-green text-white rounded-lg font-bold">+</button>
                             </div>
                         </div>
                     </div>
 
                     <!-- Consumos Extras -->
-                    <div class="mb-4 bg-amber-50 p-4 rounded-lg border border-amber-200">
-                        <label class="block text-xs font-bold text-amber-900 mb-2 flex items-center gap-2">
+                    <div class="bg-amber-50/50 p-3.5 rounded-xl border border-amber-200 space-y-2 text-xs">
+                        <label class="font-bold text-slate-700 flex items-center gap-1.5">
                             <i class="fa-solid fa-beer-mug-empty text-amber-600"></i> Agregar Consumos Extras (Bebidas / Tragos / Varios)
                         </label>
-                        <div class="flex flex-col sm:flex-row gap-2">
-                            <input type="text" id="extra-nombre" placeholder="Ej: Cerveza Heineken" class="flex-1 text-sm border border-gray-300 rounded px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-amber-500">
-                            <input type="number" id="extra-precio" placeholder="Precio ($)" min="0" class="w-full sm:w-28 text-sm border border-gray-300 rounded px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-amber-500">
-                            <input type="number" id="extra-cant" value="1" min="1" class="w-full sm:w-16 text-sm border border-gray-300 rounded px-2 py-1.5 text-center focus:outline-none">
-                            <button type="button" onclick="agregarItemExtra()" class="bg-amber-600 text-white font-bold text-xs px-4 py-1.5 rounded hover:bg-amber-700 transition flex items-center justify-center gap-1">
-                                <i class="fa-solid fa-plus"></i> Añadir
-                            </button>
+                        <div class="flex gap-2">
+                            <input type="text" id="extra-nombre" placeholder="Ej: Cerveza Heineken" class="flex-1 border rounded-lg px-3 py-2 bg-white">
+                            <input type="number" id="extra-precio" placeholder="Precio ($)" min="0" class="w-28 border rounded-lg px-3 py-2 bg-white font-bold">
+                            <input type="number" id="extra-cant" value="1" min="1" class="w-16 border rounded-lg px-2 py-2 text-center bg-white">
+                            <button type="button" onclick="agregarItemExtra()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2 rounded-lg shadow-xs">Añadir</button>
                         </div>
-                        <div id="lista-extras-temp" class="mt-3 flex flex-wrap gap-2"></div>
+                        <div id="lista-extras-temp" class="space-y-1 pt-1"></div>
                     </div>
 
-                    <!-- SECCIÓN DE ABONO RESERVA -->
-                    <div class="mb-5 bg-blue-50 p-3.5 rounded-lg border border-blue-200">
-                        <label class="block text-xs font-bold text-blue-900 mb-1 flex items-center gap-2">
+                    <!-- Abono Reserva -->
+                    <div class="bg-blue-50/60 p-3.5 rounded-xl border border-blue-200 text-xs space-y-1">
+                        <label class="font-bold text-blue-900 flex items-center gap-1.5">
                             <i class="fa-solid fa-bookmark text-blue-600"></i> Abono Reserva (Se descuenta del saldo a pagar)
                         </label>
-                        <div class="flex items-center gap-3">
-                            <div class="relative flex-1 max-w-xs">
-                                <span class="absolute left-3 top-2 text-gray-500 text-xs font-bold">$</span>
-                                <input type="number" id="monto-reserva" value="0" min="0" step="1000" placeholder="Ej: 10000" class="w-full text-sm font-bold border border-gray-300 rounded pl-7 pr-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500" oninput="calcularTotalFormulario()">
-                            </div>
-                            <span class="text-[11px] text-blue-700 font-semibold">* La propina sugerida (10%) se calcula sobre el consumo total antes de descontar la reserva.</span>
-                        </div>
+                        <input type="number" id="monto-reserva" value="0" min="0" step="1000" class="w-full border rounded-lg px-3 py-2 bg-white font-bold text-blue-800 text-sm" oninput="calcularTotalFormulario()">
                     </div>
 
-                    <!-- DESGLOSE DESTACADO DE PROPINA Y TOTAL -->
-                    <div class="bg-vitalia-lightGreen p-4 rounded-xl border border-green-200 space-y-3">
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 border-b border-green-200 pb-3">
-                            <div>
-                                <span class="text-[11px] font-bold text-gray-500 uppercase block">Subtotal Consumo:</span>
-                                <span id="lbl-subtotal" class="text-base font-extrabold text-gray-800">$0</span>
-                            </div>
-                            <div>
-                                <span class="text-[11px] font-extrabold text-vitalia-green uppercase block">Propina Sugerida (10%):</span>
-                                <span id="lbl-propina-sugerida-garzon" class="text-base font-black text-vitalia-green">$0</span>
-                            </div>
-                            <div>
-                                <span class="text-[11px] font-bold text-blue-800 uppercase block">Reserva Descontada:</span>
-                                <span id="lbl-monto-reserva-desc" class="text-base font-bold text-blue-800">-$0</span>
-                            </div>
+                    <!-- Desglose -->
+                    <div class="bg-vitalia-lightGreen p-4 rounded-xl border border-green-200 space-y-2 text-xs">
+                        <div class="grid grid-cols-3 gap-2 border-b border-green-200 pb-2">
+                            <div><span class="font-bold text-slate-500 uppercase block">Subtotal:</span><span id="lbl-subtotal" class="font-black text-slate-800 text-sm">$0</span></div>
+                            <div><span class="font-bold text-vitalia-green uppercase block">Propina 10%:</span><span id="lbl-propina-sugerida-garzon" class="font-black text-vitalia-green text-sm">$0</span></div>
+                            <div><span class="font-bold text-blue-800 uppercase block">Reserva:</span><span id="lbl-monto-reserva-desc" class="font-bold text-blue-800 text-sm">-$0</span></div>
                         </div>
-
-                        <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
+                        <div class="flex justify-between items-center pt-1">
                             <div>
-                                <span class="text-xs font-bold text-gray-600">Total Personas: <strong id="lbl-total-personas" class="text-gray-900">0</strong></span>
-                                <div class="text-lg font-black text-vitalia-dark mt-0.5">
-                                    TOTAL CON PROPINA: <span id="lbl-total-final" class="text-vitalia-green">$0</span>
-                                </div>
+                                <span class="text-slate-600 font-bold">Personas: <strong id="lbl-total-personas" class="text-slate-900">0</strong></span>
+                                <div class="text-base font-black text-slate-900">TOTAL: <span id="lbl-total-final" class="text-vitalia-green text-lg">$0</span></div>
                             </div>
-                            <button type="button" onclick="guardarPreCuenta()" class="w-full sm:w-auto bg-vitalia-green hover:bg-vitalia-dark text-white font-extrabold text-sm px-6 py-3 rounded-lg shadow transition flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-paper-plane"></i> Generar Pre-Boleta
+                            <button type="button" onclick="guardarPreCuenta()" class="bg-vitalia-green hover:bg-vitalia-dark text-white font-extrabold py-2.5 px-5 rounded-xl shadow-sm transition text-xs">
+                                Generar Pre-Boleta
                             </button>
                         </div>
                     </div>
-
                 </div>
 
-                <!-- RESUMEN EN TIEMPO REAL CAJA -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 flex flex-col justify-between">
-                    <div>
-                        <div class="border-b pb-3 mb-4 flex justify-between items-center">
-                            <h2 class="text-lg font-bold text-vitalia-dark flex items-center gap-2">
-                                <i class="fa-solid fa-chart-line text-vitalia-gold"></i> Balance de Caja
-                            </h2>
-                            <span id="badge-fecha-actual" class="text-xs bg-gray-100 text-gray-700 font-mono px-2 py-0.5 rounded">--/--/----</span>
+                <!-- Balance -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="border-b pb-3 flex justify-between items-center">
+                            <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wide">Balance de Caja</h2>
+                            <span id="badge-fecha-actual" class="text-xs bg-slate-100 px-2.5 py-1 rounded-md font-mono text-slate-600">--/--/----</span>
                         </div>
-
-                        <div class="space-y-3 mb-6">
-                            <div class="bg-gray-50 p-3 rounded-lg flex justify-between items-center border">
-                                <span class="text-xs font-bold text-gray-600 flex items-center gap-1.5">
-                                    <i class="fa-solid fa-money-bill-wave text-green-600"></i> Efectivo:
-                                </span>
-                                <span id="caja-efectivo" class="font-extrabold text-sm text-gray-900">$0</span>
-                            </div>
-                            <div class="bg-gray-50 p-3 rounded-lg flex justify-between items-center border">
-                                <span class="text-xs font-bold text-gray-600 flex items-center gap-1.5">
-                                    <i class="fa-solid fa-mobile-screen text-blue-600"></i> Transferencias:
-                                </span>
-                                <span id="caja-transferencia" class="font-extrabold text-sm text-gray-900">$0</span>
-                            </div>
-                            <div class="bg-gray-50 p-3 rounded-lg flex justify-between items-center border">
-                                <span class="text-xs font-bold text-gray-600 flex items-center gap-1.5">
-                                    <i class="fa-solid fa-credit-card text-purple-600"></i> Débito / Crédito:
-                                </span>
-                                <span id="caja-tarjeta" class="font-extrabold text-sm text-gray-900">$0</span>
-                            </div>
+                        <div class="space-y-2.5 text-xs font-semibold">
+                            <div class="bg-slate-50 p-3 rounded-xl border flex justify-between"><span>💵 Efectivo:</span><span id="caja-efectivo" class="font-extrabold text-slate-900">$0</span></div>
+                            <div class="bg-slate-50 p-3 rounded-xl border flex justify-between"><span>📱 Transferencias:</span><span id="caja-transferencia" class="font-extrabold text-slate-900">$0</span></div>
+                            <div class="bg-slate-50 p-3 rounded-xl border flex justify-between"><span>💳 Débito/Crédito:</span><span id="caja-tarjeta" class="font-extrabold text-slate-900">$0</span></div>
                         </div>
-
-                        <div class="border-t pt-4 space-y-2">
-                            <div class="flex justify-between items-center text-xs text-gray-600">
-                                <span>Total Consumos Netos:</span>
-                                <span id="caja-neto" class="font-bold text-gray-800">$0</span>
-                            </div>
-                            <div class="flex justify-between items-center text-xs text-blue-700">
-                                <span>Total Reservas Descontadas:</span>
-                                <span id="caja-reservas" class="font-bold">-$0</span>
-                            </div>
-                            <div class="flex justify-between items-center text-xs text-gray-600">
-                                <span>Total Propinas Reales CERRADAS:</span>
-                                <span id="caja-propinas" class="font-bold text-green-700">$0</span>
-                            </div>
-                            <div class="flex justify-between items-center text-sm font-black text-vitalia-dark pt-2 border-t">
-                                <span>TOTAL GENERAL EN CAJA:</span>
-                                <span id="caja-total-general" class="text-base text-vitalia-green">$0</span>
-                            </div>
+                        <div class="border-t pt-3 space-y-1.5 text-xs font-semibold">
+                            <div class="flex justify-between text-slate-600"><span>Neto:</span><span id="caja-neto" class="font-bold">$0</span></div>
+                            <div class="flex justify-between text-blue-700"><span>Reservas:</span><span id="caja-reservas" class="font-bold">-$0</span></div>
+                            <div class="flex justify-between text-emerald-700"><span>Propinas:</span><span id="caja-propinas" class="font-bold">$0</span></div>
+                            <div class="flex justify-between text-sm font-black text-slate-900 pt-2 border-t"><span>TOTAL GENERAL:</span><span id="caja-total-general" class="text-base text-vitalia-green">$0</span></div>
                         </div>
                     </div>
-
-                    <div class="mt-6 pt-4 border-t text-center">
-                        <span class="text-xs text-gray-500 font-medium">Asistentes acumulados hoy: <strong id="caja-total-personas" class="text-gray-900">0</strong> personas</span>
+                    <div class="pt-3 border-t text-center text-xs text-slate-500 font-medium">
+                        Asistentes hoy: <strong id="caja-total-personas" class="text-slate-900">0</strong> personas
                     </div>
                 </div>
             </div>
 
-            <!-- HISTORIAL DE PRE-CUENTAS -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div class="p-4 bg-gray-50 border-b flex justify-between items-center">
-                    <h3 class="font-bold text-sm text-gray-700 uppercase tracking-wider flex items-center gap-2">
-                        <i class="fa-solid fa-list-check text-vitalia-green"></i> Historial de Pre-cuentas & Registros
+            <!-- Historial -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-list text-vitalia-green"></i> Pre-cuentas Registradas
                     </h3>
-                    <button onclick="vaciarRegistrosDia()" class="text-xs text-red-600 hover:text-red-800 font-semibold flex items-center gap-1 bg-red-50 hover:bg-red-100 border border-red-200 px-3 py-1.5 rounded-lg transition">
-                        <i class="fa-solid fa-trash-can"></i> Reiniciar Día
-                    </button>
+                    <button onclick="vaciarRegistrosDia()" class="text-xs text-rose-600 hover:text-rose-800 font-semibold bg-rose-50 px-3 py-1 rounded-lg border border-rose-200">Reiniciar Día</button>
                 </div>
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse text-xs">
-                        <thead>
-                            <tr class="bg-gray-100 text-gray-600 font-bold border-b uppercase">
-                                <th class="p-3"># Reg</th>
-                                <th class="p-3">Detalle Asistentes</th>
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-100 text-slate-600 font-bold uppercase">
+                            <tr>
+                                <th class="p-3 rounded-l-lg"># Reg</th>
+                                <th class="p-3">Mesa</th>
+                                <th class="p-3">Personas</th>
                                 <th class="p-3">Extras</th>
                                 <th class="p-3 text-right">Reserva</th>
-                                <th class="p-3 text-right">Consumo Real</th>
+                                <th class="p-3 text-right">Consumo</th>
                                 <th class="p-3 text-right">Propina</th>
-                                <th class="p-3 text-right">Total Final</th>
-                                <th class="p-3 text-center">Estado / Pago</th>
-                                <th class="p-3 text-center">Acciones</th>
+                                <th class="p-3 text-right">Total</th>
+                                <th class="p-3 text-center">Estado</th>
+                                <th class="p-3 rounded-r-lg text-center">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody id="tabla-ventas-body" class="divide-y divide-gray-200"></tbody>
+                        <tbody id="tabla-ventas-body" class="divide-y divide-slate-100"></tbody>
                     </table>
                 </div>
             </div>
-
         </div>
 
         <!-- ================= PESTAÑA 2: CIERRE & BOLETA POS ================= -->
         <div id="tab-2" class="hidden space-y-6">
-
             <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                <div class="md:col-span-5 bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
+                    <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-receipt text-vitalia-green"></i> Cierre de Cuenta & Pago
+                    </h2>
 
-                <!-- CONTROLES Y MÓDULO DE CIERRE -->
-                <div class="md:col-span-5 bg-white rounded-xl shadow-sm border border-gray-200 p-5 space-y-5">
-                    <div class="border-b pb-3">
-                        <h2 class="text-lg font-bold text-vitalia-dark flex items-center gap-2">
-                            <i class="fa-solid fa-receipt text-vitalia-green"></i> Cierre de Cuenta & Pago
-                        </h2>
-                        <p class="text-xs text-gray-500">Selecciona la pre-cuenta, ajusta la propina real ingresada y cierra la venta.</p>
-                    </div>
-
-                    <!-- Selector de Ventas -->
                     <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Seleccionar Pre-cuenta:</label>
-                        <select id="selector-ventas-boleta" class="w-full text-sm font-semibold border border-gray-300 rounded-lg px-3 py-2 bg-white focus:ring-2 focus:ring-vitalia-green focus:outline-none" onchange="cargarVentaEnBoleta(this.value)">
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Seleccionar Pre-cuenta:</label>
+                        <select id="selector-ventas-boleta" class="w-full text-sm font-semibold border rounded-xl px-3 py-2 bg-white" onchange="cargarVentaEnBoleta(this.value)">
                             <option value="">-- Seleccionar Pre-cuenta --</option>
                         </select>
                     </div>
 
-                    <!-- Selector de Formato de Impresora Térmica -->
-                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-200 space-y-2">
-                        <div class="flex items-center justify-between">
-                            <label class="text-xs font-bold text-gray-700 flex items-center gap-1.5">
-                                <i class="fa-solid fa-print text-vitalia-green"></i> Formato Térmico POS:
-                            </label>
-                            <span class="text-[10px] bg-vitalia-green/10 text-vitalia-green font-extrabold px-2 py-0.5 rounded">Formato Ultracompacto</span>
-                        </div>
-                        <select id="selector-ancho-papel" class="w-full text-xs font-bold border border-gray-300 rounded px-2.5 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-vitalia-green" onchange="cambiarAnchoImpresora(this.value)">
-                            <option value="58" selected>🖨️ 58mm - Térmica Compacta POS (48mm útil)</option>
-                            <option value="80">🖨️ 80mm - Estándar Gastronomía (72mm útil)</option>
+                    <div class="bg-slate-50 p-3 rounded-xl border space-y-1 text-xs">
+                        <label class="font-bold text-slate-700">Formato Impresora:</label>
+                        <select id="selector-ancho-papel" class="w-full font-bold border rounded-lg p-2 bg-white" onchange="cambiarAnchoImpresora(this.value)">
+                            <option value="58" selected>🖨️ 58mm Compacta</option>
+                            <option value="80">🖨️ 80mm Estándar</option>
                         </select>
                     </div>
 
-                    <!-- Módulo de Cierre -->
-                    <div id="módulo-cierre-caja" class="space-y-3 bg-gray-50 p-4 rounded-lg border border-gray-200">
-                        <h3 class="text-xs font-extrabold text-vitalia-dark uppercase border-b pb-2 flex justify-between">
+                    <div class="space-y-3 bg-slate-50 p-4 rounded-xl border text-xs">
+                        <div class="flex justify-between items-center border-b pb-2 font-bold uppercase">
                             <span>Cobro Final</span>
-                            <span id="badge-estado-venta" class="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded text-[10px]">PENDIENTE</span>
-                        </h3>
+                            <span id="badge-estado-venta" class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-[10px]">PENDIENTE</span>
+                        </div>
 
-                        <!-- Medio de Pago -->
                         <div>
-                            <label class="block text-xs font-bold text-gray-700 mb-1">Medio de Pago:</label>
-                            <select id="bol-medio-pago" class="w-full text-sm font-bold border border-gray-300 rounded px-3 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-vitalia-green" onchange="actualizarBoletaManual()">
+                            <label class="block font-bold text-slate-700 mb-1">Medio de Pago:</label>
+                            <select id="bol-medio-pago" class="w-full font-bold border rounded-lg px-3 py-2 bg-white" onchange="actualizarBoletaManual()">
                                 <option value="Efectivo">💵 Efectivo</option>
-                                <option value="Transferencia">📱 Transferencia Bancaria</option>
+                                <option value="Transferencia">📱 Transferencia</option>
                                 <option value="Débito">💳 Débito / Crédito</option>
                             </select>
                         </div>
 
-                        <!-- Propina Ingresada/Ajustada por el Cajero -->
-                        <div class="border-t pt-2">
+                        <div>
                             <div class="flex justify-between items-center mb-1">
-                                <label class="text-xs font-bold text-gray-700">Monto Propina ($):</label>
-                                <button type="button" onclick="setPropinaDiezPorCiento()" class="text-[10px] text-vitalia-green font-bold bg-green-100 px-2 py-0.5 rounded hover:bg-green-200">10% Sugerido</button>
+                                <label class="font-bold text-slate-700">Propina ($):</label>
+                                <button type="button" onclick="setPropinaDiezPorCiento()" class="text-[10px] text-vitalia-green font-bold bg-green-100 px-2 py-0.5 rounded">10% Sugerido</button>
                             </div>
-                            <input type="number" id="bol-monto-propina" value="0" min="0" step="500" class="w-full text-sm font-bold border border-gray-300 rounded px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-vitalia-green" oninput="actualizarBoletaManual()">
-                            <p class="text-[10px] text-gray-500 mt-1">Ingresa el monto de propina que dejó el cliente.</p>
+                            <input type="number" id="bol-monto-propina" value="0" min="0" step="500" class="w-full font-bold border rounded-lg px-3 py-2" oninput="actualizarBoletaManual()">
                         </div>
 
-                        <div class="border-t pt-3 space-y-1 text-xs">
-                            <div class="flex justify-between text-gray-600">
-                                <span>Subtotal Consumo:</span>
-                                <strong id="cierre-lbl-subtotal">$0</strong>
-                            </div>
-                            <div id="cierre-row-reserva" class="flex justify-between text-blue-700 hidden">
-                                <span>Abono Reserva:</span>
-                                <strong id="cierre-lbl-reserva">-$0</strong>
-                            </div>
-                            <div class="flex justify-between text-green-800">
-                                <span>Propina Ingresada:</span>
-                                <strong id="cierre-lbl-propina">$0</strong>
-                            </div>
-                            <div class="flex justify-between text-sm font-black text-vitalia-dark pt-2 border-t">
-                                <span>TOTAL A COBRAR:</span>
-                                <strong id="cierre-lbl-total" class="text-vitalia-green">$0</strong>
-                            </div>
+                        <div class="border-t pt-3 space-y-1">
+                            <div class="flex justify-between text-slate-600"><span>Subtotal:</span><strong id="cierre-lbl-subtotal">$0</strong></div>
+                            <div id="cierre-row-reserva" class="flex justify-between text-blue-700 hidden"><span>Reserva:</span><strong id="cierre-lbl-reserva">-$0</strong></div>
+                            <div class="flex justify-between text-emerald-800"><span>Propina:</span><strong id="cierre-lbl-propina">$0</strong></div>
+                            <div class="flex justify-between text-sm font-black text-slate-900 pt-2 border-t"><span>TOTAL:</span><strong id="cierre-lbl-total" class="text-vitalia-green text-base">$0</strong></div>
                         </div>
 
-                        <button type="button" onclick="cerrarYGuardarVentaFinal()" class="w-full mt-2 bg-vitalia-green hover:bg-vitalia-dark text-white font-extrabold text-sm py-2.5 rounded-lg shadow transition flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-lock"></i> COBRAR Y CERRAR VENTA
+                        <div class="pt-2 flex items-center gap-2">
+                            <input type="checkbox" id="chk-liberar-mesa-cierre" checked class="rounded border-slate-300 text-vitalia-green">
+                            <label for="chk-liberar-mesa-cierre" class="font-bold text-slate-700">Liberar mesa automáticamente al cobrar</label>
+                        </div>
+
+                        <button type="button" onclick="cerrarYGuardarVentaFinal()" class="w-full mt-2 bg-vitalia-green hover:bg-vitalia-dark text-white font-extrabold py-3 rounded-xl shadow-xs transition">
+                            COBRAR Y CERRAR VENTA
                         </button>
                     </div>
 
-                    <!-- Botón Imprimir Comprobante -->
-                    <button type="button" onclick="imprimirBoletaLimpia()" class="w-full bg-vitalia-gold hover:bg-yellow-600 text-vitalia-dark font-extrabold text-base py-3 px-4 rounded-xl shadow-md transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-print text-xl"></i> IMPRIMIR BOLETA
+                    <button type="button" onclick="imprimirBoletaLimpia()" class="w-full bg-vitalia-gold hover:bg-yellow-600 text-slate-950 font-extrabold py-3 rounded-xl shadow-xs transition text-xs">
+                        IMPRIMIR BOLETA
                     </button>
                 </div>
 
-                <!-- UNICA VISTA PREVIA DEL TICKET -->
+                <!-- Ticket Preview -->
                 <div class="md:col-span-7 flex justify-center">
-                    <div id="contenedor-ticket-preview" class="ticket-preview p-5 rounded-2xl border-2 border-dashed border-gray-300 shadow-inner max-w-xs w-full transition-all duration-300">
-                        <div class="bg-white p-3 shadow rounded border border-gray-200">
-                            <div>
-                                <div style="text-align: center; margin-bottom: 4px;">
-                                    <h2 style="font-size: 12px; font-weight: bold; margin: 0; text-transform: uppercase;">TENEDOR LIBRE</h2>
-                                    <h3 style="font-size: 11px; font-weight: bold; margin: 0; text-transform: uppercase;">VITALIA CAMPESTRE</h3>
-                                    <p style="font-size: 9px; margin: 1px 0 0 0;" class="ticket-linea-sep">--------------------------------</p>
-                                    <p style="font-size: 9px; margin: 1px 0;" class="ticket-fecha-val">Fecha: 00/00/0000</p>
-                                    <p style="font-size: 9px; margin: 0;" class="ticket-linea-sep">--------------------------------</p>
-                                </div>
-
-                                <table style="width: 100%; border-collapse: collapse; margin-bottom: 4px;">
-                                    <thead>
-                                        <tr style="border-bottom: 1px dashed #000; font-size: 9px; text-align: left;">
-                                            <th style="padding-bottom: 2px;">CANT DETALLE</th>
-                                            <th style="text-align: right; padding-bottom: 2px;">TOTAL</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="ticket-items-body-val" style="font-size: 9px;"></tbody>
-                                </table>
-
-                                <div style="border-top: 1px dashed #000; padding-top: 3px; font-size: 9px;">
-                                    <div style="display: flex; justify-content: space-between; margin-bottom: 1px;">
-                                        <span>TOT. PERSONAS:</span>
-                                        <strong class="ticket-cant-personas-val">0</strong>
-                                    </div>
-                                    <div style="display: flex; justify-content: space-between; margin-bottom: 1px;">
-                                        <span>SUBTOTAL CONSUMO:</span>
-                                        <span class="ticket-subtotal-val">$0</span>
-                                    </div>
-                                    <div id="ticket-reserva-row" style="display: flex; justify-between; margin-bottom: 1px;">
-                                        <span>ABONO RESERVA:</span>
-                                        <span class="ticket-reserva-val">-$0</span>
-                                    </div>
-                                    <div style="display: flex; justify-content: space-between; margin-bottom: 1px;">
-                                        <span>PROPINA:</span>
-                                        <span class="ticket-propina-val">$0</span>
-                                    </div>
-                                    <div style="border-top: 1px double #000; margin-top: 2px; padding-top: 2px; display: flex; justify-content: space-between; font-size: 11px; font-weight: bold;">
-                                        <span>TOTAL A PAGAR:</span>
-                                        <span class="ticket-total-val">$0</span>
-                                    </div>
-                                </div>
-
-                                <div style="text-align: center; margin-top: 6px; border-top: 1px dashed #000; padding-top: 4px;">
-                                    <p style="font-size: 8px; font-weight: bold; margin: 0;">¡GRACIAS POR SU VISITA!</p>
-                                    <p style="font-size: 8px; font-weight: bold; margin: 2px 0 0 0; text-transform: uppercase; line-height: 1;">
-                                        CONSERVE ESTE COMPROBANTE
-                                    </p>
-                                </div>
+                    <div id="contenedor-ticket-preview" class="ticket-preview p-5 rounded-2xl border-2 border-dashed border-slate-300 shadow-inner max-w-xs w-full">
+                        <div class="bg-white p-4 shadow-xs rounded-xl border border-slate-200">
+                            <div style="text-align: center; margin-bottom: 4px;">
+                                <h2 style="font-size: 12px; font-weight: bold; margin: 0; text-transform: uppercase;">TENEDOR LIBRE</h2>
+                                <h3 style="font-size: 11px; font-weight: bold; margin: 0; text-transform: uppercase;">VITALIA CAMPESTRE</h3>
+                                <p style="font-size: 9px; margin: 1px 0;" class="ticket-linea-sep">--------------------------------</p>
+                                <p style="font-size: 9px; margin: 1px 0;" class="ticket-fecha-val">Fecha: 00/00/0000</p>
+                                <p style="font-size: 9px; margin: 2px 0; font-weight: bold; text-transform: uppercase;" id="ticket-cant-detalle-mesa" class="hidden">CANT DETALLE MESA -</p>
+                                <p style="font-size: 9px; margin: 0;" class="ticket-linea-sep">--------------------------------</p>
+                            </div>
+                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 4px;">
+                                <thead>
+                                    <tr style="border-bottom: 1px dashed #000; font-size: 9px; text-align: left;">
+                                        <th style="padding-bottom: 2px;">CANT DETALLE</th>
+                                        <th style="text-align: right; padding-bottom: 2px;">TOTAL</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="ticket-items-body-val" style="font-size: 9px;"></tbody>
+                            </table>
+                            <div style="border-top: 1px dashed #000; padding-top: 3px; font-size: 9px;">
+                                <div style="display: flex; justify-content: space-between;"><span>TOT. PERSONAS:</span><strong class="ticket-cant-personas-val">0</strong></div>
+                                <div style="display: flex; justify-content: space-between;"><span>SUBTOTAL:</span><span class="ticket-subtotal-val">$0</span></div>
+                                <div id="ticket-reserva-row" style="display: flex; justify-content: space-between;"><span>ABONO:</span><span class="ticket-reserva-val">-$0</span></div>
+                                <div style="display: flex; justify-content: space-between;"><span>PROPINA:</span><span class="ticket-propina-val">$0</span></div>
+                                <div style="border-top: 1px double #000; margin-top: 2px; padding-top: 2px; display: flex; justify-content: space-between; font-weight: bold;"><span>TOTAL:</span><span class="ticket-total-val">$0</span></div>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
-
         </div>
 
-        <!-- ================= PESTAÑA 3: CUADRE AUTOMÁTICO DE CAJA (DISEÑO VISUAL CON EMOJIS) ================= -->
+        <!-- ================= PESTAÑA 3: CUADRE AUTOMÁTICO ================= -->
         <div id="tab-3" class="hidden space-y-6">
-
             <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-
-                <!-- INFORMACIÓN Y BOTÓN COPIAR -->
-                <div class="md:col-span-5 bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-5">
-                    <div class="border-b pb-3">
-                        <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
-                            <i class="fa-solid fa-clipboard-check text-vitalia-green"></i> Reporte de Cuadre Diario
-                        </h2>
-                        <p class="text-xs text-slate-500">Calculado automáticamente con los cobros cerrados y no anulados del día.</p>
-                    </div>
-
-                    <!-- BOTÓN ACCESO EXCEL -->
-                    <a href="https://docs.google.com/spreadsheets/d/1N-kLiHZX6o3eygOlojn8TxtC2eHyqlku/edit?usp=sharing&ouid=115513602026994452010&rtpof=true&sd=true" target="_blank" class="block w-full bg-green-600 hover:bg-green-700 text-white p-3 rounded-xl shadow-sm border border-green-700 flex items-center justify-between transition group">
-                        <div class="flex items-center gap-3">
-                            <i class="fa-solid fa-file-excel text-xl"></i>
-                            <div>
-                                <div class="text-xs font-bold uppercase tracking-wider">Acceso a Excel</div>
-                                <div class="text-[10px] opacity-80">Hoja de cálculo central</div>
-                            </div>
-                        </div>
-                        <i class="fa-solid fa-arrow-up-right-from-square text-sm opacity-50 group-hover:opacity-100"></i>
+                <div class="md:col-span-5 bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
+                    <h2 class="text-base font-bold text-slate-800">Reporte de Cuadre Diario</h2>
+                    <a href="https://docs.google.com/spreadsheets/d/1N-kLiHZX6o3eygOlojn8TxtC2eHyqlku/edit?usp=sharing&ouid=115513602026994452010&rtpof=true&sd=true" target="_blank" class="block w-full bg-emerald-600 hover:bg-emerald-700 text-white p-3.5 rounded-xl shadow-xs flex items-center justify-between transition text-xs font-bold uppercase">
+                        <div class="flex items-center gap-3"><i class="fa-solid fa-file-excel text-lg"></i><span>Acceso a Hoja de Excel</span></div>
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
                     </a>
-
-                    <div class="bg-amber-50 border border-amber-200 p-3.5 rounded-xl text-xs text-amber-900 space-y-1">
-                        <p class="font-bold flex items-center gap-1.5 text-amber-950">
-                            <i class="fa-solid fa-circle-info text-amber-600"></i> Copia rápida para WhatsApp / Reportes
-                        </p>
-                        <p>Presiona el botón para copiar el texto estructurado exactamente como lo necesitas para tu cuadre de caja.</p>
-                    </div>
-
-                    <button type="button" onclick="copiarTextoCuadre()" class="w-full bg-vitalia-green hover:bg-vitalia-dark text-white font-extrabold text-sm py-3.5 px-4 rounded-xl shadow transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-copy text-lg"></i> COPIAR CUADRE PARA WHATSAPP
+                    <button type="button" onclick="copiarTextoCuadre()" class="w-full bg-vitalia-green hover:bg-vitalia-dark text-white font-extrabold text-xs py-3.5 px-4 rounded-xl shadow-xs transition">
+                        COPIAR CUADRE PARA WHATSAPP
                     </button>
-
-                    <div id="alerta-copiado" class="hidden bg-green-100 border border-green-300 text-green-800 text-xs font-bold p-2.5 rounded-xl text-center">
-                        <i class="fa-solid fa-circle-check"></i> ¡Texto del cuadre copiado al portapapeles!
-                    </div>
+                    <div id="alerta-copiado" class="hidden bg-green-100 text-green-800 text-xs font-bold p-2.5 rounded-xl text-center">¡Copiado al portapapeles!</div>
                 </div>
-
-                <!-- PLANTILLA VISUAL EMOJI REDISEÑADA PARA CUADRE -->
                 <div class="md:col-span-7 bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center gap-2 mb-4 pb-3 border-b border-slate-100">
-                            <span class="text-xl">📊</span>
-                            <div>
-                                <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Resumen Visual del Día</h3>
-                                <p class="text-[11px] text-slate-400">Diseño amigable listo para verificar o compartir</p>
-                            </div>
-                        </div>
+                    <div class="space-y-3 text-xs">
+                        <div class="bg-slate-50 p-3.5 rounded-xl border flex justify-between items-center"><span class="font-bold">🏷️ Netos:</span><span id="visual-neto" class="text-sm font-black">$0</span></div>
+                        <div class="bg-emerald-50 p-3.5 rounded-xl border flex justify-between items-center"><span class="font-bold text-emerald-800">💵 Propinas:</span><span id="visual-propina" class="text-sm font-black text-emerald-700">$0</span></div>
+                        <div class="bg-amber-50 p-3.5 rounded-xl border flex justify-between items-center"><span class="font-bold text-amber-900">🌟 Total con Propina:</span><span id="visual-con-propina" class="text-sm font-black text-amber-900">$0</span></div>
+                        <div class="bg-blue-50 p-3.5 rounded-xl border flex justify-between items-center"><span class="font-bold text-blue-900">🔖 Reservas:</span><span id="visual-reserva" class="text-sm font-black text-blue-800">$0</span></div>
+                        <div class="bg-slate-900 text-white p-4 rounded-xl flex justify-between items-center mt-3"><span class="font-bold uppercase text-amber-400">👥 Asistencia Total:</span><span id="visual-asistencia" class="text-sm font-black text-amber-300">0 personas</span></div>
+                    </div>
+                    <textarea id="box-cuadre-texto" readonly class="hidden"></textarea>
+                </div>
+            </div>
+        </div>
 
-                        <!-- TARJETAS VISUALES CON EMOJIS -->
-                        <div class="space-y-3">
-                            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 flex justify-between items-center">
-                                <span class="text-xs font-bold text-slate-600 flex items-center gap-2"><span>🏷️</span> Total Consumos Netos:</span>
-                                <span id="visual-neto" class="text-sm font-black text-slate-900">$0</span>
-                            </div>
-                            <div class="bg-emerald-50/70 p-3.5 rounded-xl border border-emerald-200 flex justify-between items-center">
-                                <span class="text-xs font-bold text-emerald-800 flex items-center gap-2"><span>💵</span> Propinas Acumuladas:</span>
-                                <span id="visual-propina" class="text-sm font-black text-emerald-700">$0</span>
-                            </div>
-                            <div class="bg-amber-50/70 p-3.5 rounded-xl border border-amber-200 flex justify-between items-center">
-                                <span class="text-xs font-bold text-amber-900 flex items-center gap-2"><span>🌟</span> Total con Propina:</span>
-                                <span id="visual-con-propina" class="text-sm font-black text-amber-900">$0</span>
-                            </div>
-                            <div class="bg-blue-50/70 p-3.5 rounded-xl border border-blue-200 flex justify-between items-center">
-                                <span class="text-xs font-bold text-blue-900 flex items-center gap-2"><span>🔖</span> Abonos de Reserva:</span>
-                                <span id="visual-reserva" class="text-sm font-black text-blue-800">$0</span>
-                            </div>
+        <!-- ================= PESTAÑA 4: MESAS & MAPAS (3 Zonas, Textura Madera, Banner Compacto) ================= -->
+        <div id="tab-4" class="hidden space-y-5">
 
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2">
-                                <div class="bg-gray-50 p-3 rounded-xl border text-center">
-                                    <span class="text-[10px] text-slate-500 font-bold block">📱 Transferencias</span>
-                                    <span id="visual-transf" class="text-xs font-black text-slate-800">$0</span>
-                                </div>
-                                <div class="bg-gray-50 p-3 rounded-xl border text-center">
-                                    <span class="text-[10px] text-slate-500 font-bold block">💵 Efectivo</span>
-                                    <span id="visual-efectivo" class="text-xs font-black text-slate-800">$0</span>
-                                </div>
-                                <div class="bg-gray-50 p-3 rounded-xl border text-center">
-                                    <span class="text-[10px] text-slate-500 font-bold block">💳 Débito / Crédito</span>
-                                    <span id="visual-debito" class="text-xs font-black text-slate-800">$0</span>
-                                </div>
-                            </div>
-
-                            <div class="bg-slate-900 text-white p-4 rounded-xl flex justify-between items-center mt-3">
-                                <span class="text-xs font-bold uppercase text-amber-400">👥 Asistencia Total del Día:</span>
-                                <span id="visual-asistencia" class="text-sm font-black text-amber-300">0 personas</span>
-                            </div>
+            <!-- BANNER COMPACTO DE RESERVAS -->
+            <a href="https://docs.google.com/spreadsheets/d/131E4nlA6MqfZ_igahiMedcv0l1v7sAhurf1jejtP5hM/edit?gid=907128383#gid=907128383" target="_blank" class="block bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-slate-950 p-3 rounded-2xl shadow-xs border border-amber-600 transition-all hover:scale-[1.01] hover:shadow group">
+                <div class="flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-2.5">
+                        <span class="text-2xl animate-bounce">📅</span>
+                        <div>
+                            <h3 class="text-xs font-black uppercase tracking-wide">¡Revisa si hay reservas para hoy haciendo clic aquí!</h3>
+                            <p class="text-[10px] font-semibold text-slate-900 opacity-90">Verifica nombres, horarios y PAX en Google Sheets.</p>
                         </div>
                     </div>
+                    <div class="bg-slate-950 text-amber-400 font-extrabold text-[11px] px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow whitespace-nowrap group-hover:bg-slate-900 transition">
+                        <span>Ver Planilla</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                    </div>
+                </div>
+            </a>
 
-                    <!-- Textarea oculto para mantener compatibilidad con la función copiar -->
-                    <textarea id="box-cuadre-texto" readonly class="hidden"></textarea>
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-3">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b pb-3">
+                    <div>
+                        <h2 class="text-base font-black text-vitalia-dark flex items-center gap-2">
+                            <i class="fa-solid fa-chair text-vitalia-green"></i> Mapa Interactivo del Restaurante
+                        </h2>
+                        <p class="text-xs text-slate-500">Activa <b>"✋ Activar Mover"</b> para reorganizar mesas, elementos y paredes con seguridad.</p>
+                    </div>
 
-                    <div class="mt-4 pt-3 border-t text-right">
-                        <span class="text-[11px] text-slate-400">Tenedor Libre Vitalia Campestre</span>
+                    <!-- Botones de Control -->
+                    <div class="flex flex-wrap items-center gap-1.5">
+                        <button onclick="guardarMapaEnFirebaseYLocal()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-3 py-2 rounded-xl transition shadow-xs flex items-center gap-1">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> 💾 Guardar
+                        </button>
+                        <button onclick="modoMoverMesasToggle()" id="btn-toggle-mover" class="text-xs bg-slate-800 hover:bg-slate-900 text-white font-bold px-3 py-2 rounded-xl transition shadow-xs flex items-center gap-1">
+                            <i class="fa-solid fa-hand"></i> ✋ Mover
+                        </button>
+                        <button onclick="modoCrearParedesToggle()" id="btn-toggle-paredes" class="text-xs bg-blue-700 hover:bg-blue-800 text-white font-bold px-3 py-2 rounded-xl transition shadow-xs flex items-center gap-1">
+                            <i class="fa-solid fa-wall"></i> 🧱 Pared
+                        </button>
+                        <button onclick="modoUnirMesasToggle()" id="btn-toggle-unir" class="text-xs bg-purple-700 hover:bg-purple-800 text-white font-bold px-3 py-2 rounded-xl transition shadow-xs flex items-center gap-1">
+                            <i class="fa-solid fa-link"></i> 🔗 Unir
+                        </button>
+                        <button onclick="abrirModalNuevaMesa()" class="text-xs bg-vitalia-green hover:bg-vitalia-dark text-white font-bold px-3 py-2 rounded-xl transition shadow-xs flex items-center gap-1">
+                            <i class="fa-solid fa-plus"></i> Mesa
+                        </button>
+                        <button onclick="abrirModalNuevoLandmark()" class="text-xs bg-amber-600 hover:bg-amber-700 text-white font-bold px-3 py-2 rounded-xl transition shadow-xs flex items-center gap-1">
+                            <i class="fa-solid fa-landmark"></i> Elemento
+                        </button>
                     </div>
                 </div>
 
+                <!-- SUBNAVEGACIÓN 3 ZONAS -->
+                <div class="flex gap-2 overflow-x-auto pb-1">
+                    <button id="subtab-salon" onclick="switchZonaMesas('salon')" class="py-2 px-3.5 rounded-xl text-xs font-bold bg-vitalia-dark text-vitalia-gold flex items-center gap-2 transition whitespace-nowrap border shadow-xs">
+                        🏛️ SALÓN <span id="cnt-salon" class="bg-white/20 px-2 py-0.5 rounded-full text-[10px]">0 mesas</span>
+                    </button>
+                    <button id="subtab-terraza-bar" onclick="switchZonaMesas('terraza-bar')" class="py-2 px-3.5 rounded-xl text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 flex items-center gap-2 transition whitespace-nowrap border">
+                        🍸 TERRAZA BAR <span id="cnt-terraza-bar" class="bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full text-[10px]">0 mesas</span>
+                    </button>
+                    <button id="subtab-terraza-parrillas" onclick="switchZonaMesas('terraza-parrillas')" class="py-2 px-3.5 rounded-xl text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 flex items-center gap-2 transition whitespace-nowrap border">
+                        🔥 TERRAZA PARRILLAS <span id="cnt-terraza-parrillas" class="bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full text-[10px]">0 mesas</span>
+                    </button>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-50 p-2.5 rounded-xl border text-xs">
+                    <div class="flex items-center gap-3 flex-wrap">
+                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> Disponible</span>
+                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block"></span> Reservada</span>
+                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> Ocupada</span>
+                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-purple-600 inline-block"></span> Unida</span>
+                    </div>
+                    <div class="font-bold text-slate-700">
+                        Capacidad Zona: <span class="text-vitalia-green" id="txt-sillas-zona">0 sillas</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CANVAS CON TEXTURA DE MADERA -->
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-5 overflow-hidden min-h-[580px]">
+                <div id="canvas-mapa-mesas" onclick="clicEnCanvasMapa(event)" class="wood-floor-grid relative w-full h-[540px] rounded-2xl border border-amber-900/20 overflow-hidden shadow-inner">
+                    <!-- Elementos renderizados aquí -->
+                </div>
             </div>
 
         </div>
 
     </main>
 
-    <!-- MODAL DE CONFIGURACIÓN DE FIREBASE CON BOTONES DE COPIAR -->
-    <div id="modal-firebase-config" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-gray-100 space-y-4">
+    <!-- MODAL DETALLE MESA (Tacho de basura al lado de Mesa X + cierre al clickear fuera) -->
+    <div id="modal-detalle-mesa" onclick="detectarClicAfueraModal(event)" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div id="modal-contenido-interno" class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border space-y-4 text-xs">
             <div class="flex items-center justify-between border-b pb-3">
-                <h3 class="font-extrabold text-vitalia-dark text-base flex items-center gap-2">
-                    <i class="fa-solid fa-cloud-arrow-up text-vitalia-gold"></i> Credenciales Firebase Nube
-                </h3>
-                <button onclick="cerrarModalFirebase()" class="text-gray-400 hover:text-gray-600 text-lg font-bold">&times;</button>
+                <div class="flex items-center gap-2.5">
+                    <button onclick="eliminarMesaSeleccionada()" class="text-rose-600 hover:text-rose-800 p-1.5 bg-rose-50 rounded-lg transition" title="Eliminar mesa">
+                        <i class="fa-solid fa-trash-can text-sm"></i>
+                    </button>
+                    <div>
+                        <h3 id="modal-mesa-titulo" class="font-extrabold text-vitalia-dark text-base">Mesa N°</h3>
+                        <p id="modal-mesa-subtitulo" class="text-xs text-slate-500">Zona</p>
+                    </div>
+                </div>
+                <button onclick="cerrarModalMesa()" class="text-gray-400 font-bold text-lg">&times;</button>
             </div>
-            <p class="text-xs text-gray-600 leading-relaxed">
-                Haz clic en el botón <i class="fa-solid fa-copy text-vitalia-green"></i> de cada campo para copiar el valor fácilmente y pegarlo donde lo necesites.
-            </p>
 
-            <div class="space-y-3 text-xs">
+            <div class="grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded-xl border">
                 <div>
-                    <label class="block font-bold text-gray-700 mb-1">API Key</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="fb-apiKey" readonly class="w-full border border-gray-300 rounded-xl px-3 py-2 font-mono bg-slate-50 text-slate-700 select-all">
-                        <button onclick="copiarTextoCredencial('fb-apiKey', this)" class="bg-gray-100 hover:bg-emerald-50 hover:text-emerald-700 border text-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1">
-                            <i class="fa-solid fa-copy"></i> Copiar
-                        </button>
+                    <label class="block font-bold text-slate-600 mb-1">Capacidad Sillas:</label>
+                    <div class="flex items-center gap-2">
+                        <button onclick="modificarSillasMesaSeleccionada(-1)" class="w-8 h-8 bg-white border font-bold rounded-lg">-</button>
+                        <span id="modal-mesa-sillas" class="font-extrabold text-sm w-8 text-center">4</span>
+                        <button onclick="modificarSillasMesaSeleccionada(1)" class="w-8 h-8 bg-vitalia-green text-white font-bold rounded-lg">+</button>
                     </div>
                 </div>
                 <div>
-                    <label class="block font-bold text-gray-700 mb-1">Project ID</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="fb-projectId" readonly class="w-full border border-gray-300 rounded-xl px-3 py-2 font-mono bg-slate-50 text-slate-700 select-all">
-                        <button onclick="copiarTextoCredencial('fb-projectId', this)" class="bg-gray-100 hover:bg-emerald-50 hover:text-emerald-700 border text-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1">
-                            <i class="fa-solid fa-copy"></i> Copiar
-                        </button>
-                    </div>
-                </div>
-                <div>
-                    <label class="block font-bold text-gray-700 mb-1">Auth Domain</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="fb-authDomain" readonly class="w-full border border-gray-300 rounded-xl px-3 py-2 font-mono bg-slate-50 text-slate-700 select-all">
-                        <button onclick="copiarTextoCredencial('fb-authDomain', this)" class="bg-gray-100 hover:bg-emerald-50 hover:text-emerald-700 border text-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1">
-                            <i class="fa-solid fa-copy"></i> Copiar
-                        </button>
-                    </div>
-                </div>
-                <div>
-                    <label class="block font-bold text-gray-700 mb-1">App ID</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="fb-appId" readonly class="w-full border border-gray-300 rounded-xl px-3 py-2 font-mono bg-slate-50 text-slate-700 select-all">
-                        <button onclick="copiarTextoCredencial('fb-appId', this)" class="bg-gray-100 hover:bg-emerald-50 hover:text-emerald-700 border text-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1">
-                            <i class="fa-solid fa-copy"></i> Copiar
-                        </button>
-                    </div>
+                    <label class="block font-bold text-slate-600 mb-1">Orientación:</label>
+                    <select id="modal-mesa-orientacion" class="w-full font-bold border rounded-lg p-2 bg-white" onchange="cambiarOrientacionMesaSeleccionada(this.value)">
+                        <option value="horizontal">Horizontal ↔</option>
+                        <option value="vertical">Vertical ↕</option>
+                    </select>
                 </div>
             </div>
 
-            <div class="pt-2 flex gap-2">
-                <button onclick="cerrarModalFirebase()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 px-4 rounded-xl text-xs transition">
-                    Cerrar
-                </button>
-                <button onclick="restablecerFirebaseDefault()" class="bg-vitalia-green hover:bg-vitalia-dark text-white font-bold py-2.5 px-4 rounded-xl text-xs transition shadow">
-                    Reconectar
-                </button>
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Nombre Reserva / Cliente:</label>
+                <input type="text" id="res-cliente-nombre" placeholder="Ej: Familia Pérez" class="w-full border rounded-lg p-2.5 font-semibold text-sm">
+            </div>
+
+            <div class="pt-2 grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <button onclick="guardarReservaMesa()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-2 rounded-xl transition shadow-xs">Guardar Reserva</button>
+                <button onclick="crearPrecuentaDesdeMesa()" class="bg-vitalia-green hover:bg-vitalia-dark text-white font-bold py-2.5 px-2 rounded-xl transition shadow-xs">Generar Pre-Cuenta</button>
+                <button onclick="liberarMesaSeleccionada()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-2 rounded-xl transition">Liberar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL AGREGAR NUEVA MESA -->
+    <div id="modal-agregar-mesa" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border space-y-4 text-xs">
+            <h3 class="font-bold text-slate-800 text-base border-b pb-2">➕ Añadir Nueva Mesa</h3>
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Zona:</label>
+                <select id="new-mesa-zona" class="w-full border rounded-lg p-2 bg-white font-bold">
+                    <option value="salon">SALÓN</option>
+                    <option value="terraza-bar">TERRAZA BAR</option>
+                    <option value="terraza-parrillas">TERRAZA PARRILLAS</option>
+                </select>
+            </div>
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Orientación:</label>
+                <select id="new-mesa-orientacion" class="w-full border rounded-lg p-2 bg-white font-bold">
+                    <option value="horizontal">Horizontal ↔</option>
+                    <option value="vertical">Vertical ↕</option>
+                </select>
+            </div>
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Sillas:</label>
+                <input type="number" id="new-mesa-sillas" value="4" min="1" max="12" class="w-full border rounded-lg p-2 font-bold">
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="cerrarModalAgregarMesa()" class="px-4 py-2 bg-gray-100 font-bold rounded-lg">Cancelar</button>
+                <button onclick="confirmarAgregarNuevaMesa()" class="px-4 py-2 bg-vitalia-green text-white font-bold rounded-lg shadow">Crear Mesa</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL AGREGAR ELEMENTO (Incluyendo opción "Otro / Personalizado") -->
+    <div id="modal-agregar-landmark" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border space-y-4 text-xs">
+            <h3 class="font-bold text-slate-800 text-base border-b pb-2">🏛️ Añadir Elemento Físico</h3>
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Tipo de Elemento:</label>
+                <select id="new-lm-tipo-select" class="w-full border rounded-lg p-2 bg-white font-bold" onchange="verificarOpcionOtroLandmark(this.value)">
+                    <option value="Escenario 🎭">Escenario 🎭</option>
+                    <option value="Entrada 🚪">Entrada 🚪</option>
+                    <option value="Barra 🍸">Barra 🍸</option>
+                    <option value="Baño María 🍲">Baño María 🍲</option>
+                    <option value="Parrillas 🔥">Parrillas 🔥</option>
+                    <option value="otro">Otro (Personalizado) ✏️</option>
+                </select>
+            </div>
+            <div id="contenedor-otro-landmark" class="hidden">
+                <label class="block font-bold text-slate-700 mb-1">Nombre del Elemento:</label>
+                <input type="text" id="new-lm-nombre-custom" placeholder="Ej: Caja, Exhibidor..." class="w-full border rounded-lg p-2 font-bold">
+            </div>
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Orientación:</label>
+                <select id="new-lm-orientacion" class="w-full border rounded-lg p-2 bg-white font-bold">
+                    <option value="horizontal">Horizontal ↔</option>
+                    <option value="vertical">Vertical ↕</option>
+                </select>
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="cerrarModalNuevoLandmark()" class="px-4 py-2 bg-gray-100 font-bold rounded-lg">Cancelar</button>
+                <button onclick="confirmarAgregarLandmark()" class="px-4 py-2 bg-amber-600 text-white font-bold rounded-lg shadow">Añadir</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL FIREBASE -->
+    <div id="modal-firebase-config" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border space-y-4 text-xs">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="font-bold text-slate-800 text-sm">Credenciales Firebase Nube</h3>
+                <button onclick="cerrarModalFirebase()" class="text-gray-400 font-bold text-base">&times;</button>
+            </div>
+            <div class="space-y-2">
+                <div><label class="font-bold text-slate-600">API Key</label><input type="text" id="fb-apiKey" readonly class="w-full border rounded p-1.5 font-mono bg-slate-50 select-all"></div>
+                <div><label class="font-bold text-slate-600">Project ID</label><input type="text" id="fb-projectId" readonly class="w-full border rounded p-1.5 font-mono bg-slate-50 select-all"></div>
+                <div><label class="font-bold text-slate-600">Auth Domain</label><input type="text" id="fb-authDomain" readonly class="w-full border rounded p-1.5 font-mono bg-slate-50 select-all"></div>
+                <div><label class="font-bold text-slate-600">App ID</label><input type="text" id="fb-appId" readonly class="w-full border rounded p-1.5 font-mono bg-slate-50 select-all"></div>
+            </div>
+            <div class="flex justify-end pt-2">
+                <button onclick="cerrarModalFirebase()" class="px-4 py-2 bg-vitalia-green text-white font-bold rounded-lg">Cerrar</button>
             </div>
         </div>
     </div>
 
     <!-- FOOTER -->
     <footer class="bg-gray-800 text-gray-400 text-xs py-4 text-center mt-auto">
-        Tenedor Libre Vitalia Campestre &copy; <span id="year-copy"></span> - Sistema de Caja
+        Tenedor Libre Vitalia Campestre &copy; <span id="year-copy"></span> - Sistema de Caja & Mesas
     </footer>
 
-    <!-- SDKs DE FIREBASE CON EXCEPCIONES MANEJADAS 100% PARA CLOUDFLARE PAGES -->
+    <!-- SCRIPT DE FIREBASE -->
     <script type="module">
         import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -653,85 +640,83 @@
         let db = null;
         let auth = null;
         let unsubscribeSnapshot = null;
+        let unsubscribeMapaSnapshot = null;
 
-        function obtenerFirebaseConfig() {
-            const configGuardada = localStorage.getItem('vitalia_firebase_config_custom');
-            if (configGuardada) {
-                try {
-                    return JSON.parse(configGuardada);
-                } catch(e) {}
-            }
-            return {
-                apiKey: "AIzaSyD81SdFCXLVf-zVRwqIui8wr_gxI5EVxIA",
-                authDomain: "vitalia-cuadre.firebaseapp.com",
-                projectId: "vitalia-cuadre",
-                storageBucket: "vitalia-cuadre.appspot.com",
-                messagingSenderId: "923520470959",
-                appId: "1:923520470959:web:d33f549ae4bea0ffb8295a"
-            };
-        }
+        const firebaseConfig = {
+            apiKey: "AIzaSyD81SdFCXLVf-zVRwqIui8wr_gxI5EVxIA",
+            authDomain: "vitalia-cuadre.firebaseapp.com",
+            projectId: "vitalia-cuadre",
+            storageBucket: "vitalia-cuadre.appspot.com",
+            messagingSenderId: "923520470959",
+            appId: "1:923520470959:web:d33f549ae4bea0ffb8295a"
+        };
 
         window.inicializarFirebaseNube = async function() {
-            const config = obtenerFirebaseConfig();
-            
-            if (document.getElementById('fb-apiKey')) {
-                document.getElementById('fb-apiKey').value = config.apiKey || '';
-                document.getElementById('fb-projectId').value = config.projectId || '';
-                document.getElementById('fb-authDomain').value = config.authDomain || '';
-                document.getElementById('fb-appId').value = config.appId || '';
-            }
-
             try {
                 const existingApps = getApps();
-                const app = existingApps.length === 0 ? initializeApp(config) : existingApps[0];
-                
+                const app = existingApps.length === 0 ? initializeApp(firebaseConfig) : existingApps[0];
                 db = getFirestore(app);
                 auth = getAuth(app);
-
                 await signInAnonymously(auth);
                 
-                actualizarEstadoNubeVisual(true, "Nube Sincronizada (Firebase / Cloudflare)");
+                actualizarEstadoNubeVisual(true, "Nube Sincronizada");
                 window.iniciarSincronizacionNube();
+                window.iniciarSincronizacionMapaNube();
             } catch (err) {
-                console.warn("⚠️ Advertencia al conectar con Firebase:", err);
-                actualizarEstadoNubeVisual(false, "Modo Local (Haz clic en 'Credenciales' para conectar Nube)");
-                
-                if (typeof cargarVentasLocalStorage === 'function') {
-                    cargarVentasLocalStorage();
-                }
+                console.warn("Modo Local activo:", err);
+                actualizarEstadoNubeVisual(false, "Modo Local");
+                if (typeof cargarVentasLocalStorage === 'function') cargarVentasLocalStorage();
+                if (typeof cargarMapaLocalStorage === 'function') cargarMapaLocalStorage();
             }
         };
 
         window.iniciarSincronizacionNube = function() {
             if (!db) return;
             if (unsubscribeSnapshot) unsubscribeSnapshot();
-
             const fechaKey = window.fechaActualGlobal || new Date().toISOString().split('T')[0];
-            
             try {
                 const colRef = collection(db, "vitalia_pos_ventas", `fecha_${fechaKey}`, "items");
-
                 unsubscribeSnapshot = onSnapshot(colRef, (snapshot) => {
                     let ventasRemotas = [];
-                    snapshot.forEach((docSnap) => {
-                        ventasRemotas.push(docSnap.data());
-                    });
+                    snapshot.forEach(docSnap => ventasRemotas.push(docSnap.data()));
                     ventasRemotas.sort((a, b) => a.id - b.id);
-                    
                     window.ventasGlobalesCache = ventasRemotas;
-                    
-                    if (typeof guardarVentasLocalStorage === 'function') {
-                        guardarVentasLocalStorage();
-                    }
-                    if (typeof cargarDatosCajaDia === 'function') {
-                        cargarDatosCajaDia(ventasRemotas);
-                    }
-                }, (error) => {
-                    console.warn("Error en subscripción onSnapshot:", error);
-                    actualizarEstadoNubeVisual(false, "Error de sincronización en tiempo real");
+                    guardarVentasLocalStorage();
+                    cargarDatosCajaDia(ventasRemotas);
                 });
-            } catch (e) {
-                console.warn("Error al iniciar colección:", e);
+            } catch(e) {}
+        };
+
+        window.iniciarSincronizacionMapaNube = function() {
+            if (!db) return;
+            if (unsubscribeMapaSnapshot) unsubscribeMapaSnapshot();
+            try {
+                const docRef = doc(db, "vitalia_mapa_restaurante", "layout_general_v12");
+                unsubscribeMapaSnapshot = onSnapshot(docRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        if (data.mesas) window.mesasGlobales = data.mesas;
+                        if (data.landmarks) window.landmarksGlobales = data.landmarks;
+                        if (data.walls) window.paredesGlobales = data.walls;
+                        guardarMapaLocalStorage();
+                        if (typeof renderizarPlanoMesasActual === 'function') renderizarPlanoMesasActual();
+                    }
+                });
+            } catch(e) {}
+        };
+
+        window.guardarMapaCompletoEnNube = async function() {
+            if (!db) return alert("Modo Local: Cambios guardados en este dispositivo.");
+            try {
+                const docRef = doc(db, "vitalia_mapa_restaurante", "layout_general_v12");
+                await setDoc(docRef, {
+                    mesas: window.mesasGlobales,
+                    landmarks: window.landmarksGlobales,
+                    walls: window.paredesGlobales
+                });
+                alert("☁️ ¡Mapa, elementos y paredes guardados en Firebase con éxito!");
+            } catch(e) {
+                alert("Error al guardar en la nube: " + e.message);
             }
         };
 
@@ -742,10 +727,7 @@
                 const docRef = doc(db, "vitalia_pos_ventas", `fecha_${fechaKey}`, "items", String(venta.id));
                 await setDoc(docRef, venta);
                 return true;
-            } catch (e) {
-                console.error("Error al guardar en Firebase:", e);
-                return true;
-            }
+            } catch(e) { return true; }
         };
 
         window.eliminarDiaEnNube = async function() {
@@ -754,17 +736,11 @@
                 const fechaKey = window.fechaActualGlobal || new Date().toISOString().split('T')[0];
                 const colRef = collection(db, "vitalia_pos_ventas", `fecha_${fechaKey}`, "items");
                 const snapshot = await getDocs(colRef);
-                
                 const promesas = [];
-                snapshot.forEach((documento) => {
-                    promesas.push(deleteDoc(documento.ref));
-                });
+                snapshot.forEach(docSnap => promesas.push(deleteDoc(docSnap.ref)));
                 await Promise.all(promesas);
                 return true;
-            } catch (e) {
-                console.error("Error al borrar en Firebase:", e);
-                return false;
-            }
+            } catch(e) { return false; }
         };
 
         window.inicializarFirebaseNube();
@@ -784,71 +760,503 @@
         let anchoPapelMm = '58';
         window.ventasGlobalesCache = [];
 
-        window.datosBoletaActual = {
-            adultos: 0,
-            ninos: 0,
-            chicos: 0,
-            reserva: 0,
-            extras: [],
-            propinaMonto: 0,
-            medioPago: 'Efectivo'
-        };
+        window.zonaMesasActual = 'salon';
+        window.mesaSeleccionadaId = null;
+        window.landmarkSeleccionadoId = null;
+        window.modoMoverMesas = false;
+        window.modoCrearParedes = false;
+        window.modoUnirMesas = false;
+        window.mesasSeleccionadasUnir = [];
 
-        function copiarTextoCredencial(idInput, btn) {
-            const input = document.getElementById(idInput);
-            input.select();
-            input.setSelectionRange(0, 99999);
-            document.execCommand('copy');
+        let puntoParedInicio = null;
+        let elementoArrastrandoTipo = null;
+        let elementoArrastrandoId = null;
+        let dragOffsetX = 0;
+        let dragOffsetY = 0;
 
-            const originalHTML = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-check text-emerald-600"></i> ¡Copiado!';
-            btn.classList.add('bg-emerald-50', 'text-emerald-700', 'border-emerald-300');
-            setTimeout(() => {
-                btn.innerHTML = originalHTML;
-                btn.classList.remove('bg-emerald-50', 'text-emerald-700', 'border-emerald-300');
-            }, 1500);
+        window.mesasGlobales = [];
+        window.landmarksGlobales = [
+            { id: 'lm-escenario', zona: 'salon', nombre: '🎭 Escenario', x: 250, y: 20, orientacion: 'horizontal' },
+            { id: 'lm-entrada', zona: 'salon', nombre: '🚪 Entrada', x: 20, y: 500, orientacion: 'horizontal' }
+        ];
+        window.paredesGlobales = [];
+
+        function cargarMapaLocalStorage() {
+            try {
+                const mData = localStorage.getItem('vitalia_mesas_v12');
+                const lData = localStorage.getItem('vitalia_landmarks_v12');
+                const pData = localStorage.getItem('vitalia_paredes_v12');
+                if (mData) window.mesasGlobales = JSON.parse(mData);
+                if (lData) window.landmarksGlobales = JSON.parse(lData);
+                if (pData) window.paredesGlobales = JSON.parse(pData);
+            } catch(e) {}
+        }
+        function guardarMapaLocalStorage() {
+            try {
+                localStorage.setItem('vitalia_mesas_v12', JSON.stringify(window.mesasGlobales));
+                localStorage.setItem('vitalia_landmarks_v12', JSON.stringify(window.landmarksGlobales));
+                localStorage.setItem('vitalia_paredes_v12', JSON.stringify(window.paredesGlobales));
+            } catch(e) {}
         }
 
-        function actualizarEstadoNubeVisual(conectado, texto) {
-            const el = document.getElementById('subtitulo-estado');
-            if (!el) return;
-            if (conectado) {
-                el.className = "text-xs text-green-200 flex items-center gap-1.5 font-bold";
-                el.innerHTML = `<i class="fa-solid fa-cloud text-green-300 animate-pulse"></i> ${texto}`;
+        window.guardarMapaEnFirebaseYLocal = async function() {
+            guardarMapaLocalStorage();
+            if (typeof window.guardarMapaCompletoEnNube === 'function') {
+                await window.guardarMapaCompletoEnNube();
+            }
+        };
+
+        window.switchZonaMesas = function(zona) {
+            window.zonaMesasActual = zona;
+            const zonas = ['salon', 'terraza-bar', 'terraza-parrillas'];
+            zonas.forEach(z => {
+                const btn = document.getElementById(`subtab-${z}`);
+                if (btn) {
+                    if (z === zona) {
+                        btn.className = "py-2.5 px-4 rounded-xl text-xs font-bold bg-vitalia-dark text-vitalia-gold flex items-center gap-2 transition whitespace-nowrap border shadow";
+                    } else {
+                        btn.className = "py-2.5 px-4 rounded-xl text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 flex items-center gap-2 transition whitespace-nowrap border";
+                    }
+                }
+            });
+            renderizarPlanoMesasActual();
+        };
+
+        window.modoMoverMesasToggle = function() {
+            window.modoMoverMesas = !window.modoMoverMesas;
+            window.modoCrearParedes = false;
+            window.modoUnirMesas = false;
+            puntoParedInicio = null;
+            const btn = document.getElementById('btn-toggle-mover');
+            if (window.modoMoverMesas) {
+                btn.innerHTML = '<i class="fa-solid fa-hand-holding"></i> ✋ Mover Activado';
+                btn.className = "text-xs bg-emerald-600 text-white font-extrabold px-3.5 py-2.5 rounded-xl transition shadow animate-pulse";
             } else {
-                el.className = "text-xs text-yellow-200 flex items-center gap-1.5 font-semibold";
-                el.innerHTML = `<i class="fa-solid fa-cloud-sun text-yellow-300"></i> ${texto}`;
+                btn.innerHTML = '<i class="fa-solid fa-hand"></i> ✋ Activar Mover';
+                btn.className = "text-xs bg-slate-800 hover:bg-slate-900 text-white font-bold px-3.5 py-2.5 rounded-xl transition shadow";
+            }
+            renderizarPlanoMesasActual();
+        };
+
+        window.modoCrearParedesToggle = function() {
+            window.modoCrearParedes = !window.modoCrearParedes;
+            window.modoMoverMesas = false;
+            window.modoUnirMesas = false;
+            puntoParedInicio = null;
+            const btn = document.getElementById('btn-toggle-paredes');
+            if (window.modoCrearParedes) {
+                btn.innerHTML = '<i class="fa-solid fa-wall"></i> 🧱 Clic Inicio Pared...';
+                btn.className = "text-xs bg-blue-600 text-white font-extrabold px-3.5 py-2.5 rounded-xl transition shadow animate-pulse";
+            } else {
+                btn.innerHTML = '<i class="fa-solid fa-wall"></i> 🧱 Crear Pared';
+                btn.className = "text-xs bg-blue-700 hover:bg-blue-800 text-white font-bold px-3.5 py-2.5 rounded-xl transition shadow";
+            }
+            renderizarPlanoMesasActual();
+        };
+
+        window.modoUnirMesasToggle = function() {
+            window.modoUnirMesas = !window.modoUnirMesas;
+            window.modoMoverMesas = false;
+            window.modoCrearParedes = false;
+            window.mesasSeleccionadasUnir = [];
+            puntoParedInicio = null;
+            const btn = document.getElementById('btn-toggle-unir');
+            if (window.modoUnirMesas) {
+                btn.innerHTML = '<i class="fa-solid fa-link"></i> Haz clic en 2 mesas...';
+                btn.className = "text-xs bg-purple-900 text-white font-extrabold px-3.5 py-2.5 rounded-xl transition shadow animate-pulse";
+            } else {
+                btn.innerHTML = '<i class="fa-solid fa-link"></i> 🔗 Unir Mesas';
+                btn.className = "text-xs bg-purple-700 hover:bg-purple-800 text-white font-bold px-3.5 py-2.5 rounded-xl transition shadow";
+            }
+            renderizarPlanoMesasActual();
+        };
+
+        window.clicEnCanvasMapa = function(e) {
+            if (!window.modoCrearParedes) return;
+            const container = document.getElementById('canvas-mapa-mesas');
+            const rect = container.getBoundingClientRect();
+            const clickX = Math.round(e.clientX - rect.left);
+            const clickY = Math.round(e.clientY - rect.top);
+
+            if (!puntoParedInicio) {
+                puntoParedInicio = { x: clickX, y: clickY };
+                document.getElementById('btn-toggle-paredes').innerHTML = '🧱 Clic Final de Pared...';
+            } else {
+                const nuevaPared = {
+                    id: 'pared-' + Date.now(),
+                    zona: window.zonaMesasActual,
+                    x1: puntoParedInicio.x,
+                    y1: puntoParedInicio.y,
+                    x2: clickX,
+                    y2: clickY
+                };
+                window.paredesGlobales.push(nuevaPared);
+                guardarMapaLocalStorage();
+                puntoParedInicio = null;
+                document.getElementById('btn-toggle-paredes').innerHTML = '<i class="fa-solid fa-wall"></i> 🧱 Crear Pared';
+                window.modoCrearParedes = false;
+                document.getElementById('btn-toggle-paredes').className = "text-xs bg-blue-700 hover:bg-blue-800 text-white font-bold px-3.5 py-2.5 rounded-xl transition shadow";
+                renderizarPlanoMesasActual();
+            }
+        };
+
+        window.verificarOpcionOtroLandmark = function(val) {
+            const cont = document.getElementById('contenedor-otro-landmark');
+            if (val === 'otro') {
+                cont.classList.remove('hidden');
+            } else {
+                cont.classList.add('hidden');
+            }
+        };
+
+        window.renderizarPlanoMesasActual = function() {
+            const container = document.getElementById('canvas-mapa-mesas');
+            if (!container) return;
+
+            const zona = window.zonaMesasActual;
+            const mesasZona = window.mesasGlobales.filter(m => m.zona === zona);
+            const lmsZona = window.landmarksGlobales.filter(l => l.zona === zona);
+            const paredesZona = window.paredesGlobales.filter(p => p.zona === zona);
+
+            let totalSillas = 0;
+            mesasZona.forEach(m => totalSillas += m.sillas);
+            document.getElementById('txt-sillas-zona').textContent = `${totalSillas} sillas`;
+            document.getElementById(`cnt-${zona}`).textContent = `${mesasZona.length} mesas`;
+
+            let cursorMapStyle = window.modoMoverMesas ? 'cursor-move' : 'cursor-pointer';
+            if (window.modoCrearParedes) cursorMapStyle = 'cursor-crosshair';
+
+            let paredesHTML = paredesZona.map(p => {
+                let length = Math.hypot(p.x2 - p.x1, p.y2 - p.y1);
+                let angle = Math.atan2(p.y2 - p.y1, p.x2 - p.x1) * 180 / Math.PI;
+                let wallCursor = window.modoMoverMesas ? 'cursor-move' : 'cursor-pointer';
+                return `
+                    <div onmousedown="iniciarArrastreElemento(event, 'pared', '${p.id}')" ontouchstart="iniciarArrastreElemento(event, 'pared', '${p.id}')" onclick="clicParedMapa(event, '${p.id}')" style="left: ${p.x1}px; top: ${p.y1}px; width: ${length}px; transform: rotate(${angle}deg); transform-origin: 0 0;" class="absolute h-3 bg-slate-700 border border-slate-900 rounded-sm z-0 ${wallCursor} shadow-sm" title="Arrastra para mover o haz clic para eliminar en modo mover"></div>
+                `;
+            }).join('');
+
+            let landmarksHTML = lmsZona.map(l => {
+                let w = l.orientacion === 'vertical' ? 'w-16 h-28' : 'w-28 h-16';
+                let lmCursor = window.modoMoverMesas ? 'cursor-move' : 'cursor-default';
+                return `
+                    <div onmousedown="iniciarArrastreElemento(event, 'landmark', '${l.id}')" ontouchstart="iniciarArrastreElemento(event, 'landmark', '${l.id}')" style="left: ${l.x}px; top: ${l.y}px;" class="absolute ${lmCursor} select-none z-1">
+                        <div class="${w} bg-amber-100 border-2 border-dashed border-amber-600 text-amber-900 font-extrabold text-xs px-2 py-1 rounded-xl shadow-xs flex items-center justify-center text-center">
+                            ${l.nombre}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            let mesasHTML = mesasZona.map(m => {
+                let colorClass = 'bg-emerald-500 text-white border-emerald-600';
+                if (m.estado === 'reservada') colorClass = 'bg-blue-500 text-white border-blue-600';
+                else if (m.estado === 'ocupada') colorClass = 'bg-amber-500 text-slate-950 border-amber-600';
+
+                if (m.unidaCon) colorClass += ' ring-4 ring-purple-600';
+                if (window.mesasSeleccionadasUnir.includes(m.id)) colorClass += ' ring-4 ring-yellow-400 animate-bounce';
+
+                let width = 'w-24', height = 'h-14', rounded = 'rounded-xl';
+                if (m.orientacion === 'vertical') {
+                    width = 'w-14'; height = 'h-24';
+                }
+
+                let labelReserva = m.reserva ? `<div class="text-[9px] truncate max-w-[90%] bg-black/40 px-1 py-0.5 rounded text-white font-semibold mt-0.5">${m.reserva}</div>` : '';
+                let badgeUnida = m.unidaCon ? `<span class="absolute -top-2 -right-2 bg-purple-700 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow">🔗</span>` : '';
+
+                return `
+                    <div onmousedown="iniciarArrastreElemento(event, 'mesa', '${m.id}')" ontouchstart="iniciarArrastreElemento(event, 'mesa', '${m.id}')" onclick="clickEnMesaMapa('${m.id}')" style="left: ${m.x}px; top: ${m.y}px;" class="absolute ${cursorMapStyle} select-none z-10 transition-transform">
+                        <div class="${width} ${height} ${rounded} ${colorClass} shadow-md border-2 p-1.5 flex flex-col items-center justify-center text-center relative">
+                            ${badgeUnida}
+                            <span class="font-black text-xs leading-none">${m.nombre}</span>
+                            <span class="text-[10px] opacity-90 font-bold">${m.sillas}s</span>
+                            ${labelReserva}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = paredesHTML + landmarksHTML + mesasHTML;
+        };
+
+        window.clicParedMapa = function(e, id) {
+            if (!window.modoMoverMesas) return;
+            if (confirm("¿Desea eliminar esta pared?")) {
+                window.paredesGlobales = window.paredesGlobales.filter(p => p.id !== id);
+                guardarMapaLocalStorage();
+                renderizarPlanoMesasActual();
+            }
+            e.stopPropagation();
+        };
+
+        window.iniciarArrastreElemento = function(e, tipo, id) {
+            if (!window.modoMoverMesas) return;
+            elementoArrastrandoTipo = tipo;
+            elementoArrastrandoId = id;
+            const targetDiv = e.currentTarget;
+            const rect = targetDiv.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+            dragOffsetX = clientX - rect.left;
+            dragOffsetY = clientY - rect.top;
+
+            document.addEventListener('mousemove', moverArrastreElemento);
+            document.addEventListener('touchmove', moverArrastreElemento);
+            document.addEventListener('mouseup', finalizarArrastreElemento);
+            document.addEventListener('touchend', finalizarArrastreElemento);
+            e.stopPropagation();
+        };
+
+        function moverArrastreElemento(e) {
+            if (!elementoArrastrandoId) return;
+            const container = document.getElementById('canvas-mapa-mesas');
+            if (!container) return;
+            const containerRect = container.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+            let newX = clientX - containerRect.left - dragOffsetX;
+            let newY = clientY - containerRect.top - dragOffsetY;
+
+            newX = Math.max(5, Math.min(containerRect.width - 80, newX));
+            newY = Math.max(5, Math.min(containerRect.height - 60, newY));
+
+            if (elementoArrastrandoTipo === 'mesa') {
+                const m = window.mesasGlobales.find(item => item.id === elementoArrastrandoId);
+                if (m) { m.x = Math.round(newX); m.y = Math.round(newY); renderizarPlanoMesasActual(); }
+            } else if (elementoArrastrandoTipo === 'landmark') {
+                const l = window.landmarksGlobales.find(item => item.id === elementoArrastrandoId);
+                if (l) { l.x = Math.round(newX); l.y = Math.round(newY); renderizarPlanoMesasActual(); }
+            } else if (elementoArrastrandoTipo === 'pared') {
+                const p = window.paredesGlobales.find(item => item.id === elementoArrastrandoId);
+                if (p) {
+                    let diffX = newX - p.x1;
+                    let diffY = newY - p.y1;
+                    p.x1 += diffX; p.y1 += diffY;
+                    p.x2 += diffX; p.y2 += diffY;
+                    renderizarPlanoMesasActual();
+                }
             }
         }
 
-        window.abrirModalFirebase = function() {
-            document.getElementById('modal-firebase-config').classList.remove('hidden');
-        };
-
-        window.cerrarModalFirebase = function() {
-            document.getElementById('modal-firebase-config').classList.add('hidden');
-        };
-
-        window.restablecerFirebaseDefault = function() {
-            localStorage.removeItem('vitalia_firebase_config_custom');
-            alert("Restableciendo conexión...");
-            cerrarModalFirebase();
-            location.reload();
-        };
-
-        window.cambiarAnchoImpresora = function(val) {
-            anchoPapelMm = val;
-            const container = document.getElementById('contenedor-ticket-preview');
-            const lineasSep = document.querySelectorAll('.ticket-linea-sep');
-
-            if (val === '80') {
-                if (container) container.style.maxWidth = '380px';
-                lineasSep.forEach(l => l.textContent = '------------------------------------------------');
-            } else {
-                if (container) container.style.maxWidth = '280px';
-                lineasSep.forEach(l => l.textContent = '--------------------------------');
+        function finalizarArrastreElemento() {
+            if (elementoArrastrandoId) {
+                guardarMapaLocalStorage();
+                elementoArrastrandoId = null;
+                elementoArrastrandoTipo = null;
             }
-            renderBoletaTicket();
+            document.removeEventListener('mousemove', moverArrastreElemento);
+            document.removeEventListener('touchmove', moverArrastreElemento);
+            document.removeEventListener('mouseup', finalizarArrastreElemento);
+            document.removeEventListener('touchend', finalizarArrastreElemento);
+        }
+
+        window.clickEnMesaMapa = function(id) {
+            if (window.modoMoverMesas || window.modoCrearParedes) return;
+            const m = window.mesasGlobales.find(item => item.id === id);
+            if (!m) return;
+
+            if (window.modoUnirMesas) {
+                if (!window.mesasSeleccionadasUnir.includes(id)) {
+                    window.mesasSeleccionadasUnir.push(id);
+                } else {
+                    window.mesasSeleccionadasUnir = window.mesasSeleccionadasUnir.filter(item => item !== id);
+                }
+
+                if (window.mesasSeleccionadasUnir.length >= 2) {
+                    const m1 = window.mesasGlobales.find(item => item.id === window.mesasSeleccionadasUnir[0]);
+                    const m2 = window.mesasGlobales.find(item => item.id === window.mesasSeleccionadasUnir[1]);
+
+                    if (m1 && m2) {
+                        m1.unidaCon = m2.id;
+                        m2.unidaCon = m1.id;
+                        m1.sillas += m2.sillas;
+                        guardarMapaLocalStorage();
+                        alert(`🔗 ${m1.nombre} y ${m2.nombre} unidas. Capacidad total: ${m1.sillas} sillas.`);
+                    }
+                    window.modoUnirMesas = false;
+                    window.mesasSeleccionadasUnir = [];
+                    document.getElementById('btn-toggle-unir').innerHTML = '<i class="fa-solid fa-link"></i> 🔗 Unir Mesas';
+                }
+                renderizarPlanoMesasActual();
+                return;
+            }
+
+            window.mesaSeleccionadaId = id;
+            document.getElementById('modal-mesa-titulo').textContent = m.nombre;
+            document.getElementById('modal-mesa-subtitulo').textContent = `Zona: ${getNombreZonaFormateado(m.zona)}`;
+            document.getElementById('modal-mesa-sillas').textContent = m.sillas;
+            document.getElementById('modal-mesa-orientacion').value = m.orientacion || 'horizontal';
+            document.getElementById('res-cliente-nombre').value = m.reserva || '';
+
+            document.getElementById('modal-detalle-mesa').classList.remove('hidden');
+        };
+
+        function getNombreZonaFormateado(z) {
+            if (z === 'salon') return 'Salón';
+            if (z === 'terraza-bar') return 'Terraza Bar';
+            if (z === 'terraza-parrillas') return 'Terraza Parrillas';
+            return 'Salón';
+        }
+
+        window.cerrarModalMesa = function() {
+            document.getElementById('modal-detalle-mesa').classList.add('hidden');
+            window.mesaSeleccionadaId = null;
+        };
+
+        window.detectarClicAfueraModal = function(e) {
+            const contenido = document.getElementById('modal-contenido-interno');
+            if (!contenido.contains(e.target)) {
+                cerrarModalMesa();
+            }
+        };
+
+        window.modificarSillasMesaSeleccionada = function(delta) {
+            if (!window.mesaSeleccionadaId) return;
+            const m = window.mesasGlobales.find(item => item.id === window.mesaSeleccionadaId);
+            if (m) {
+                m.sillas = Math.max(1, m.sillas + delta);
+                document.getElementById('modal-mesa-sillas').textContent = m.sillas;
+                guardarMapaLocalStorage();
+            }
+        };
+
+        window.cambiarOrientacionMesaSeleccionada = function(ori) {
+            if (!window.mesaSeleccionadaId) return;
+            const m = window.mesasGlobales.find(item => item.id === window.mesaSeleccionadaId);
+            if (m) {
+                m.orientacion = ori;
+                guardarMapaLocalStorage();
+                renderizarPlanoMesasActual();
+            }
+        };
+
+        window.guardarReservaMesa = function() {
+            if (!window.mesaSeleccionadaId) return;
+            const m = window.mesasGlobales.find(item => item.id === window.mesaSeleccionadaId);
+            if (!m) return;
+            const cliente = document.getElementById('res-cliente-nombre').value.trim();
+            m.reserva = cliente;
+            m.estado = cliente ? 'reservada' : 'disponible';
+            guardarMapaLocalStorage();
+            cerrarModalMesa();
+            renderizarPlanoMesasActual();
+        };
+
+        window.crearPrecuentaDesdeMesa = function() {
+            if (!window.mesaSeleccionadaId) return;
+            const m = window.mesasGlobales.find(item => item.id === window.mesaSeleccionadaId);
+            if (!m) return;
+            m.estado = 'ocupada';
+            guardarMapaLocalStorage();
+
+            switchTab(1);
+            document.getElementById('input-mesa-id-vinculada').value = m.id;
+            document.getElementById('lbl-mesa-vinculada-desc').textContent = `${m.nombre} (${getNombreZonaFormateado(m.zona)})`;
+            document.getElementById('qty-adultos').value = m.sillas;
+            calcularTotalFormulario();
+            cerrarModalMesa();
+        };
+
+        window.liberarMesaSeleccionada = function() {
+            if (!window.mesaSeleccionadaId) return;
+            const m = window.mesasGlobales.find(item => item.id === window.mesaSeleccionadaId);
+            if (m) {
+                m.estado = 'disponible';
+                m.reserva = null;
+                m.unidaCon = null;
+                guardarMapaLocalStorage();
+                cerrarModalMesa();
+                renderizarPlanoMesasActual();
+            }
+        };
+
+        window.eliminarMesaSeleccionada = function() {
+            if (!window.mesaSeleccionadaId) return;
+            if (confirm("¿Está seguro de eliminar esta mesa del mapa?")) {
+                const id = window.mesaSeleccionadaId;
+                window.mesasGlobales = window.mesasGlobales.filter(item => item.id !== id);
+                guardarMapaLocalStorage();
+                cerrarModalMesa();
+                renderizarPlanoMesasActual();
+            }
+        };
+
+        window.abrirModalNuevaMesa = function() {
+            document.getElementById('modal-agregar-mesa').classList.remove('hidden');
+        };
+        window.cerrarModalAgregarMesa = function() {
+            document.getElementById('modal-agregar-mesa').classList.add('hidden');
+        };
+
+        window.confirmarAgregarNuevaMesa = function() {
+            const zona = document.getElementById('new-mesa-zona').value;
+            const orientacion = document.getElementById('new-mesa-orientacion').value;
+            const sillas = parseInt(document.getElementById('new-mesa-sillas').value) || 4;
+
+            const numSiguiente = window.mesasGlobales.length + 1;
+
+            const nueva = {
+                id: 'mesa-' + Date.now(),
+                zona: zona,
+                nombre: `Mesa ${numSiguiente}`,
+                x: 120, y: 120,
+                sillas: sillas,
+                orientacion: orientacion,
+                estado: 'disponible',
+                reserva: null,
+                unidaCon: null
+            };
+
+            window.mesasGlobales.push(nueva);
+            guardarMapaLocalStorage();
+            cerrarModalAgregarMesa();
+            switchZonaMesas(zona);
+        };
+
+        window.abrirModalNuevoLandmark = function() {
+            document.getElementById('new-lm-tipo-select').value = 'Escenario 🎭';
+            document.getElementById('contenedor-otro-landmark').classList.add('hidden');
+            document.getElementById('modal-agregar-landmark').classList.remove('hidden');
+        };
+        window.cerrarModalNuevoLandmark = function() {
+            document.getElementById('modal-agregar-landmark').classList.add('hidden');
+        };
+        window.confirmarAgregarLandmark = function() {
+            let tipo = document.getElementById('new-lm-tipo-select').value;
+            if (tipo === 'otro') {
+                tipo = document.getElementById('new-lm-nombre-custom').value.trim() || 'Elemento';
+            }
+            const orientacion = document.getElementById('new-lm-orientacion').value;
+            const nuevo = {
+                id: 'lm-' + Date.now(),
+                zona: window.zonaMesasActual,
+                nombre: tipo,
+                x: 200, y: 200,
+                orientacion: orientacion
+            };
+            window.landmarksGlobales.push(nuevo);
+            guardarMapaLocalStorage();
+            cerrarModalNuevoLandmark();
+            renderizarPlanoMesasActual();
+        };
+
+        // --- SISTEMA POS GENERAL ---
+        window.switchTab = function(num) {
+            for (let i = 1; i <= 4; i++) {
+                const tab = document.getElementById(`tab-${i}`);
+                const btn = document.getElementById(`btn-tab-${i}`);
+                if (tab) tab.classList.add('hidden');
+                if (btn) btn.className = "py-3 px-5 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-vitalia-green flex items-center gap-2 whitespace-nowrap transition-all";
+            }
+            const activeTab = document.getElementById(`tab-${num}`);
+            const activeBtn = document.getElementById(`btn-tab-${num}`);
+            if (activeTab) activeTab.classList.remove('hidden');
+            if (activeBtn) activeBtn.className = "py-3 px-5 font-bold text-sm border-b-2 border-vitalia-green text-vitalia-green flex items-center gap-2 whitespace-nowrap transition-all";
+
+            if (num === 2) poblaciónSelectorVentasBoleta();
+            if (num === 3) actualizarTextoCuadreTab3();
+            if (num === 4) renderizarPlanoMesasActual();
         };
 
         function formatMoney(amount) {
@@ -856,19 +1264,10 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            const yearEl = document.getElementById('year-copy');
-            if (yearEl) yearEl.textContent = new Date().getFullYear();
-
-            const inputFecha = document.getElementById('fecha-trabajo');
-            if (inputFecha) inputFecha.value = fechaActual;
-
-            const logoGuardado = localStorage.getItem('vitalia_logo_base64');
-            if (logoGuardado) {
-                const imgHeader = document.getElementById('img-logo-header');
-                if (imgHeader) imgHeader.src = logoGuardado;
-            }
-
+            document.getElementById('year-copy').textContent = new Date().getFullYear();
+            document.getElementById('fecha-trabajo').value = fechaActual;
             actualizarLabelFecha();
+            cargarMapaLocalStorage();
             cargarVentasLocalStorage();
         });
 
@@ -881,7 +1280,6 @@
                 }
             } catch(e) {}
         }
-
         function guardarVentasLocalStorage() {
             try {
                 localStorage.setItem(`vitalia_ventas_${fechaActual}`, JSON.stringify(window.ventasGlobalesCache || []));
@@ -896,23 +1294,16 @@
             }
             actualizarLabelFecha();
             cargarVentasLocalStorage();
-
-            if (typeof window.iniciarSincronizacionNube === 'function') {
-                window.iniciarSincronizacionNube();
-            }
+            if (typeof window.iniciarSincronizacionNube === 'function') window.iniciarSincronizacionNube();
         };
 
         function actualizarLabelFecha() {
             if (!fechaActual) return;
             const partes = fechaActual.split('-');
             const fechaFormateada = `${partes[2]}/${partes[1]}/${partes[0]}`;
-            
             const badge = document.getElementById('badge-fecha-actual');
             if (badge) badge.textContent = fechaFormateada;
-
-            document.querySelectorAll('.ticket-fecha-val').forEach(el => {
-                el.textContent = `Fecha: ${fechaFormateada}`;
-            });
+            document.querySelectorAll('.ticket-fecha-val').forEach(el => el.textContent = `Fecha: ${fechaFormateada}`);
         }
 
         window.cargarLogoLocal = function(event) {
@@ -920,318 +1311,27 @@
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    const base64Img = e.target.result;
-                    document.getElementById('img-logo-header').src = base64Img;
-                    localStorage.setItem('vitalia_logo_base64', base64Img);
+                    document.getElementById('img-logo-header').src = e.target.result;
+                    localStorage.setItem('vitalia_logo_base64', e.target.result);
                 };
                 reader.readAsDataURL(file);
             }
         };
 
-        window.switchTab = function(num) {
-            const tab1 = document.getElementById('tab-1');
-            const tab2 = document.getElementById('tab-2');
-            const tab3 = document.getElementById('tab-3');
-            const btn1 = document.getElementById('btn-tab-1');
-            const btn2 = document.getElementById('btn-tab-2');
-            const btn3 = document.getElementById('btn-tab-3');
-
-            if (!tab1 || !tab2 || !tab3) return;
-
-            tab1.classList.add('hidden');
-            tab2.classList.add('hidden');
-            tab3.classList.add('hidden');
-
-            btn1.className = "py-3 px-5 font-semibold text-sm border-b-2 border-transparent text-gray-500 hover:text-vitalia-green flex items-center gap-2 whitespace-nowrap transition-all";
-            btn2.className = "py-3 px-5 font-semibold text-sm border-b-2 border-transparent text-gray-500 hover:text-vitalia-green flex items-center gap-2 whitespace-nowrap transition-all";
-            btn3.className = "py-3 px-5 font-semibold text-sm border-b-2 border-transparent text-gray-500 hover:text-vitalia-green flex items-center gap-2 whitespace-nowrap transition-all";
-
-            if (num === 1) {
-                tab1.classList.remove('hidden');
-                btn1.className = "py-3 px-5 font-bold text-sm border-b-2 border-vitalia-green text-vitalia-green flex items-center gap-2 whitespace-nowrap transition-all";
-            } else if (num === 2) {
-                tab2.classList.remove('hidden');
-                btn2.className = "py-3 px-5 font-bold text-sm border-b-2 border-vitalia-green text-vitalia-green flex items-center gap-2 whitespace-nowrap transition-all";
-                poblaciónSelectorVentasBoleta();
-            } else if (num === 3) {
-                tab3.classList.remove('hidden');
-                btn3.className = "py-3 px-5 font-bold text-sm border-b-2 border-vitalia-green text-vitalia-green flex items-center gap-2 whitespace-nowrap transition-all";
-                actualizarTextoCuadreTab3();
-            }
-        };
-
-        window.adjustQty = function(id, delta) {
-            const el = document.getElementById(id);
-            if (!el) return;
-            let val = parseInt(el.value) || 0;
-            val = Math.max(0, val + delta);
-            el.value = val;
-            calcularTotalFormulario();
-        };
-
-        window.agregarItemExtra = function() {
-            const nombreEl = document.getElementById('extra-nombre');
-            const precioEl = document.getElementById('extra-precio');
-            const cantEl = document.getElementById('extra-cant');
-
-            const nombre = nombreEl.value.trim();
-            const precio = parseInt(precioEl.value) || 0;
-            const cant = parseInt(cantEl.value) || 1;
-
-            if (!nombre || precio <= 0) {
-                alert("Por favor ingrese un nombre y precio válido para el consumo extra.");
-                return;
-            }
-
-            extrasFormularioActual.push({ nombre, precio, cant, total: precio * cant });
-            nombreEl.value = "";
-            precioEl.value = "";
-            cantEl.value = 1;
-
-            renderExtrasFormulario();
-            calcularTotalFormulario();
-        };
-
-        window.eliminarExtraTemp = function(idx) {
-            extrasFormularioActual.splice(idx, 1);
-            renderExtrasFormulario();
-            calcularTotalFormulario();
-        };
-
-        function renderExtrasFormulario() {
-            const cont = document.getElementById('lista-extras-temp');
-            if (!cont) return;
-            cont.innerHTML = extrasFormularioActual.map((item, i) => `
-                <span class="inline-flex items-center gap-1 bg-amber-200 text-amber-900 text-xs px-2.5 py-1 rounded-full font-bold">
-                    ${item.cant}x ${item.nombre} ($${formatMoney(item.total)})
-                    <button type="button" onclick="eliminarExtraTemp(${i})" class="text-amber-800 hover:text-red-700 ml-1 font-extrabold">&times;</button>
-                </span>
-            `).join('');
-        }
-
-        window.calcularTotalFormulario = function() {
-            const ad = parseInt(document.getElementById('qty-adultos').value) || 0;
-            const ni = parseInt(document.getElementById('qty-ninos').value) || 0;
-            const ch = parseInt(document.getElementById('qty-chicos').value) || 0;
-            const abonoReserva = parseInt(document.getElementById('monto-reserva').value) || 0;
-
-            const totalPersonas = ad + ni + ch;
-            const subtotalPersonas = (ad * PRECIO_ADULTO) + (ni * PRECIO_NINO) + (ch * PRECIO_CHICO);
-            const subtotalExtras = extrasFormularioActual.reduce((acc, curr) => acc + curr.total, 0);
-
-            const subtotalConsumoTotal = subtotalPersonas + subtotalExtras;
-            const propinaEstimada = Math.round(subtotalConsumoTotal * 0.10);
-            const totalFinal = Math.max(0, subtotalConsumoTotal - abonoReserva) + propinaEstimada;
-
-            document.getElementById('lbl-total-personas').textContent = totalPersonas;
-            document.getElementById('lbl-subtotal').textContent = '$' + formatMoney(subtotalConsumoTotal);
-            document.getElementById('lbl-propina-sugerida-garzon').textContent = '$' + formatMoney(propinaEstimada);
-            document.getElementById('lbl-monto-reserva-desc').textContent = '-$' + formatMoney(abonoReserva);
-            document.getElementById('lbl-total-final').textContent = '$' + formatMoney(totalFinal);
-        };
-
-        window.guardarPreCuenta = async function() {
-            const ad = parseInt(document.getElementById('qty-adultos').value) || 0;
-            const ni = parseInt(document.getElementById('qty-ninos').value) || 0;
-            const ch = parseInt(document.getElementById('qty-chicos').value) || 0;
-            const abonoReserva = parseInt(document.getElementById('monto-reserva').value) || 0;
-            const totalPersonas = ad + ni + ch;
-
-            if (totalPersonas === 0 && extrasFormularioActual.length === 0) {
-                alert("Ingrese al menos 1 asistente o consumo extra.");
-                return;
-            }
-
-            const subtotalPersonas = (ad * PRECIO_ADULTO) + (ni * PRECIO_NINO) + (ch * PRECIO_CHICO);
-            const subtotalExtras = extrasFormularioActual.reduce((acc, curr) => acc + curr.total, 0);
-            const subtotalConsumoTotal = subtotalPersonas + subtotalExtras;
-
-            const propinaSugerida = Math.round(subtotalConsumoTotal * 0.10);
-            const totalEstimado = Math.max(0, subtotalConsumoTotal - abonoReserva) + propinaSugerida;
-
-            const ventasActuales = window.ventasGlobalesCache || [];
-            const nuevoId = ventasActuales.length > 0 ? Math.max(...ventasActuales.map(v => v.id)) + 1 : 1;
-
-            const nuevaVenta = {
-                id: nuevoId,
-                hora: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                adultos: ad,
-                ninos: ni,
-                chicos: ch,
-                totalPersonas,
-                extras: [...extrasFormularioActual],
-                reserva: abonoReserva,
-                subtotal: subtotalConsumoTotal,
-                propina: propinaSugerida,
-                total: totalEstimado,
-                medioPago: 'Pendiente',
-                cerrada: false,
-                anulada: false
-            };
-
-            ventasActuales.push(nuevaVenta);
-            window.ventasGlobalesCache = ventasActuales;
-            guardarVentasLocalStorage();
-            cargarDatosCajaDia(ventasActuales);
-
-            if (typeof window.guardarVentaEnNube === 'function') {
-                await window.guardarVentaEnNube(nuevaVenta);
-            }
-
-            document.getElementById('qty-adultos').value = 0;
-            document.getElementById('qty-ninos').value = 0;
-            document.getElementById('qty-chicos').value = 0;
-            document.getElementById('monto-reserva').value = 0;
-            extrasFormularioActual = [];
-            renderExtrasFormulario();
-            calcularTotalFormulario();
-
-            irABoletaVenta(nuevoId);
-        };
-
-        window.anularVenta = async function(id) {
-            if (confirm(`¿Está seguro de anular la Pre-cuenta #${id}?`)) {
-                const v = window.ventasGlobalesCache.find(item => item.id == id);
-                if (v) {
-                    v.anulada = true;
-                    guardarVentasLocalStorage();
-                    cargarDatosCajaDia(window.ventasGlobalesCache);
-                    if (typeof window.guardarVentaEnNube === 'function') {
-                        await window.guardarVentaEnNube(v);
-                    }
-                }
-            }
-        };
-
-        function cargarDatosCajaDia(ventas) {
-            const body = document.getElementById('tabla-ventas-body');
-            if (!body) return;
-
-            let totEfectivo = 0;
-            let totTransf = 0;
-            let totTarjeta = 0;
-            let totNeto = 0;
-            let totReservas = 0;
-            let totPropinas = 0;
-            let totPersonas = 0;
-
-            if (!ventas || ventas.length === 0) {
-                body.innerHTML = `<tr><td colspan="9" class="p-6 text-center text-gray-400 italic">No hay registros para esta fecha.</td></tr>`;
-            } else {
-                body.innerHTML = ventas.map(v => {
-                    if (!v.anulada && v.cerrada) {
-                        totNeto += v.subtotal;
-                        totReservas += (v.reserva || 0);
-                        totPropinas += v.propina;
-                        totPersonas += v.totalPersonas;
-
-                        if (v.medioPago === 'Efectivo') totEfectivo += v.total;
-                        else if (v.medioPago === 'Transferencia') totTransf += v.total;
-                        else if (v.medioPago === 'Débito' || v.medioPago === 'Tarjeta') totTarjeta += v.total;
-                    }
-
-                    let detallePersonas = [];
-                    if (v.adultos > 0) detallePersonas.push(`${v.adultos} Ad`);
-                    if (v.ninos > 0) detallePersonas.push(`${v.ninos} Niñ`);
-                    if (v.chicos > 0) detallePersonas.push(`${v.chicos} Chi`);
-
-                    let detalleExtras = v.extras ? v.extras.map(e => `${e.cant}x ${e.nombre}`).join(', ') : '-';
-                    if (!detalleExtras) detalleExtras = '-';
-
-                    let rowClass = v.anulada ? 'venta-anulada' : 'hover:bg-gray-50';
-                    let estadoBadge = '';
-
-                    if (v.anulada) {
-                        estadoBadge = `<span class="bg-gray-200 text-gray-700 font-bold px-2 py-0.5 rounded text-[10px] no-line-through">ANULADA</span>`;
-                    } else if (v.cerrada) {
-                        estadoBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold ${getBadgeMedioPago(v.medioPago)} no-line-through">${v.medioPago}</span>`;
-                    } else {
-                        estadoBadge = `<span class="bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded text-[10px] no-line-through">PENDIENTE</span>`;
-                    }
-
-                    return `
-                        <tr class="${rowClass} transition">
-                            <td class="p-3 font-bold">#${v.id} <span class="text-[10px] opacity-75 font-normal">(${v.hora})</span></td>
-                            <td class="p-3 font-semibold">${detallePersonas.join(' + ') || 'Solo extras'}</td>
-                            <td class="p-3 truncate max-w-xs">${detalleExtras}</td>
-                            <td class="p-3 text-right font-semibold text-blue-700">${v.reserva > 0 ? '-$' + formatMoney(v.reserva) : '-'}</td>
-                            <td class="p-3 text-right font-medium">$${formatMoney(v.subtotal)}</td>
-                            <td class="p-3 text-right text-green-700 font-medium">$${formatMoney(v.propina)}</td>
-                            <td class="p-3 text-right font-bold text-vitalia-dark">$${formatMoney(v.total)}</td>
-                            <td class="p-3 text-center">${estadoBadge}</td>
-                            <td class="p-3 text-center space-x-1 no-line-through">
-                                ${!v.anulada ? `
-                                    <button onclick="irABoletaVenta(${v.id})" class="bg-vitalia-green hover:bg-vitalia-dark text-white font-bold text-[11px] px-2 py-1 rounded transition">
-                                        <i class="fa-solid fa-receipt"></i> Boleta
-                                    </button>
-                                    <button onclick="anularVenta(${v.id})" class="bg-red-100 hover:bg-red-200 text-red-700 font-bold text-[11px] px-2 py-1 rounded transition" title="Anular pre-cuenta">
-                                        <i class="fa-solid fa-ban"></i>
-                                    </button>
-                                ` : '<span class="text-xs text-gray-400 italic">Anulada</span>'}
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
-            }
-
-            document.getElementById('caja-efectivo').textContent = '$' + formatMoney(totEfectivo);
-            document.getElementById('caja-transferencia').textContent = '$' + formatMoney(totTransf);
-            document.getElementById('caja-tarjeta').textContent = '$' + formatMoney(totTarjeta);
-            document.getElementById('caja-neto').textContent = '$' + formatMoney(totNeto);
-            document.getElementById('caja-reservas').textContent = '-$' + formatMoney(totReservas);
-            document.getElementById('caja-propinas').textContent = '$' + formatMoney(totPropinas);
-            document.getElementById('caja-total-general').textContent = '$' + formatMoney(totEfectivo + totTransf + totTarjeta);
-            document.getElementById('caja-total-personas').textContent = totPersonas;
-        }
-
-        function getBadgeMedioPago(metodo) {
-            if (metodo === 'Efectivo') return 'bg-green-100 text-green-800';
-            if (metodo === 'Transferencia') return 'bg-blue-100 text-blue-800';
-            return 'bg-purple-100 text-purple-800';
-        }
-
-        window.vaciarRegistrosDia = async function() {
-            const passwordIngresada = prompt("⚠️ ACCIÓN PROTEGIDA POR SUPERVISOR\n\nPor favor ingrese la contraseña para reiniciar el día:");
-            
-            if (passwordIngresada === null) return;
-
-            if (passwordIngresada !== "Chinitoj0@") {
-                alert("❌ Contraseña incorrecta. Se ha cancelado la reinicialización de la caja.");
-                return;
-            }
-
-            if (confirm("¿Está completamente seguro de ELIMINAR TODOS los registros de hoy? Esta acción afectará a todos los dispositivos conectados.")) {
-                window.ventasGlobalesCache = [];
-                guardarVentasLocalStorage();
-                cargarDatosCajaDia([]);
-
-                if (typeof window.eliminarDiaEnNube === 'function') {
-                    await window.eliminarDiaEnNube();
-                }
-
-                alert("🗑️ Registros del día reiniciados con éxito.");
-            }
-        };
-
         window.poblaciónSelectorVentasBoleta = function() {
-            const selector = document.getElementById('selector-ventas-boleta');
-            if (!selector) return;
-
+            const sel = document.getElementById('selector-ventas-boleta');
+            if (!sel) return;
             const ventas = (window.ventasGlobalesCache || []).filter(v => !v.anulada);
-
-            selector.innerHTML = `<option value="">-- Seleccionar Pre-cuenta --</option>` +
-                ventas.map(v => `<option value="${v.id}">#${v.id} - ${v.totalPersonas} pers - Subtotal $${formatMoney(v.subtotal)} [${v.cerrada ? 'CERRADA' : 'PENDIENTE'}]</option>`).join('');
-            
-            if (ventaSeleccionadaBoletaId) {
-                selector.value = ventaSeleccionadaBoletaId;
-            }
+            sel.innerHTML = `<option value="">-- Seleccionar Pre-cuenta --</option>` +
+                ventas.map(v => `<option value="${v.id}">#${v.id} - ${v.mesaNombre || 'Mostrador'} ($${formatMoney(v.subtotal)}) [${v.cerrada ? 'CERRADA' : 'PENDIENTE'}]</option>`).join('');
+            if (ventaSeleccionadaBoletaId) sel.value = ventaSeleccionadaBoletaId;
         };
 
         window.irABoletaVenta = function(id) {
             switchTab(2);
             ventaSeleccionadaBoletaId = id;
-            const selector = document.getElementById('selector-ventas-boleta');
-            if (selector) selector.value = id;
+            const sel = document.getElementById('selector-ventas-boleta');
+            if (sel) sel.value = id;
             cargarVentaEnBoleta(id);
         };
 
@@ -1242,345 +1342,135 @@
             if (!v) return;
 
             document.getElementById('bol-monto-propina').value = v.propina;
-            document.getElementById('bol-medio-pago').value = (v.medioPago !== 'Pendiente') ? v.medioPago : 'Efectivo';
-
+            document.getElementById('bol-medio-pago').value = v.medioPago !== 'Pendiente' ? v.medioPago : 'Efectivo';
+            
             const badge = document.getElementById('badge-estado-venta');
-            if (v.cerrada) {
-                badge.className = "bg-green-100 text-green-800 px-2 py-0.5 rounded text-[10px] font-bold";
-                badge.textContent = "CERRADA Y COBRADA";
-            } else {
-                badge.className = "bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-[10px] font-bold";
-                badge.textContent = "PENDIENTE DE PAGO";
-            }
+            badge.className = v.cerrada ? "bg-green-100 text-green-800 px-2 py-0.5 rounded text-[10px] font-bold" : "bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-[10px] font-bold";
+            badge.textContent = v.cerrada ? "CERRADA Y COBRADA" : "PENDIENTE";
 
-            datosBoletaActual = {
-                adultos: v.adultos,
-                ninos: v.ninos,
-                chicos: v.chicos,
-                reserva: v.reserva || 0,
-                extras: v.extras || [],
-                propinaMonto: v.propina,
-                medioPago: v.medioPago
+            window.datosBoletaActual = {
+                adultos: v.adultos, ninos: v.ninos, chicos: v.chicos,
+                reserva: v.reserva || 0, extras: v.extras || [],
+                propinaMonto: v.propina, medioPago: v.medioPago,
+                mesaId: v.mesaId || null, mesaNombre: v.mesaNombre || null
             };
-
             renderBoletaTicket();
         };
 
         window.setPropinaDiezPorCiento = function() {
-            let subtotalConsumo = (datosBoletaActual.adultos * PRECIO_ADULTO) + 
-                                  (datosBoletaActual.ninos * PRECIO_NINO) + 
-                                  (datosBoletaActual.chicos * PRECIO_CHICO) + 
-                                  (datosBoletaActual.extras ? datosBoletaActual.extras.reduce((acc, e) => acc + e.total, 0) : 0);
-            
-            let p10 = Math.round(subtotalConsumo * 0.10);
-            document.getElementById('bol-monto-propina').value = p10;
+            let sub = (window.datosBoletaActual.adultos * PRECIO_ADULTO) + (window.datosBoletaActual.ninos * PRECIO_NINO) + (window.datosBoletaActual.chicos * PRECIO_CHICO) + (window.datosBoletaActual.extras ? window.datosBoletaActual.extras.reduce((a,e)=>a+e.total,0):0);
+            document.getElementById('bol-monto-propina').value = Math.round(sub * 0.10);
             actualizarBoletaManual();
         };
 
         window.actualizarBoletaManual = function() {
-            const propMonto = parseInt(document.getElementById('bol-monto-propina').value) || 0;
-            const medio = document.getElementById('bol-medio-pago').value;
-
-            datosBoletaActual.propinaMonto = propMonto;
-            datosBoletaActual.medioPago = medio;
-
+            window.datosBoletaActual.propinaMonto = parseInt(document.getElementById('bol-monto-propina').value) || 0;
+            window.datosBoletaActual.medioPago = document.getElementById('bol-medio-pago').value;
             renderBoletaTicket();
         };
 
         function renderBoletaTicket() {
             let itemsHTML = '';
-            let cantPersonas = datosBoletaActual.adultos + datosBoletaActual.ninos + datosBoletaActual.chicos;
-            let subtotalConsumo = 0;
-
-            if (datosBoletaActual.adultos > 0) {
-                let tot = datosBoletaActual.adultos * PRECIO_ADULTO;
-                subtotalConsumo += tot;
-                itemsHTML += `<tr><td style="padding: 1px 0;">${datosBoletaActual.adultos} ADULTOS (13+)</td><td style="text-align: right; padding: 1px 0;">$${formatMoney(tot)}</td></tr>`;
-            }
-            if (datosBoletaActual.ninos > 0) {
-                let tot = datosBoletaActual.ninos * PRECIO_NINO;
-                subtotalConsumo += tot;
-                itemsHTML += `<tr><td style="padding: 1px 0;">${datosBoletaActual.ninos} NINOS (6-12)</td><td style="text-align: right; padding: 1px 0;">$${formatMoney(tot)}</td></tr>`;
-            }
-            if (datosBoletaActual.chicos > 0) {
-                let tot = datosBoletaActual.chicos * PRECIO_CHICO;
-                subtotalConsumo += tot;
-                itemsHTML += `<tr><td style="padding: 1px 0;">${datosBoletaActual.chicos} NINOS CHICOS (4-5)</td><td style="text-align: right; padding: 1px 0;">$${formatMoney(tot)}</td></tr>`;
+            let cantP = window.datosBoletaActual.adultos + window.datosBoletaActual.ninos + window.datosBoletaActual.chicos;
+            let sub = 0;
+            if (window.datosBoletaActual.adultos > 0) { let t = window.datosBoletaActual.adultos * PRECIO_ADULTO; sub += t; itemsHTML += `<tr><td>${window.datosBoletaActual.adultos} ADULTOS</td><td style="text-align:right">$${formatMoney(t)}</td></tr>`; }
+            if (window.datosBoletaActual.ninos > 0) { let t = window.datosBoletaActual.ninos * PRECIO_NINO; sub += t; itemsHTML += `<tr><td>${window.datosBoletaActual.ninos} NIÑOS</td><td style="text-align:right">$${formatMoney(t)}</td></tr>`; }
+            if (window.datosBoletaActual.chicos > 0) { let t = window.datosBoletaActual.chicos * PRECIO_CHICO; sub += t; itemsHTML += `<tr><td>${window.datosBoletaActual.chicos} CHICOS</td><td style="text-align:right">$${formatMoney(t)}</td></tr>`; }
+            if (window.datosBoletaActual.extras) {
+                window.datosBoletaActual.extras.forEach(e => { sub += e.total; itemsHTML += `<tr><td>${e.cant} ${e.nombre}</td><td style="text-align:right">$${formatMoney(e.total)}</td></tr>`; });
             }
 
-            if (datosBoletaActual.extras && datosBoletaActual.extras.length > 0) {
-                datosBoletaActual.extras.forEach(e => {
-                    subtotalConsumo += e.total;
-                    itemsHTML += `<tr><td style="padding: 1px 0;">${e.cant} ${e.nombre.toUpperCase()}</td><td style="text-align: right; padding: 1px 0;">$${formatMoney(e.total)}</td></tr>`;
-                });
-            }
+            const abono = window.datosBoletaActual.reserva || 0;
+            const prop = window.datosBoletaActual.propinaMonto || 0;
+            const tot = Math.max(0, sub - abono) + prop;
 
-            if (!itemsHTML) {
-                itemsHTML = `<tr><td colspan="2" style="text-align: center; padding: 2px 0;">SIN ITEMS</td></tr>`;
-            }
-
-            const abonoReserva = datosBoletaActual.reserva || 0;
-            const propina = datosBoletaActual.propinaMonto || 0;
-            const totalPagar = Math.max(0, subtotalConsumo - abonoReserva) + propina;
-
-            document.querySelectorAll('.ticket-items-body-val').forEach(el => el.innerHTML = itemsHTML);
-            document.querySelectorAll('.ticket-cant-personas-val').forEach(el => el.textContent = cantPersonas);
-            document.querySelectorAll('.ticket-subtotal-val').forEach(el => el.textContent = '$' + formatMoney(subtotalConsumo));
+            document.querySelectorAll('.ticket-items-body-val').forEach(el => el.innerHTML = itemsHTML || '<tr><td colspan="2">Sin items</td></tr>');
+            document.querySelectorAll('.ticket-cant-personas-val').forEach(el => el.textContent = cantP);
+            document.querySelectorAll('.ticket-subtotal-val').forEach(el => el.textContent = '$' + formatMoney(sub));
             
-            const rowReserva = document.getElementById('ticket-reserva-row');
-            if (rowReserva) {
-                if (abonoReserva > 0) {
-                    rowReserva.style.display = 'flex';
-                    document.querySelectorAll('.ticket-reserva-val').forEach(el => el.textContent = '-$' + formatMoney(abonoReserva));
+            const tagMesa = document.getElementById('ticket-cant-detalle-mesa');
+            if (tagMesa) {
+                if (window.datosBoletaActual.mesaNombre) {
+                    tagMesa.classList.remove('hidden');
+                    tagMesa.textContent = `CANT DETALLE MESA "${window.datosBoletaActual.mesaNombre.toUpperCase()}"`;
                 } else {
-                    rowReserva.style.display = 'none';
+                    tagMesa.classList.add('hidden');
                 }
             }
 
-            document.querySelectorAll('.ticket-propina-val').forEach(el => el.textContent = '$' + formatMoney(propina));
-            document.querySelectorAll('.ticket-total-val').forEach(el => el.textContent = '$' + formatMoney(totalPagar));
-
-            document.getElementById('cierre-lbl-subtotal').textContent = '$' + formatMoney(subtotalConsumo);
-            const crRes = document.getElementById('cierre-row-reserva');
-            if (crRes) {
-                if (abonoReserva > 0) {
-                    crRes.classList.remove('hidden');
-                    document.getElementById('cierre-lbl-reserva').textContent = '-$' + formatMoney(abonoReserva);
-                } else {
-                    crRes.classList.add('hidden');
-                }
+            const rRow = document.getElementById('ticket-reserva-row');
+            if (rRow) {
+                if (abono > 0) { rRow.style.display = 'flex'; document.querySelectorAll('.ticket-reserva-val').forEach(el => el.textContent = '-$' + formatMoney(abono)); }
+                else rRow.style.display = 'none';
             }
-            document.getElementById('cierre-lbl-propina').textContent = '$' + formatMoney(propina);
-            document.getElementById('cierre-lbl-total').textContent = '$' + formatMoney(totalPagar);
+            document.querySelectorAll('.ticket-propina-val').forEach(el => el.textContent = '$' + formatMoney(prop));
+            document.querySelectorAll('.ticket-total-val').forEach(el => el.textContent = '$' + formatMoney(tot));
+
+            document.getElementById('cierre-lbl-subtotal').textContent = '$' + formatMoney(sub);
+            document.getElementById('cierre-lbl-propina').textContent = '$' + formatMoney(prop);
+            document.getElementById('cierre-lbl-total').textContent = '$' + formatMoney(tot);
         }
 
         window.cerrarYGuardarVentaFinal = async function() {
-            if (!ventaSeleccionadaBoletaId) {
-                alert("Seleccione una pre-cuenta para cobrar y cerrar.");
-                return;
-            }
-
+            if (!ventaSeleccionadaBoletaId) { alert("Seleccione una pre-cuenta."); return; }
             const v = (window.ventasGlobalesCache || []).find(item => item.id == ventaSeleccionadaBoletaId);
             if (!v) return;
 
-            const propMonto = parseInt(document.getElementById('bol-monto-propina').value) || 0;
-            const medio = document.getElementById('bol-medio-pago').value;
-
-            v.propina = propMonto;
-            v.medioPago = medio;
-            v.total = Math.max(0, v.subtotal - (v.reserva || 0)) + propMonto;
+            v.propina = parseInt(document.getElementById('bol-monto-propina').value) || 0;
+            v.medioPago = document.getElementById('bol-medio-pago').value;
+            v.total = Math.max(0, v.subtotal - (v.reserva || 0)) + v.propina;
             v.cerrada = true;
+
+            const chkLiberar = document.getElementById('chk-liberar-mesa-cierre');
+            if (chkLiberar && chkLiberar.checked && v.mesaId) {
+                const mMesa = window.mesasGlobales.find(m => m.id === v.mesaId);
+                if (mMesa) {
+                    mMesa.estado = 'disponible';
+                    mMesa.reserva = null;
+                    guardarMapaLocalStorage();
+                    if (typeof window.guardarMapaCompletoEnNube === 'function') window.guardarMapaCompletoEnNube();
+                }
+            }
 
             guardarVentasLocalStorage();
             cargarDatosCajaDia(window.ventasGlobalesCache);
+            if (typeof window.guardarVentaEnNube === 'function') await window.guardarVentaEnNube(v);
 
-            if (typeof window.guardarVentaEnNube === 'function') {
-                await window.guardarVentaEnNube(v);
-            }
-
-            alert(`✅ Venta #${v.id} CERRADA y COBRADA con éxito (${medio}).`);
+            alert("✅ Venta cerrada y cobrada con éxito.");
             cargarVentaEnBoleta(v.id);
         };
 
         window.imprimirBoletaLimpia = function() {
-            const partes = fechaActual.split('-');
-            const fechaFormateada = `${partes[2]}/${partes[1]}/${partes[0]}`;
-
-            const es80mm = (anchoPapelMm === '80');
-            const pageSizeCss = es80mm ? '80mm auto' : '58mm auto';
-            const bodyWidthCss = es80mm ? '72mm' : '48mm';
-            const fontSizeCss = es80mm ? '11px' : '10px';
-            const fontSizeHeaderCss = es80mm ? '13px' : '11px';
-            const sepLine = es80mm ? '------------------------------------------------' : '--------------------------------';
-
-            let itemsTxt = '';
-            let cantPersonas = datosBoletaActual.adultos + datosBoletaActual.ninos + datosBoletaActual.chicos;
-            let subtotalConsumo = 0;
-
-            if (datosBoletaActual.adultos > 0) {
-                let tot = datosBoletaActual.adultos * PRECIO_ADULTO;
-                subtotalConsumo += tot;
-                itemsTxt += `<tr><td style="padding:1px 0;">${datosBoletaActual.adultos} ADULTOS (13+)</td><td style="text-align:right; padding:1px 0;">$${formatMoney(tot)}</td></tr>`;
-            }
-            if (datosBoletaActual.ninos > 0) {
-                let tot = datosBoletaActual.ninos * PRECIO_NINO;
-                subtotalConsumo += tot;
-                itemsTxt += `<tr><td style="padding:1px 0;">${datosBoletaActual.ninos} NINOS (6-12)</td><td style="text-align:right; padding:1px 0;">$${formatMoney(tot)}</td></tr>`;
-            }
-            if (datosBoletaActual.chicos > 0) {
-                let tot = datosBoletaActual.chicos * PRECIO_CHICO;
-                subtotalConsumo += tot;
-                itemsTxt += `<tr><td style="padding:1px 0;">${datosBoletaActual.chicos} NINOS CHICOS (4-5)</td><td style="text-align:right; padding:1px 0;">$${formatMoney(tot)}</td></tr>`;
-            }
-
-            if (datosBoletaActual.extras) {
-                datosBoletaActual.extras.forEach(e => {
-                    subtotalConsumo += e.total;
-                    itemsTxt += `<tr><td style="padding:1px 0;">${e.cant} ${e.nombre.toUpperCase()}</td><td style="text-align:right; padding:1px 0;">$${formatMoney(e.total)}</td></tr>`;
-                });
-            }
-
-            const abonoReserva = datosBoletaActual.reserva || 0;
-            const propina = datosBoletaActual.propinaMonto || 0;
-            const totalPagar = Math.max(0, subtotalConsumo - abonoReserva) + propina;
-
-            let reservaTxt = abonoReserva > 0 ? `<tr><td style="padding:1px 0;">ABONO RESERVA:</td><td style="text-align:right; padding:1px 0;">-$${formatMoney(abonoReserva)}</td></tr>` : '';
-
-            const iframe = document.createElement('iframe');
-            iframe.style.position = 'fixed';
-            iframe.style.right = '0';
-            iframe.style.bottom = '0';
-            iframe.style.width = '0px';
-            iframe.style.height = '0px';
-            iframe.style.border = 'none';
-            document.body.appendChild(iframe);
-
-            const doc = iframe.contentWindow.document;
-            doc.open();
-            doc.write(`
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <meta charset="utf-8">
-                    <title>Boleta POS - Vitalia</title>
-                    <style>
-                        @page { size: ${pageSizeCss}; margin: 0mm !important; }
-                        @media print {
-                            html, body { width: ${bodyWidthCss} !important; height: max-content !important; margin: 0 !important; padding: 0 !important; overflow: hidden !important; }
-                        }
-                        * { box-sizing: border-box; margin: 0; padding: 0; }
-                        html, body { width: ${bodyWidthCss}; margin: 0 auto; padding: 1mm; font-family: 'Courier New', Courier, monospace; font-size: ${fontSizeCss}; line-height: 1.15; color: #000; background: #fff; }
-                        table { width: 100%; border-collapse: collapse; margin: 1px 0; }
-                        td, th { padding: 1px 0; font-size: ${fontSizeCss}; vertical-align: top; }
-                        .center { text-align: center; }
-                        .bold { font-weight: bold; }
-                        .sep { text-align: center; font-size: 9px; margin: 1px 0; overflow: hidden; white-space: nowrap; line-height: 1; }
-                        .line { border-bottom: 1px dashed #000; margin: 2px 0; }
-                        .double-line { border-bottom: 2px double #000; margin: 2px 0; }
-                    </style>
-                </head>
-                <body>
-                    <div class="center bold" style="font-size: ${fontSizeHeaderCss};">${es80mm ? 'TENEDOR LIBRE VITALIA CAMPESTRE' : 'TENEDOR LIBRE<br/>VITALIA CAMPESTRE'}</div>
-                    <div class="sep">${sepLine}</div>
-                    <div class="center" style="font-size: 9px;">Fecha: ${fechaFormateada} ${ventaSeleccionadaBoletaId ? '| Reg: #' + ventaSeleccionadaBoletaId : ''}</div>
-                    <div class="sep">${sepLine}</div>
-
-                    <table>
-                        <thead>
-                            <tr style="border-bottom: 1px dashed #000;">
-                                <th style="text-align:left; padding-bottom: 1px;">CANT DETALLE</th>
-                                <th style="text-align:right; padding-bottom: 1px;">TOTAL</th>
-                            </tr>
-                        </thead>
-                        <tbody>${itemsTxt}</tbody>
-                    </table>
-
-                    <div class="line"></div>
-                    <table>
-                        <tr><td style="padding:1px 0;">TOT. PERSONAS:</td><td style="text-align:right; padding:1px 0;" class="bold">${cantPersonas}</td></tr>
-                        <tr><td style="padding:1px 0;">SUBTOTAL CONSUMO:</td><td style="text-align:right; padding:1px 0;">$${formatMoney(subtotalConsumo)}</td></tr>
-                        ${reservaTxt}
-                        <tr><td style="padding:1px 0;">PROPINA:</td><td style="text-align:right; padding:1px 0;">$${formatMoney(propina)}</td></tr>
-                    </table>
-
-                    <div class="double-line"></div>
-                    <table>
-                        <tr class="bold" style="font-size: ${fontSizeHeaderCss};">
-                            <td style="padding: 2px 0;">TOTAL A PAGAR:</td>
-                            <td style="text-align:right; padding: 2px 0;">$${formatMoney(totalPagar)}</td>
-                        </tr>
-                    </table>
-
-                    <div class="line"></div>
-                    <div class="center bold" style="font-size: 9px; margin-top: 3px;">¡GRACIAS POR SU VISITA!</div>
-                    <div class="center bold" style="font-size: 8px; margin-top: 1px; line-height: 1;">CONSERVE ESTE COMPROBANTE</div>
-                </body>
-                </html>
-            `);
-            doc.close();
-
-            setTimeout(() => {
-                iframe.contentWindow.focus();
-                iframe.contentWindow.print();
-                setTimeout(() => document.body.removeChild(iframe), 1000);
-            }, 300);
+            window.print();
         };
 
         window.actualizarTextoCuadreTab3 = function() {
             const ventas = (window.ventasGlobalesCache || []).filter(v => !v.anulada && v.cerrada);
-
-            let totNeto = 0;
-            let totPropina = 0;
-            let totReserva = 0;
-            let totTransf = 0;
-            let totEfectivo = 0;
-            let totDebito = 0;
-
-            let cantAdultos = 0;
-            let cantNinos = 0;
-            let cantChicos = 0;
-
+            let totNeto = 0, totPropina = 0, totReserva = 0, totTransf = 0, totEfectivo = 0, totDebito = 0, cantAd = 0, cantNi = 0, cantCh = 0;
             ventas.forEach(v => {
-                totNeto += v.subtotal;
-                totPropina += v.propina;
-                totReserva += (v.reserva || 0);
-
+                totNeto += v.subtotal; totPropina += v.propina; totReserva += (v.reserva || 0);
                 if (v.medioPago === 'Transferencia') totTransf += v.total;
                 else if (v.medioPago === 'Efectivo') totEfectivo += v.total;
                 else if (v.medioPago === 'Débito' || v.medioPago === 'Tarjeta') totDebito += v.total;
-
-                cantAdultos += (v.adultos || 0);
-                cantNinos += (v.ninos || 0);
-                cantChicos += (v.chicos || 0);
+                cantAd += (v.adultos || 0); cantNi += (v.ninos || 0); cantCh += (v.chicos || 0);
             });
-
-            let totConPropina = totNeto + totPropina;
-            let totPersonas = cantAdultos + cantNinos + cantChicos;
-
-            // Actualizar vista visual con emojis
             document.getElementById('visual-neto').textContent = '$' + formatMoney(totNeto);
             document.getElementById('visual-propina').textContent = '$' + formatMoney(totPropina);
-            document.getElementById('visual-con-propina').textContent = '$' + formatMoney(totConPropina);
+            document.getElementById('visual-con-propina').textContent = '$' + formatMoney(totNeto + totPropina);
             document.getElementById('visual-reserva').textContent = '-$' + formatMoney(totReserva);
-            document.getElementById('visual-transf').textContent = '$' + formatMoney(totTransf);
-            document.getElementById('visual-efectivo').textContent = '$' + formatMoney(totEfectivo);
-            document.getElementById('visual-debito').textContent = '$' + formatMoney(totDebito);
-            document.getElementById('visual-asistencia').textContent = `${totPersonas} personas (${cantAdultos} Ad, ${cantNinos} Niñ, ${cantChicos} Chicos)`;
+            document.getElementById('visual-asistencia').textContent = `${cantAd + cantNi + cantCh} personas (${cantAd} Ad, ${cantNi} Niñ, ${cantCh} Chi)`;
 
-            // Plantilla de texto para WhatsApp
-            const plantilla = 
-`Total: ${formatMoney(totNeto)}
-Propina: ${formatMoney(totPropina)}
-Total con propina: ${formatMoney(totConPropina)}
-Abonos de reserva: ${formatMoney(totReserva)}
-Transferencia: ${formatMoney(totTransf)}
-Efectivo: ${formatMoney(totEfectivo)}
-Debito : ${formatMoney(totDebito)}
-
-Adultos: ${cantAdultos}
-Niños: ${cantNinos}
-Niños chicos: ${cantChicos}
-Total: ${totPersonas}`;
-
-            const box = document.getElementById('box-cuadre-texto');
-            if (box) box.value = plantilla;
+            document.getElementById('box-cuadre-texto').value = `Total: ${formatMoney(totNeto)}\nPropina: ${formatMoney(totPropina)}\nTotal con propina: ${formatMoney(totNeto + totPropina)}\nEfectivo: ${formatMoney(totEfectivo)}\nTransferencia: ${formatMoney(totTransf)}\nDébito: ${formatMoney(totDebito)}`;
         };
 
         window.copiarTextoCuadre = function() {
             actualizarTextoCuadreTab3();
             const box = document.getElementById('box-cuadre-texto');
-            if (!box) return;
-            box.classList.remove('hidden');
-            box.select();
-            document.execCommand('copy');
-            box.classList.add('hidden');
-
-            const alerta = document.getElementById('alerta-copiado');
-            if (alerta) {
-                alerta.classList.remove('hidden');
-                setTimeout(() => alerta.classList.add('hidden'), 3000);
-            }
+            box.classList.remove('hidden'); box.select(); document.execCommand('copy'); box.classList.add('hidden');
+            const al = document.getElementById('alerta-copiado');
+            al.classList.remove('hidden'); setTimeout(() => al.classList.add('hidden'), 3000);
         };
     </script>
 </body>
 </html>
+```eof
