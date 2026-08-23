@@ -26,6 +26,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script>
+        /* STREAMING_CHUNK:Configurando helpers de SVG y logos por defecto... */
         function usarLogoSvgPorDefecto(imgEl) {
             imgEl.onerror = null;
             const svgLogo = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="%231b4332"/><circle cx="50" cy="50" r="42" fill="none" stroke="%23d4af37" stroke-width="3"/><path d="M35 65 L35 35 M30 35 L40 35 M35 45 L40 45" stroke="%23d4af37" stroke-width="3" stroke-linecap="round"/><path d="M60 35 Q68 45 60 55 L60 65" stroke="%23d4af37" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M50 25 C45 35 45 45 50 25 Z" fill="%232e7d32" stroke="%23d4af37" stroke-width="1.5"/></svg>`;
@@ -68,7 +69,7 @@
 </head>
 <body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col font-sans">
 
-    <!-- HEADER PRINCIPAL -->
+    <!-- STREAMING_CHUNK:Renderizando Header principal de la aplicación... -->
     <header class="bg-vitalia-dark text-white shadow-md">
         <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-3">
@@ -104,7 +105,7 @@
         </div>
     </header>
 
-    <!-- NAVEGACIÓN PESTAÑAS -->
+    <!-- STREAMING_CHUNK:Navegación principal de pestañas... -->
     <div class="bg-white border-b border-slate-200 shadow-xs">
         <div class="max-w-7xl mx-auto px-4 flex overflow-x-auto">
             <button id="btn-tab-1" onclick="switchTab(1)" class="py-3 px-5 font-bold text-sm border-b-2 border-vitalia-green text-vitalia-green flex items-center gap-2 whitespace-nowrap transition-all">
@@ -117,7 +118,7 @@
                 <i class="fa-solid fa-calculator"></i> 3. Cuadre Automático
             </button>
             <button id="btn-tab-4" onclick="switchTab(4)" class="py-3 px-5 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-vitalia-green flex items-center gap-2 whitespace-nowrap transition-all">
-                <i class="fa-solid fa-chair text-amber-600"></i> 4. Mesas & Mapas
+                <i class="fa-solid fa-chair text-slate-500"></i> 4. Mesas & Mapas
             </button>
         </div>
     </div>
@@ -125,7 +126,7 @@
     <!-- CONTENIDO -->
     <main class="max-w-7xl mx-auto px-4 py-5 flex-1 w-full space-y-4">
 
-        <!-- ================= PESTAÑA 1: INGRESO DE PRE-CUENTAS ================= -->
+        <!-- STREAMING_CHUNK:Renderizando Pestaña 1 (Pre-cuentas & Garzones)... -->
         <div id="tab-1" class="space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-2 bg-white rounded-2xl shadow-xs border border-slate-200 p-6 space-y-4">
@@ -156,9 +157,9 @@
                             <p class="text-xs font-bold text-slate-700">Adultos (13+ yrs)</p>
                             <p class="text-xs text-vitalia-green font-extrabold mb-2">$22.000 c/u</p>
                             <div class="flex items-center justify-center gap-2">
-                                <button type="button" onclick="adjustQty('qty-adultos', -1)" class="w-8 h-8 bg-white border rounded-lg font-bold">-</button>
-                                <input type="number" id="qty-adultos" value="0" min="0" class="w-12 text-center font-bold bg-transparent text-sm" oninput="calcularTotalFormulario()">
-                                <button type="button" onclick="adjustQty('qty-adultos', 1)" class="w-8 h-8 bg-vitalia-green text-white rounded-lg font-bold">+</button>
+                                <button type="button" onclick="adjustQty('qty-adultos', -1)" class="w-8 h-8 bg-white border rounded-lg font-bold text-slate-700 hover:bg-slate-100">-</button>
+                                <input type="number" id="qty-adultos" value="0" min="0" class="w-12 text-center font-bold bg-transparent text-sm focus:outline-none" oninput="calcularTotalFormulario()">
+                                <button type="button" onclick="adjustQty('qty-adultos', 1)" class="w-8 h-8 bg-vitalia-green text-white rounded-lg font-bold hover:bg-vitalia-dark">+</button>
                             </div>
                         </div>
 
@@ -166,9 +167,9 @@
                             <p class="text-xs font-bold text-slate-700">Niños (6-12 yrs)</p>
                             <p class="text-xs text-vitalia-green font-extrabold mb-2">$11.000 c/u</p>
                             <div class="flex items-center justify-center gap-2">
-                                <button type="button" onclick="adjustQty('qty-ninos', -1)" class="w-8 h-8 bg-white border rounded-lg font-bold">-</button>
-                                <input type="number" id="qty-ninos" value="0" min="0" class="w-12 text-center font-bold bg-transparent text-sm" oninput="calcularTotalFormulario()">
-                                <button type="button" onclick="adjustQty('qty-ninos', 1)" class="w-8 h-8 bg-vitalia-green text-white rounded-lg font-bold">+</button>
+                                <button type="button" onclick="adjustQty('qty-ninos', -1)" class="w-8 h-8 bg-white border rounded-lg font-bold text-slate-700 hover:bg-slate-100">-</button>
+                                <input type="number" id="qty-ninos" value="0" min="0" class="w-12 text-center font-bold bg-transparent text-sm focus:outline-none" oninput="calcularTotalFormulario()">
+                                <button type="button" onclick="adjustQty('qty-ninos', 1)" class="w-8 h-8 bg-vitalia-green text-white rounded-lg font-bold hover:bg-vitalia-dark">+</button>
                             </div>
                         </div>
 
@@ -176,9 +177,9 @@
                             <p class="text-xs font-bold text-slate-700">Niños Chicos (4-5 yrs)</p>
                             <p class="text-xs text-vitalia-green font-extrabold mb-2">$5.000 c/u</p>
                             <div class="flex items-center justify-center gap-2">
-                                <button type="button" onclick="adjustQty('qty-chicos', -1)" class="w-8 h-8 bg-white border rounded-lg font-bold">-</button>
-                                <input type="number" id="qty-chicos" value="0" min="0" class="w-12 text-center font-bold bg-transparent text-sm" oninput="calcularTotalFormulario()">
-                                <button type="button" onclick="adjustQty('qty-chicos', 1)" class="w-8 h-8 bg-vitalia-green text-white rounded-lg font-bold">+</button>
+                                <button type="button" onclick="adjustQty('qty-chicos', -1)" class="w-8 h-8 bg-white border rounded-lg font-bold text-slate-700 hover:bg-slate-100">-</button>
+                                <input type="number" id="qty-chicos" value="0" min="0" class="w-12 text-center font-bold bg-transparent text-sm focus:outline-none" oninput="calcularTotalFormulario()">
+                                <button type="button" onclick="adjustQty('qty-chicos', 1)" class="w-8 h-8 bg-vitalia-green text-white rounded-lg font-bold hover:bg-vitalia-dark">+</button>
                             </div>
                         </div>
                     </div>
@@ -188,13 +189,13 @@
                         <label class="font-bold text-slate-700 flex items-center gap-1.5">
                             <i class="fa-solid fa-beer-mug-empty text-amber-600"></i> Agregar Consumos Extras (Bebidas / Tragos / Varios)
                         </label>
-                        <div class="flex gap-2">
-                            <input type="text" id="extra-nombre" placeholder="Ej: Cerveza Heineken" class="flex-1 border rounded-lg px-3 py-2 bg-white">
-                            <input type="number" id="extra-precio" placeholder="Precio ($)" min="0" class="w-28 border rounded-lg px-3 py-2 bg-white font-bold">
-                            <input type="number" id="extra-cant" value="1" min="1" class="w-16 border rounded-lg px-2 py-2 text-center bg-white">
-                            <button type="button" onclick="agregarItemExtra()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2 rounded-lg shadow-xs">Añadir</button>
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <input type="text" id="extra-nombre" placeholder="Ej: Cerveza Heineken" class="flex-1 border rounded-lg px-3 py-2 bg-white text-sm">
+                            <input type="number" id="extra-precio" placeholder="Precio ($)" min="0" class="w-full sm:w-28 border rounded-lg px-3 py-2 bg-white font-bold text-sm">
+                            <input type="number" id="extra-cant" value="1" min="1" class="w-full sm:w-16 border rounded-lg px-2 py-2 text-center bg-white text-sm">
+                            <button type="button" onclick="agregarItemExtra()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2 rounded-lg shadow-xs transition">Añadir</button>
                         </div>
-                        <div id="lista-extras-temp" class="space-y-1 pt-1"></div>
+                        <div id="lista-extras-temp" class="flex flex-wrap gap-2 pt-1"></div>
                     </div>
 
                     <!-- Abono Reserva -->
@@ -202,23 +203,23 @@
                         <label class="font-bold text-blue-900 flex items-center gap-1.5">
                             <i class="fa-solid fa-bookmark text-blue-600"></i> Abono Reserva (Se descuenta del saldo a pagar)
                         </label>
-                        <input type="number" id="monto-reserva" value="0" min="0" step="1000" class="w-full border rounded-lg px-3 py-2 bg-white font-bold text-blue-800 text-sm" oninput="calcularTotalFormulario()">
+                        <input type="number" id="monto-reserva" value="0" min="0" step="1000" class="w-full border rounded-lg px-3 py-2 bg-white font-bold text-blue-800 text-sm focus:outline-none" oninput="calcularTotalFormulario()">
                     </div>
 
                     <!-- Desglose -->
                     <div class="bg-vitalia-lightGreen p-4 rounded-xl border border-green-200 space-y-2 text-xs">
-                        <div class="grid grid-cols-3 gap-2 border-b border-green-200 pb-2">
-                            <div><span class="font-bold text-slate-500 uppercase block">Subtotal:</span><span id="lbl-subtotal" class="font-black text-slate-800 text-sm">$0</span></div>
-                            <div><span class="font-bold text-vitalia-green uppercase block">Propina 10%:</span><span id="lbl-propina-sugerida-garzon" class="font-black text-vitalia-green text-sm">$0</span></div>
-                            <div><span class="font-bold text-blue-800 uppercase block">Reserva:</span><span id="lbl-monto-reserva-desc" class="font-bold text-blue-800 text-sm">-$0</span></div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 border-b border-green-200 pb-2">
+                            <div><span class="font-bold text-slate-500 uppercase block">Subtotal Consumo:</span><span id="lbl-subtotal" class="font-black text-slate-800 text-sm">$0</span></div>
+                            <div><span class="font-bold text-vitalia-green uppercase block">Propina Sugerida (10%):</span><span id="lbl-propina-sugerida-garzon" class="font-black text-vitalia-green text-sm">$0</span></div>
+                            <div><span class="font-bold text-blue-800 uppercase block">Reserva Descontada:</span><span id="lbl-monto-reserva-desc" class="font-bold text-blue-800 text-sm">-$0</span></div>
                         </div>
-                        <div class="flex justify-between items-center pt-1">
+                        <div class="flex flex-col sm:flex-row justify-between items-center gap-2 pt-1">
                             <div>
-                                <span class="text-slate-600 font-bold">Personas: <strong id="lbl-total-personas" class="text-slate-900">0</strong></span>
-                                <div class="text-base font-black text-slate-900">TOTAL: <span id="lbl-total-final" class="text-vitalia-green text-lg">$0</span></div>
+                                <span class="text-slate-600 font-bold">Total Personas: <strong id="lbl-total-personas" class="text-slate-900">0</strong></span>
+                                <div class="text-base font-black text-slate-900">TOTAL CON PROPINA: <span id="lbl-total-final" class="text-vitalia-green text-lg">$0</span></div>
                             </div>
-                            <button type="button" onclick="guardarPreCuenta()" class="bg-vitalia-green hover:bg-vitalia-dark text-white font-extrabold py-2.5 px-5 rounded-xl shadow-sm transition text-xs">
-                                Generar Pre-Boleta
+                            <button type="button" onclick="guardarPreCuenta()" class="w-full sm:w-auto bg-vitalia-green hover:bg-vitalia-dark text-white font-extrabold py-2.5 px-5 rounded-xl shadow-sm transition text-xs flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-paper-plane"></i> Generar Pre-Boleta
                             </button>
                         </div>
                     </div>
@@ -279,7 +280,7 @@
             </div>
         </div>
 
-        <!-- ================= PESTAÑA 2: CIERRE & BOLETA POS ================= -->
+        <!-- STREAMING_CHUNK:Renderizando Pestaña 2 (Cierre & POS)... -->
         <div id="tab-2" class="hidden space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
                 <div class="md:col-span-5 bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
@@ -381,7 +382,7 @@
             </div>
         </div>
 
-        <!-- ================= PESTAÑA 3: CUADRE AUTOMÁTICO ================= -->
+        <!-- STREAMING_CHUNK:Renderizando Pestaña 3 (Cuadre)... -->
         <div id="tab-3" class="hidden space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
                 <div class="md:col-span-5 bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
@@ -408,7 +409,7 @@
             </div>
         </div>
 
-        <!-- ================= PESTAÑA 4: MESAS & MAPAS (3 Zonas, Textura Madera, Banner Compacto) ================= -->
+        <!-- STREAMING_CHUNK:Renderizando Pestaña 4 (Mesas & Mapas)... -->
         <div id="tab-4" class="hidden space-y-5">
 
             <!-- BANNER COMPACTO DE RESERVAS -->
@@ -428,57 +429,57 @@
                 </div>
             </a>
 
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-3">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b pb-3">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 space-y-4">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b pb-3">
                     <div>
-                        <h2 class="text-base font-black text-vitalia-dark flex items-center gap-2">
-                            <i class="fa-solid fa-chair text-vitalia-green"></i> Mapa Interactivo del Restaurante
+                        <h2 class="text-lg font-black text-vitalia-dark flex items-center gap-2">
+                            <i class="fa-solid fa-chair text-slate-500"></i> Mapa Interactivo del Restaurante
                         </h2>
                         <p class="text-xs text-slate-500">Activa <b>"✋ Activar Mover"</b> para reorganizar mesas, elementos y paredes con seguridad.</p>
                     </div>
 
-                    <!-- Botones de Control -->
-                    <div class="flex flex-wrap items-center gap-1.5">
-                        <button onclick="guardarMapaEnFirebaseYLocal()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-3 py-2 rounded-xl transition shadow-xs flex items-center gap-1">
-                            <i class="fa-solid fa-cloud-arrow-up"></i> 💾 Guardar
+                    <!-- Botones de Control y Firebase -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button onclick="guardarMapaEnFirebaseYLocal()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-3.5 py-2.5 rounded-xl transition shadow flex items-center gap-1.5">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> 💾 Guardar en Firebase
                         </button>
-                        <button onclick="modoMoverMesasToggle()" id="btn-toggle-mover" class="text-xs bg-slate-800 hover:bg-slate-900 text-white font-bold px-3 py-2 rounded-xl transition shadow-xs flex items-center gap-1">
-                            <i class="fa-solid fa-hand"></i> ✋ Mover
+                        <button onclick="modoMoverMesasToggle()" id="btn-toggle-mover" class="text-xs bg-slate-800 hover:bg-slate-900 text-white font-bold px-3.5 py-2.5 rounded-xl transition shadow flex items-center gap-1.5">
+                            <i class="fa-solid fa-hand"></i> ✋ Activar Mover
                         </button>
-                        <button onclick="modoCrearParedesToggle()" id="btn-toggle-paredes" class="text-xs bg-blue-700 hover:bg-blue-800 text-white font-bold px-3 py-2 rounded-xl transition shadow-xs flex items-center gap-1">
-                            <i class="fa-solid fa-wall"></i> 🧱 Pared
+                        <button onclick="modoCrearParedesToggle()" id="btn-toggle-paredes" class="text-xs bg-blue-700 hover:bg-blue-800 text-white font-bold px-3.5 py-2.5 rounded-xl transition shadow flex items-center gap-1.5">
+                            <i class="fa-solid fa-wall"></i> 🧱 Crear Pared
                         </button>
-                        <button onclick="modoUnirMesasToggle()" id="btn-toggle-unir" class="text-xs bg-purple-700 hover:bg-purple-800 text-white font-bold px-3 py-2 rounded-xl transition shadow-xs flex items-center gap-1">
-                            <i class="fa-solid fa-link"></i> 🔗 Unir
+                        <button onclick="modoUnirMesasToggle()" id="btn-toggle-unir" class="text-xs bg-purple-700 hover:bg-purple-800 text-white font-bold px-3.5 py-2.5 rounded-xl transition shadow flex items-center gap-1.5">
+                            <i class="fa-solid fa-link"></i> 🔗 Unir Mesas
                         </button>
-                        <button onclick="abrirModalNuevaMesa()" class="text-xs bg-vitalia-green hover:bg-vitalia-dark text-white font-bold px-3 py-2 rounded-xl transition shadow-xs flex items-center gap-1">
-                            <i class="fa-solid fa-plus"></i> Mesa
+                        <button onclick="abrirModalNuevaMesa()" class="text-xs bg-vitalia-green hover:bg-vitalia-dark text-white font-bold px-3.5 py-2.5 rounded-xl transition shadow flex items-center gap-1.5">
+                            <i class="fa-solid fa-plus"></i> Añadir Mesa
                         </button>
-                        <button onclick="abrirModalNuevoLandmark()" class="text-xs bg-amber-600 hover:bg-amber-700 text-white font-bold px-3 py-2 rounded-xl transition shadow-xs flex items-center gap-1">
-                            <i class="fa-solid fa-landmark"></i> Elemento
+                        <button onclick="abrirModalNuevoLandmark()" class="text-xs bg-amber-600 hover:bg-amber-700 text-white font-bold px-3.5 py-2.5 rounded-xl transition shadow flex items-center gap-1.5">
+                            <i class="fa-solid fa-landmark"></i> Añadir Elemento
                         </button>
                     </div>
                 </div>
 
                 <!-- SUBNAVEGACIÓN 3 ZONAS -->
                 <div class="flex gap-2 overflow-x-auto pb-1">
-                    <button id="subtab-salon" onclick="switchZonaMesas('salon')" class="py-2 px-3.5 rounded-xl text-xs font-bold bg-vitalia-dark text-vitalia-gold flex items-center gap-2 transition whitespace-nowrap border shadow-xs">
+                    <button id="subtab-salon" onclick="switchZonaMesas('salon')" class="py-2.5 px-4 rounded-xl text-xs font-bold bg-vitalia-dark text-vitalia-gold flex items-center gap-2 transition whitespace-nowrap border shadow">
                         🏛️ SALÓN <span id="cnt-salon" class="bg-white/20 px-2 py-0.5 rounded-full text-[10px]">0 mesas</span>
                     </button>
-                    <button id="subtab-terraza-bar" onclick="switchZonaMesas('terraza-bar')" class="py-2 px-3.5 rounded-xl text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 flex items-center gap-2 transition whitespace-nowrap border">
+                    <button id="subtab-terraza-bar" onclick="switchZonaMesas('terraza-bar')" class="py-2.5 px-4 rounded-xl text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 flex items-center gap-2 transition whitespace-nowrap border">
                         🍸 TERRAZA BAR <span id="cnt-terraza-bar" class="bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full text-[10px]">0 mesas</span>
                     </button>
-                    <button id="subtab-terraza-parrillas" onclick="switchZonaMesas('terraza-parrillas')" class="py-2 px-3.5 rounded-xl text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 flex items-center gap-2 transition whitespace-nowrap border">
+                    <button id="subtab-terraza-parrillas" onclick="switchZonaMesas('terraza-parrillas')" class="py-2.5 px-4 rounded-xl text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 flex items-center gap-2 transition whitespace-nowrap border">
                         🔥 TERRAZA PARRILLAS <span id="cnt-terraza-parrillas" class="bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full text-[10px]">0 mesas</span>
                     </button>
                 </div>
 
-                <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-50 p-2.5 rounded-xl border text-xs">
-                    <div class="flex items-center gap-3 flex-wrap">
-                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> Disponible</span>
-                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block"></span> Reservada</span>
-                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> Ocupada</span>
-                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-purple-600 inline-block"></span> Unida</span>
+                <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-50 p-3 rounded-xl border text-xs">
+                    <div class="flex items-center gap-4 flex-wrap">
+                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span> Disponible</span>
+                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-blue-500 inline-block"></span> Reservada</span>
+                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span> Ocupada</span>
+                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-purple-600 inline-block"></span> Unida</span>
                     </div>
                     <div class="font-bold text-slate-700">
                         Capacidad Zona: <span class="text-vitalia-green" id="txt-sillas-zona">0 sillas</span>
@@ -486,10 +487,10 @@
                 </div>
             </div>
 
-            <!-- CANVAS CON TEXTURA DE MADERA -->
-            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-5 overflow-hidden min-h-[580px]">
-                <div id="canvas-mapa-mesas" onclick="clicEnCanvasMapa(event)" class="wood-floor-grid relative w-full h-[540px] rounded-2xl border border-amber-900/20 overflow-hidden shadow-inner">
-                    <!-- Elementos renderizados aquí -->
+            <!-- CANVAS INTERACTIVO DE MAPA -->
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 overflow-hidden min-h-[620px]">
+                <div id="canvas-mapa-mesas" onclick="clicEnCanvasMapa(event)" class="wood-floor-grid relative w-full h-[600px] rounded-2xl border border-amber-900/20 overflow-hidden bg-white shadow-inner">
+                    <!-- Mesas, elementos, paredes renderizadas aquí -->
                 </div>
             </div>
 
@@ -497,7 +498,8 @@
 
     </main>
 
-    <!-- MODAL DETALLE MESA (Tacho de basura al lado de Mesa X + cierre al clickear fuera) -->
+    <!-- STREAMING_CHUNK:Renderizando Modales... -->
+    <!-- MODAL DETALLE MESA -->
     <div id="modal-detalle-mesa" onclick="detectarClicAfueraModal(event)" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div id="modal-contenido-interno" class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border space-y-4 text-xs">
             <div class="flex items-center justify-between border-b pb-3">
@@ -574,7 +576,7 @@
         </div>
     </div>
 
-    <!-- MODAL AGREGAR ELEMENTO (Incluyendo opción "Otro / Personalizado") -->
+    <!-- MODAL AGREGAR ELEMENTO -->
     <div id="modal-agregar-landmark" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border space-y-4 text-xs">
             <h3 class="font-bold text-slate-800 text-base border-b pb-2">🏛️ Añadir Elemento Físico</h3>
@@ -631,7 +633,7 @@
         Tenedor Libre Vitalia Campestre &copy; <span id="year-copy"></span> - Sistema de Caja & Mesas
     </footer>
 
-    <!-- SCRIPT DE FIREBASE -->
+    <!-- STREAMING_CHUNK:Inicializando SDK de Firebase... -->
     <script type="module">
         import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -691,7 +693,7 @@
             if (!db) return;
             if (unsubscribeMapaSnapshot) unsubscribeMapaSnapshot();
             try {
-                const docRef = doc(db, "vitalia_mapa_restaurante", "layout_general_v12");
+                const docRef = doc(db, "vitalia_mapa_restaurante", "layout_general_v14");
                 unsubscribeMapaSnapshot = onSnapshot(docRef, (docSnap) => {
                     if (docSnap.exists()) {
                         const data = docSnap.data();
@@ -708,7 +710,7 @@
         window.guardarMapaCompletoEnNube = async function() {
             if (!db) return alert("Modo Local: Cambios guardados en este dispositivo.");
             try {
-                const docRef = doc(db, "vitalia_mapa_restaurante", "layout_general_v12");
+                const docRef = doc(db, "vitalia_mapa_restaurante", "layout_general_v14");
                 await setDoc(docRef, {
                     mesas: window.mesasGlobales,
                     landmarks: window.landmarksGlobales,
@@ -746,7 +748,7 @@
         window.inicializarFirebaseNube();
     </script>
 
-    <!-- SCRIPT PRINCIPAL DE LA APLICACIÓN -->
+    <!-- STREAMING_CHUNK:Cargando Script Principal del POS y Mapa... -->
     <script>
         const PRECIO_ADULTO = 22000;
         const PRECIO_NINO = 11000;
@@ -781,11 +783,278 @@
         ];
         window.paredesGlobales = [];
 
+        /* FUNCIONES DE TAB 1 (PRE-CUENTAS) */
+        window.adjustQty = function(id, delta) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            let val = parseInt(el.value) || 0;
+            val = Math.max(0, val + delta);
+            el.value = val;
+            window.calcularTotalFormulario();
+        };
+
+        window.agregarItemExtra = function() {
+            const nombreEl = document.getElementById('extra-nombre');
+            const precioEl = document.getElementById('extra-precio');
+            const cantEl = document.getElementById('extra-cant');
+
+            const nombre = nombreEl.value.trim();
+            const precio = parseInt(precioEl.value) || 0;
+            const cant = parseInt(cantEl.value) || 1;
+
+            if (!nombre || precio <= 0) {
+                alert("Por favor ingrese un nombre y precio válido para el consumo extra.");
+                return;
+            }
+
+            extrasFormularioActual.push({ nombre, precio, cant, total: precio * cant });
+            nombreEl.value = "";
+            precioEl.value = "";
+            cantEl.value = 1;
+
+            renderExtrasFormulario();
+            window.calcularTotalFormulario();
+        };
+
+        window.eliminarExtraTemp = function(idx) {
+            extrasFormularioActual.splice(idx, 1);
+            renderExtrasFormulario();
+            window.calcularTotalFormulario();
+        };
+
+        function renderExtrasFormulario() {
+            const cont = document.getElementById('lista-extras-temp');
+            if (!cont) return;
+            cont.innerHTML = extrasFormularioActual.map((item, i) => `
+                <span class="inline-flex items-center gap-1 bg-amber-200 text-amber-900 text-xs px-2.5 py-1 rounded-full font-bold">
+                    ${item.cant}x ${item.nombre} ($${formatMoney(item.total)})
+                    <button type="button" onclick="eliminarExtraTemp(${i})" class="text-amber-800 hover:text-red-700 ml-1 font-extrabold">&times;</button>
+                </span>
+            `).join('');
+        }
+
+        window.calcularTotalFormulario = function() {
+            const elAd = document.getElementById('qty-adultos');
+            const elNi = document.getElementById('qty-ninos');
+            const elCh = document.getElementById('qty-chicos');
+            const elRes = document.getElementById('monto-reserva');
+
+            const ad = parseInt(elAd ? elAd.value : 0) || 0;
+            const ni = parseInt(elNi ? elNi.value : 0) || 0;
+            const ch = parseInt(elCh ? elCh.value : 0) || 0;
+            const abonoReserva = parseInt(elRes ? elRes.value : 0) || 0;
+
+            const totalPersonas = ad + ni + ch;
+            const subtotalPersonas = (ad * PRECIO_ADULTO) + (ni * PRECIO_NINO) + (ch * PRECIO_CHICO);
+            const subtotalExtras = extrasFormularioActual.reduce((acc, curr) => acc + curr.total, 0);
+
+            const subtotalConsumoTotal = subtotalPersonas + subtotalExtras;
+            const propinaEstimada = Math.round(subtotalConsumoTotal * 0.10);
+            const totalFinal = Math.max(0, subtotalConsumoTotal - abonoReserva) + propinaEstimada;
+
+            if (document.getElementById('lbl-total-personas')) document.getElementById('lbl-total-personas').textContent = totalPersonas;
+            if (document.getElementById('lbl-subtotal')) document.getElementById('lbl-subtotal').textContent = '$' + formatMoney(subtotalConsumoTotal);
+            if (document.getElementById('lbl-propina-sugerida-garzon')) document.getElementById('lbl-propina-sugerida-garzon').textContent = '$' + formatMoney(propinaEstimada);
+            if (document.getElementById('lbl-monto-reserva-desc')) document.getElementById('lbl-monto-reserva-desc').textContent = '-$' + formatMoney(abonoReserva);
+            if (document.getElementById('lbl-total-final')) document.getElementById('lbl-total-final').textContent = '$' + formatMoney(totalFinal);
+        };
+
+        window.guardarPreCuenta = async function() {
+            const ad = parseInt(document.getElementById('qty-adultos').value) || 0;
+            const ni = parseInt(document.getElementById('qty-ninos').value) || 0;
+            const ch = parseInt(document.getElementById('qty-chicos').value) || 0;
+            const abonoReserva = parseInt(document.getElementById('monto-reserva').value) || 0;
+            const mesaVinculadaId = document.getElementById('input-mesa-id-vinculada').value || null;
+            const totalPersonas = ad + ni + ch;
+
+            if (totalPersonas === 0 && extrasFormularioActual.length === 0) {
+                alert("Ingrese al menos 1 asistente o consumo extra.");
+                return;
+            }
+
+            let mesaNombreVinculada = null;
+            if (mesaVinculadaId) {
+                const mMesa = window.mesasGlobales.find(m => m.id === mesaVinculadaId);
+                if (mMesa) mesaNombreVinculada = `${mMesa.nombre} (${getNombreZonaFormateado(mMesa.zona)})`;
+            }
+
+            const subtotalPersonas = (ad * PRECIO_ADULTO) + (ni * PRECIO_NINO) + (ch * PRECIO_CHICO);
+            const subtotalExtras = extrasFormularioActual.reduce((acc, curr) => acc + curr.total, 0);
+            const subtotalConsumoTotal = subtotalPersonas + subtotalExtras;
+
+            const propinaSugerida = Math.round(subtotalConsumoTotal * 0.10);
+            const totalEstimado = Math.max(0, subtotalConsumoTotal - abonoReserva) + propinaSugerida;
+
+            const ventasActuales = window.ventasGlobalesCache || [];
+            const nuevoId = ventasActuales.length > 0 ? Math.max(...ventasActuales.map(v => v.id)) + 1 : 1;
+
+            const nuevaVenta = {
+                id: nuevoId,
+                hora: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                adultos: ad,
+                ninos: ni,
+                chicos: ch,
+                totalPersonas,
+                extras: [...extrasFormularioActual],
+                reserva: abonoReserva,
+                subtotal: subtotalConsumoTotal,
+                propina: propinaSugerida,
+                total: totalEstimado,
+                medioPago: 'Pendiente',
+                cerrada: false,
+                anulada: false,
+                mesaId: mesaVinculadaId,
+                mesaNombre: mesaNombreVinculada
+            };
+
+            ventasActuales.push(nuevaVenta);
+            window.ventasGlobalesCache = ventasActuales;
+            guardarVentasLocalStorage();
+            cargarDatosCajaDia(ventasActuales);
+
+            if (typeof window.guardarVentaEnNube === 'function') {
+                await window.guardarVentaEnNube(nuevaVenta);
+            }
+
+            document.getElementById('qty-adultos').value = 0;
+            document.getElementById('qty-ninos').value = 0;
+            document.getElementById('qty-chicos').value = 0;
+            document.getElementById('monto-reserva').value = 0;
+            document.getElementById('input-mesa-id-vinculada').value = '';
+            document.getElementById('lbl-mesa-vinculada-desc').textContent = 'Ninguna mesa seleccionada (opcional)';
+            extrasFormularioActual = [];
+            renderExtrasFormulario();
+            window.calcularTotalFormulario();
+
+            irABoletaVenta(nuevoId);
+        };
+
+        window.anularVenta = async function(id) {
+            if (confirm(`¿Está seguro de anular la Pre-cuenta #${id}?`)) {
+                const v = window.ventasGlobalesCache.find(item => item.id == id);
+                if (v) {
+                    v.anulada = true;
+                    guardarVentasLocalStorage();
+                    cargarDatosCajaDia(window.ventasGlobalesCache);
+                    if (typeof window.guardarVentaEnNube === 'function') {
+                        await window.guardarVentaEnNube(v);
+                    }
+                }
+            }
+        };
+
+        function cargarDatosCajaDia(ventas) {
+            const body = document.getElementById('tabla-ventas-body');
+            if (!body) return;
+
+            let totEfectivo = 0;
+            let totTransf = 0;
+            let totTarjeta = 0;
+            let totNeto = 0;
+            let totReservas = 0;
+            let totPropinas = 0;
+            let totPersonas = 0;
+
+            if (!ventas || ventas.length === 0) {
+                body.innerHTML = `<tr><td colspan="10" class="p-6 text-center text-gray-400 italic">No hay registros para esta fecha.</td></tr>`;
+            } else {
+                body.innerHTML = ventas.map(v => {
+                    if (!v.anulada && v.cerrada) {
+                        totNeto += v.subtotal;
+                        totReservas += (v.reserva || 0);
+                        totPropinas += v.propina;
+                        totPersonas += v.totalPersonas;
+
+                        if (v.medioPago === 'Efectivo') totEfectivo += v.total;
+                        else if (v.medioPago === 'Transferencia') totTransf += v.total;
+                        else if (v.medioPago === 'Débito' || v.medioPago === 'Tarjeta') totTarjeta += v.total;
+                    }
+
+                    let detallePersonas = [];
+                    if (v.adultos > 0) detallePersonas.push(`${v.adultos} Ad`);
+                    if (v.ninos > 0) detallePersonas.push(`${v.ninos} Niñ`);
+                    if (v.chicos > 0) detallePersonas.push(`${v.chicos} Chi`);
+
+                    let detalleExtras = v.extras ? v.extras.map(e => `${e.cant}x ${e.nombre}`).join(', ') : '-';
+                    if (!detalleExtras) detalleExtras = '-';
+
+                    let rowClass = v.anulada ? 'venta-anulada' : 'hover:bg-gray-50';
+                    let estadoBadge = '';
+
+                    if (v.anulada) {
+                        estadoBadge = `<span class="bg-gray-200 text-gray-700 font-bold px-2 py-0.5 rounded text-[10px] no-line-through">ANULADA</span>`;
+                    } else if (v.cerrada) {
+                        estadoBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold ${getBadgeMedioPago(v.medioPago)} no-line-through">${v.medioPago}</span>`;
+                    } else {
+                        estadoBadge = `<span class="bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded text-[10px] no-line-through">PENDIENTE</span>`;
+                    }
+
+                    return `
+                        <tr class="${rowClass} transition">
+                            <td class="p-3 font-bold">#${v.id} <span class="text-[10px] opacity-75 font-normal">(${v.hora})</span></td>
+                            <td class="p-3 font-bold text-amber-900">${v.mesaNombre || 'Mostrador / General'}</td>
+                            <td class="p-3 font-semibold">${detallePersonas.join(' + ') || 'Solo extras'}</td>
+                            <td class="p-3 truncate max-w-xs">${detalleExtras}</td>
+                            <td class="p-3 text-right font-semibold text-blue-700">${v.reserva > 0 ? '-$' + formatMoney(v.reserva) : '-'}</td>
+                            <td class="p-3 text-right font-medium">$${formatMoney(v.subtotal)}</td>
+                            <td class="p-3 text-right text-green-700 font-medium">$${formatMoney(v.propina)}</td>
+                            <td class="p-3 text-right font-bold text-vitalia-dark">$${formatMoney(v.total)}</td>
+                            <td class="p-3 text-center">${estadoBadge}</td>
+                            <td class="p-3 text-center space-x-1 no-line-through">
+                                ${!v.anulada ? `
+                                    <button onclick="irABoletaVenta(${v.id})" class="bg-vitalia-green hover:bg-vitalia-dark text-white font-bold text-[11px] px-2 py-1 rounded transition">
+                                        <i class="fa-solid fa-receipt"></i> Boleta
+                                    </button>
+                                    <button onclick="anularVenta(${v.id})" class="bg-red-100 hover:bg-red-200 text-red-700 font-bold text-[11px] px-2 py-1 rounded transition" title="Anular pre-cuenta">
+                                        <i class="fa-solid fa-ban"></i>
+                                    </button>
+                                ` : '<span class="text-xs text-gray-400 italic">Anulada</span>'}
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            if (document.getElementById('caja-efectivo')) document.getElementById('caja-efectivo').textContent = '$' + formatMoney(totEfectivo);
+            if (document.getElementById('caja-transferencia')) document.getElementById('caja-transferencia').textContent = '$' + formatMoney(totTransf);
+            if (document.getElementById('caja-tarjeta')) document.getElementById('caja-tarjeta').textContent = '$' + formatMoney(totTarjeta);
+            if (document.getElementById('caja-neto')) document.getElementById('caja-neto').textContent = '$' + formatMoney(totNeto);
+            if (document.getElementById('caja-reservas')) document.getElementById('caja-reservas').textContent = '-$' + formatMoney(totReservas);
+            if (document.getElementById('caja-propinas')) document.getElementById('caja-propinas').textContent = '$' + formatMoney(totPropinas);
+            if (document.getElementById('caja-total-general')) document.getElementById('caja-total-general').textContent = '$' + formatMoney(totEfectivo + totTransf + totTarjeta);
+            if (document.getElementById('caja-total-personas')) document.getElementById('caja-total-personas').textContent = totPersonas;
+        }
+
+        function getBadgeMedioPago(metodo) {
+            if (metodo === 'Efectivo') return 'bg-green-100 text-green-800';
+            if (metodo === 'Transferencia') return 'bg-blue-100 text-blue-800';
+            return 'bg-purple-100 text-purple-800';
+        }
+
+        window.vaciarRegistrosDia = async function() {
+            const passwordIngresada = prompt("⚠️ ACCIÓN PROTEGIDA POR SUPERVISOR\n\nPor favor ingrese la contraseña para reiniciar el día:");
+            if (passwordIngresada === null) return;
+            if (passwordIngresada !== "Chinitoj0@") {
+                alert("❌ Contraseña incorrecta. Se ha cancelado la reinicialización de la caja.");
+                return;
+            }
+            if (confirm("¿Está completamente seguro de ELIMINAR TODOS los registros de hoy?")) {
+                window.ventasGlobalesCache = [];
+                guardarVentasLocalStorage();
+                cargarDatosCajaDia([]);
+                if (typeof window.eliminarDiaEnNube === 'function') {
+                    await window.eliminarDiaEnNube();
+                }
+                alert("🗑️ Registros del día reiniciados con éxito.");
+            }
+        };
+
+        /* STREAMING_CHUNK:Funciones del Mapa e Interacción de Mesas... */
         function cargarMapaLocalStorage() {
             try {
-                const mData = localStorage.getItem('vitalia_mesas_v12');
-                const lData = localStorage.getItem('vitalia_landmarks_v12');
-                const pData = localStorage.getItem('vitalia_paredes_v12');
+                const mData = localStorage.getItem('vitalia_mesas_v14');
+                const lData = localStorage.getItem('vitalia_landmarks_v14');
+                const pData = localStorage.getItem('vitalia_paredes_v14');
                 if (mData) window.mesasGlobales = JSON.parse(mData);
                 if (lData) window.landmarksGlobales = JSON.parse(lData);
                 if (pData) window.paredesGlobales = JSON.parse(pData);
@@ -793,9 +1062,9 @@
         }
         function guardarMapaLocalStorage() {
             try {
-                localStorage.setItem('vitalia_mesas_v12', JSON.stringify(window.mesasGlobales));
-                localStorage.setItem('vitalia_landmarks_v12', JSON.stringify(window.landmarksGlobales));
-                localStorage.setItem('vitalia_paredes_v12', JSON.stringify(window.paredesGlobales));
+                localStorage.setItem('vitalia_mesas_v14', JSON.stringify(window.mesasGlobales));
+                localStorage.setItem('vitalia_landmarks_v14', JSON.stringify(window.landmarksGlobales));
+                localStorage.setItem('vitalia_paredes_v14', JSON.stringify(window.paredesGlobales));
             } catch(e) {}
         }
 
@@ -921,7 +1190,9 @@
             let totalSillas = 0;
             mesasZona.forEach(m => totalSillas += m.sillas);
             document.getElementById('txt-sillas-zona').textContent = `${totalSillas} sillas`;
-            document.getElementById(`cnt-${zona}`).textContent = `${mesasZona.length} mesas`;
+            if (document.getElementById(`cnt-${zona}`)) {
+                document.getElementById(`cnt-${zona}`).textContent = `${mesasZona.length} mesas`;
+            }
 
             let cursorMapStyle = window.modoMoverMesas ? 'cursor-move' : 'cursor-pointer';
             if (window.modoCrearParedes) cursorMapStyle = 'cursor-crosshair';
@@ -1154,7 +1425,7 @@
             document.getElementById('input-mesa-id-vinculada').value = m.id;
             document.getElementById('lbl-mesa-vinculada-desc').textContent = `${m.nombre} (${getNombreZonaFormateado(m.zona)})`;
             document.getElementById('qty-adultos').value = m.sillas;
-            calcularTotalFormulario();
+            window.calcularTotalFormulario();
             cerrarModalMesa();
         };
 
@@ -1223,8 +1494,9 @@
             document.getElementById('modal-agregar-landmark').classList.add('hidden');
         };
         window.confirmarAgregarLandmark = function() {
-            let tipo = document.getElementById('new-lm-tipo-select').value;
-            if (tipo === 'otro') {
+            const tipoSel = document.getElementById('new-lm-tipo-select').value;
+            let tipo = tipoSel;
+            if (tipoSel === 'otro') {
                 tipo = document.getElementById('new-lm-nombre-custom').value.trim() || 'Elemento';
             }
             const orientacion = document.getElementById('new-lm-orientacion').value;
@@ -1241,7 +1513,7 @@
             renderizarPlanoMesasActual();
         };
 
-        // --- SISTEMA POS GENERAL ---
+        /* STREAMING_CHUNK:Funciones auxiliares del POS... */
         window.switchTab = function(num) {
             for (let i = 1; i <= 4; i++) {
                 const tab = document.getElementById(`tab-${i}`);
@@ -1269,6 +1541,7 @@
             actualizarLabelFecha();
             cargarMapaLocalStorage();
             cargarVentasLocalStorage();
+            window.calcularTotalFormulario();
         });
 
         function cargarVentasLocalStorage() {
