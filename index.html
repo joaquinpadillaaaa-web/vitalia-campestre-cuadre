@@ -77,12 +77,9 @@
                 <div>
                     <h1 class="text-lg md:text-xl font-extrabold tracking-wide uppercase text-vitalia-gold">Tenedor Libre Vitalia Campestre</h1>
                     <div class="flex items-center gap-2">
-                        <p id="subtitulo-estado" class="text-xs text-green-200 flex items-center gap-1.5">
-                            <i class="fa-solid fa-spinner animate-spin"></i> Conectando a la nube...
+                        <p id="subtitulo-estado" class="text-xs text-green-200 flex items-center gap-1.5 font-bold">
+                            <i class="fa-solid fa-cloud text-green-300 animate-pulse"></i> Nube Sincronizada
                         </p>
-                        <button onclick="abrirModalFirebase()" class="text-[10px] bg-vitalia-gold hover:bg-yellow-600 text-vitalia-dark px-2.5 py-0.5 rounded font-extrabold transition flex items-center gap-1 shadow" title="Configurar credenciales">
-                            <i class="fa-solid fa-plug"></i> Conectar
-                        </button>
                     </div>
                 </div>
             </div>
@@ -467,7 +464,7 @@
 
         </div>
 
-        <!-- ================= PESTAÑA 3: CUADRE AUTOMÁTICO DE CAJA (DISEÑO VISUAL CON EMOJIS REDISEÑADO) ================= -->
+        <!-- ================= PESTAÑA 3: CUADRE AUTOMÁTICO DE CAJA ================= -->
         <div id="tab-3" class="hidden space-y-6">
 
             <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
@@ -575,71 +572,12 @@
 
     </main>
 
-    <!-- MODAL DE CONFIGURACIÓN DE FIREBASE (CON BLOQUE DE CÓDIGO OFICIAL Y BOTÓN DE COPIAR) -->
-    <div id="modal-firebase-config" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-gray-100 space-y-4 max-h-[90vh] overflow-y-auto">
-            <div class="flex items-center justify-between border-b pb-3">
-                <h3 class="font-extrabold text-vitalia-dark text-base flex items-center gap-2">
-                    <i class="fa-solid fa-cloud-arrow-up text-vitalia-gold"></i> Configurar Credenciales de Firebase
-                </h3>
-                <button onclick="cerrarModalFirebase()" class="text-gray-400 hover:text-gray-600 text-lg font-bold">&times;</button>
-            </div>
-            <p class="text-xs text-gray-600 leading-relaxed">
-                Copia el bloque oficial de configuración de Firebase de abajo haciendo clic en el botón, y luego pégalo en los campos correspondientes.
-            </p>
-
-            <!-- Bloque de Código Oficial -->
-            <div class="relative bg-slate-900 text-slate-100 p-3.5 rounded-xl font-mono text-[11px] overflow-x-auto shadow-inner">
-                <button onclick="copiarSnippetConfig(this)" class="absolute top-2.5 right-2.5 bg-white/10 hover:bg-white/20 text-white px-2.5 py-1 rounded text-[10px] font-sans font-bold transition flex items-center gap-1 border border-white/20">
-                    <i class="fa-solid fa-copy"></i> Copiar Bloque
-                </button>
-                <pre id="firebase-snippet-text">const firebaseConfig = {
-  apiKey: "AIzaSyD81SdFCXLVf-zVRwqIui8wr_gxI5EVxIA",
-  authDomain: "vitalia-cuadre.firebaseapp.com",
-  projectId: "vitalia-cuadre",
-  storageBucket: "vitalia-cuadre.appspot.com",
-  messagingSenderId: "923520470959",
-  appId: "1:923520470959:web:d33f549ae4bea0ffb8295a"
-};</pre>
-            </div>
-
-            <!-- Campos vacíos para pegar y conectar -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pt-1">
-                <div>
-                    <label class="block font-bold text-gray-700 mb-1">API Key</label>
-                    <input type="text" id="fb-apiKey" placeholder="Pega aquí el apiKey..." class="w-full border border-gray-300 rounded-xl px-3 py-2 font-mono bg-white text-slate-800 focus:ring-2 focus:ring-vitalia-green focus:outline-none">
-                </div>
-                <div>
-                    <label class="block font-bold text-gray-700 mb-1">Project ID</label>
-                    <input type="text" id="fb-projectId" placeholder="Pega aquí el projectId..." class="w-full border border-gray-300 rounded-xl px-3 py-2 font-mono bg-white text-slate-800 focus:ring-2 focus:ring-vitalia-green focus:outline-none">
-                </div>
-                <div>
-                    <label class="block font-bold text-gray-700 mb-1">Auth Domain</label>
-                    <input type="text" id="fb-authDomain" placeholder="Pega aquí el authDomain..." class="w-full border border-gray-300 rounded-xl px-3 py-2 font-mono bg-white text-slate-800 focus:ring-2 focus:ring-vitalia-green focus:outline-none">
-                </div>
-                <div>
-                    <label class="block font-bold text-gray-700 mb-1">App ID</label>
-                    <input type="text" id="fb-appId" placeholder="Pega aquí el appId..." class="w-full border border-gray-300 rounded-xl px-3 py-2 font-mono bg-white text-slate-800 focus:ring-2 focus:ring-vitalia-green focus:outline-none">
-                </div>
-            </div>
-
-            <div class="pt-3 flex gap-2 border-t">
-                <button onclick="cerrarModalFirebase()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 px-4 rounded-xl text-xs transition">
-                    Cancelar
-                </button>
-                <button onclick="guardarYConectarFirebaseCustom()" class="flex-1 bg-vitalia-green hover:bg-vitalia-dark text-white font-bold py-2.5 px-4 rounded-xl text-xs transition shadow">
-                    Guardar y Conectar
-                </button>
-            </div>
-        </div>
-    </div>
-
     <!-- FOOTER -->
     <footer class="bg-gray-800 text-gray-400 text-xs py-4 text-center mt-auto">
         Tenedor Libre Vitalia Campestre &copy; <span id="year-copy"></span> - Sistema de Caja
     </footer>
 
-    <!-- SDKs DE FIREBASE CON EXCEPCIONES MANEJADAS -->
+    <!-- SDKs DE FIREBASE CON INICIALIZACIÓN AUTOMÁTICA -->
     <script type="module">
         import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -649,29 +587,19 @@
         let auth = null;
         let unsubscribeSnapshot = null;
 
-        function obtenerFirebaseConfig() {
-            const configGuardada = localStorage.getItem('vitalia_firebase_config_custom');
-            if (configGuardada) {
-                try {
-                    return JSON.parse(configGuardada);
-                } catch(e) {}
-            }
-            return {
-                apiKey: "AIzaSyD81SdFCXLVf-zVRwqIui8wr_gxI5EVxIA",
-                authDomain: "vitalia-cuadre.firebaseapp.com",
-                projectId: "vitalia-cuadre",
-                storageBucket: "vitalia-cuadre.appspot.com",
-                messagingSenderId: "923520470959",
-                appId: "1:923520470959:web:d33f549ae4bea0ffb8295a"
-            };
-        }
+        const firebaseConfig = {
+            apiKey: "AIzaSyD81SdFCXLVf-zVRwqIui8wr_gxI5EVxIA",
+            authDomain: "vitalia-cuadre.firebaseapp.com",
+            projectId: "vitalia-cuadre",
+            storageBucket: "vitalia-cuadre.appspot.com",
+            messagingSenderId: "923520470959",
+            appId: "1:923520470959:web:d33f549ae4bea0ffb8295a"
+        };
 
         window.inicializarFirebaseNube = async function() {
-            const config = obtenerFirebaseConfig();
-
             try {
                 const existingApps = getApps();
-                const app = existingApps.length === 0 ? initializeApp(config) : existingApps[0];
+                const app = existingApps.length === 0 ? initializeApp(firebaseConfig) : existingApps[0];
                 
                 db = getFirestore(app);
                 auth = getAuth(app);
@@ -688,31 +616,6 @@
                     cargarVentasLocalStorage();
                 }
             }
-        };
-
-        window.guardarYConectarFirebaseCustom = async function() {
-            const apiKey = document.getElementById('fb-apiKey').value.trim();
-            const projectId = document.getElementById('fb-projectId').value.trim();
-            const authDomain = document.getElementById('fb-authDomain').value.trim();
-            const appId = document.getElementById('fb-appId').value.trim();
-
-            if (!apiKey || !projectId) {
-                alert("Por favor completa al menos la API Key y el Project ID.");
-                return;
-            }
-
-            const nuevaConfig = {
-                apiKey,
-                projectId,
-                authDomain: authDomain || `${projectId}.firebaseapp.com`,
-                appId: appId || "1:923520470959:web:default",
-                storageBucket: `${projectId}.appspot.com`,
-                messagingSenderId: "923520470959"
-            };
-
-            localStorage.setItem('vitalia_firebase_config_custom', JSON.stringify(nuevaConfig));
-            cerrarModalFirebase();
-            await window.inicializarFirebaseNube();
         };
 
         window.iniciarSincronizacionNube = function() {
@@ -807,22 +710,6 @@
             medioPago: 'Efectivo'
         };
 
-        function copiarSnippetConfig(btn) {
-            const texto = document.getElementById('firebase-snippet-text').innerText;
-            const textarea = document.createElement('textarea');
-            textarea.value = texto;
-            document.body.appendChild(textarea);
-            textarea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textarea);
-
-            const originalHTML = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-check text-emerald-400"></i> ¡Copiado!';
-            setTimeout(() => {
-                btn.innerHTML = originalHTML;
-            }, 1500);
-        }
-
         function actualizarEstadoNubeVisual(conectado, texto) {
             const el = document.getElementById('subtitulo-estado');
             if (!el) return;
@@ -834,14 +721,6 @@
                 el.innerHTML = `<i class="fa-solid fa-cloud-sun text-yellow-300"></i> ${texto}`;
             }
         }
-
-        window.abrirModalFirebase = function() {
-            document.getElementById('modal-firebase-config').classList.remove('hidden');
-        };
-
-        window.cerrarModalFirebase = function() {
-            document.getElementById('modal-firebase-config').classList.add('hidden');
-        };
 
         window.cambiarAnchoImpresora = function(val) {
             anchoPapelMm = val;
@@ -1591,5 +1470,3 @@ Total: ${totPersonas}`;
     </script>
 </body>
 </html>
-
-```eof
