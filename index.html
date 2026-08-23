@@ -59,17 +59,18 @@
 </head>
 <body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col font-sans">
 
-    <!-- HEADER PRINCIPAL -->
+    <!-- HEADER PRINCIPAL CON LOGO OFICIAL Y ESTADO DE NUBE -->
     <header class="bg-vitalia-dark text-white shadow-md">
         <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-3">
+                <!-- Contenedor del Logo interactivo -->
                 <div class="relative group cursor-pointer" onclick="document.getElementById('input-logo-file').click()" title="Haz clic para seleccionar tu logo local">
                     <div class="bg-white p-1 rounded-xl shadow-md border-2 border-vitalia-gold flex items-center justify-center w-12 h-12 overflow-hidden">
                         <img id="img-logo-header" src="assets/vitalia-logo.svg" alt="Logo de Vitalia Campestre" class="w-full h-full object-cover rounded-lg" onerror="usarLogoSvgPorDefecto(this)">
                     </div>
                     <div class="absolute inset-0 bg-black/60 rounded-xl flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white text-[9px] font-bold text-center p-0.5">
                         <i class="fa-solid fa-camera text-xs mb-0.5"></i>
-                        <span>Cambiar</span>
+                        <span>Cambiar Logo</span>
                     </div>
                 </div>
                 <input type="file" id="input-logo-file" accept="image/*" class="hidden" onchange="cargarLogoLocal(event)">
@@ -77,11 +78,11 @@
                 <div>
                     <h1 class="text-lg md:text-xl font-extrabold tracking-wide uppercase text-vitalia-gold">Tenedor Libre Vitalia Campestre</h1>
                     <div class="flex items-center gap-2">
-                        <p id="subtitulo-estado" class="text-xs text-yellow-200 flex items-center gap-1.5 font-semibold">
-                            <i class="fa-solid fa-cloud-sun text-yellow-300"></i> Modo Local
+                        <p id="subtitulo-estado" class="text-xs text-green-200 flex items-center gap-1.5">
+                            <i class="fa-solid fa-spinner animate-spin"></i> Conectando a la nube...
                         </p>
-                        <button onclick="abrirModalFirebase()" class="text-[10px] bg-vitalia-gold hover:bg-yellow-600 text-vitalia-dark px-2.5 py-0.5 rounded font-extrabold transition flex items-center gap-1 shadow" title="Configurar credenciales">
-                            <i class="fa-solid fa-plug"></i> Conectar
+                        <button onclick="abrirModalFirebase()" class="text-[10px] bg-white/10 hover:bg-white/20 text-vitalia-gold px-2 py-0.5 rounded border border-vitalia-gold/40 transition flex items-center gap-1" title="Configurar credenciales de Firebase">
+                            <i class="fa-solid fa-gear"></i> Credenciales
                         </button>
                     </div>
                 </div>
@@ -438,7 +439,7 @@
                                         <span>SUBTOTAL CONSUMO:</span>
                                         <span class="ticket-subtotal-val">$0</span>
                                     </div>
-                                    <div id="ticket-reserva-row" style="display: flex; justify-content: space-between; margin-bottom: 1px;">
+                                    <div id="ticket-reserva-row" style="display: flex; justify-between; margin-bottom: 1px;">
                                         <span>ABONO RESERVA:</span>
                                         <span class="ticket-reserva-val">-$0</span>
                                     </div>
@@ -467,7 +468,7 @@
 
         </div>
 
-        <!-- ================= PESTAÑA 3: CUADRE AUTOMÁTICO DE CAJA ================= -->
+        <!-- ================= PESTAÑA 3: CUADRE AUTOMÁTICO DE CAJA (DISEÑO VISUAL CON EMOJIS) ================= -->
         <div id="tab-3" class="hidden space-y-6">
 
             <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
@@ -575,71 +576,64 @@
 
     </main>
 
-    <!-- MODAL DE CONFIGURACIÓN DE FIREBASE CON BOTONES DE COPIAR 1 POR 1 Y CAMPOS VACÍOS -->
+    <!-- MODAL DE CONFIGURACIÓN DE FIREBASE CON BOTONES DE COPIAR -->
     <div id="modal-firebase-config" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-gray-100 space-y-4 max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-gray-100 space-y-4">
             <div class="flex items-center justify-between border-b pb-3">
                 <h3 class="font-extrabold text-vitalia-dark text-base flex items-center gap-2">
-                    <i class="fa-solid fa-cloud-arrow-up text-vitalia-gold"></i> Configurar Credenciales de Firebase
+                    <i class="fa-solid fa-cloud-arrow-up text-vitalia-gold"></i> Credenciales Firebase Nube
                 </h3>
                 <button onclick="cerrarModalFirebase()" class="text-gray-400 hover:text-gray-600 text-lg font-bold">&times;</button>
             </div>
             <p class="text-xs text-gray-600 leading-relaxed">
-                Copia cada dato individualmente con su respectivo botón y pégalo en los campos correspondientes.
+                Haz clic en el botón <i class="fa-solid fa-copy text-vitalia-green"></i> de cada campo para copiar el valor fácilmente y pegarlo donde lo necesites.
             </p>
 
-            <div class="space-y-3">
-                <!-- API Key -->
-                <div class="bg-slate-50 p-3 rounded-xl border">
-                    <div class="flex justify-between items-center mb-1">
-                        <label class="text-[11px] font-bold text-gray-700">API Key</label>
-                        <button onclick="copiarDatoEspecifico('AIzaSyD81SdfCXLVF-zVRwqIui8wr_gxI5EVxIA', this)" class="bg-slate-200 hover:bg-emerald-100 text-slate-800 text-[10px] font-bold px-2.5 py-1 rounded transition flex items-center gap-1">
-                            <i class="fa-solid fa-copy"></i> Copiar API Key
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">API Key</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="fb-apiKey" readonly class="w-full border border-gray-300 rounded-xl px-3 py-2 font-mono bg-slate-50 text-slate-700 select-all">
+                        <button onclick="copiarTextoCredencial('fb-apiKey', this)" class="bg-gray-100 hover:bg-emerald-50 hover:text-emerald-700 border text-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1">
+                            <i class="fa-solid fa-copy"></i> Copiar
                         </button>
                     </div>
-                    <input type="text" id="fb-apiKey" placeholder="Pega aquí la API Key..." class="w-full border border-gray-300 rounded-lg px-3 py-1.5 font-mono text-xs bg-white focus:ring-2 focus:ring-vitalia-green focus:outline-none">
                 </div>
-
-                <!-- Project ID -->
-                <div class="bg-slate-50 p-3 rounded-xl border">
-                    <div class="flex justify-between items-center mb-1">
-                        <label class="text-[11px] font-bold text-gray-700">Project ID</label>
-                        <button onclick="copiarDatoEspecifico('vitalia-cuadre', this)" class="bg-slate-200 hover:bg-emerald-100 text-slate-800 text-[10px] font-bold px-2.5 py-1 rounded transition flex items-center gap-1">
-                            <i class="fa-solid fa-copy"></i> Copiar Project ID
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">Project ID</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="fb-projectId" readonly class="w-full border border-gray-300 rounded-xl px-3 py-2 font-mono bg-slate-50 text-slate-700 select-all">
+                        <button onclick="copiarTextoCredencial('fb-projectId', this)" class="bg-gray-100 hover:bg-emerald-50 hover:text-emerald-700 border text-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1">
+                            <i class="fa-solid fa-copy"></i> Copiar
                         </button>
                     </div>
-                    <input type="text" id="fb-projectId" placeholder="Pega aquí el Project ID..." class="w-full border border-gray-300 rounded-lg px-3 py-1.5 font-mono text-xs bg-white focus:ring-2 focus:ring-vitalia-green focus:outline-none">
                 </div>
-
-                <!-- Auth Domain -->
-                <div class="bg-slate-50 p-3 rounded-xl border">
-                    <div class="flex justify-between items-center mb-1">
-                        <label class="text-[11px] font-bold text-gray-700">Auth Domain</label>
-                        <button onclick="copiarDatoEspecifico('vitalia-cuadre.firebaseapp.com', this)" class="bg-slate-200 hover:bg-emerald-100 text-slate-800 text-[10px] font-bold px-2.5 py-1 rounded transition flex items-center gap-1">
-                            <i class="fa-solid fa-copy"></i> Copiar Auth Domain
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">Auth Domain</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="fb-authDomain" readonly class="w-full border border-gray-300 rounded-xl px-3 py-2 font-mono bg-slate-50 text-slate-700 select-all">
+                        <button onclick="copiarTextoCredencial('fb-authDomain', this)" class="bg-gray-100 hover:bg-emerald-50 hover:text-emerald-700 border text-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1">
+                            <i class="fa-solid fa-copy"></i> Copiar
                         </button>
                     </div>
-                    <input type="text" id="fb-authDomain" placeholder="Pega aquí el Auth Domain..." class="w-full border border-gray-300 rounded-lg px-3 py-1.5 font-mono text-xs bg-white focus:ring-2 focus:ring-vitalia-green focus:outline-none">
                 </div>
-
-                <!-- App ID -->
-                <div class="bg-slate-50 p-3 rounded-xl border">
-                    <div class="flex justify-between items-center mb-1">
-                        <label class="text-[11px] font-bold text-gray-700">App ID</label>
-                        <button onclick="copiarDatoEspecifico('1:923520470959:web:d33f549ae4bea0ffb8295a', this)" class="bg-slate-200 hover:bg-emerald-100 text-slate-800 text-[10px] font-bold px-2.5 py-1 rounded transition flex items-center gap-1">
-                            <i class="fa-solid fa-copy"></i> Copiar App ID
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">App ID</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="fb-appId" readonly class="w-full border border-gray-300 rounded-xl px-3 py-2 font-mono bg-slate-50 text-slate-700 select-all">
+                        <button onclick="copiarTextoCredencial('fb-appId', this)" class="bg-gray-100 hover:bg-emerald-50 hover:text-emerald-700 border text-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1">
+                            <i class="fa-solid fa-copy"></i> Copiar
                         </button>
                     </div>
-                    <input type="text" id="fb-appId" placeholder="Pega aquí el App ID..." class="w-full border border-gray-300 rounded-lg px-3 py-1.5 font-mono text-xs bg-white focus:ring-2 focus:ring-vitalia-green focus:outline-none">
                 </div>
             </div>
 
-            <div class="pt-3 flex gap-2 border-t">
+            <div class="pt-2 flex gap-2">
                 <button onclick="cerrarModalFirebase()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 px-4 rounded-xl text-xs transition">
-                    Cancelar
+                    Cerrar
                 </button>
-                <button onclick="guardarYConectarFirebaseCustom()" class="flex-1 bg-vitalia-green hover:bg-vitalia-dark text-white font-bold py-2.5 px-4 rounded-xl text-xs transition shadow">
-                    Guardar y Conectar
+                <button onclick="restablecerFirebaseDefault()" class="bg-vitalia-green hover:bg-vitalia-dark text-white font-bold py-2.5 px-4 rounded-xl text-xs transition shadow">
+                    Reconectar
                 </button>
             </div>
         </div>
@@ -650,7 +644,7 @@
         Tenedor Libre Vitalia Campestre &copy; <span id="year-copy"></span> - Sistema de Caja
     </footer>
 
-    <!-- SDKs DE FIREBASE CON EXCEPCIONES MANEJADAS -->
+    <!-- SDKs DE FIREBASE CON EXCEPCIONES MANEJADAS 100% PARA CLOUDFLARE PAGES -->
     <script type="module">
         import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -679,6 +673,13 @@
 
         window.inicializarFirebaseNube = async function() {
             const config = obtenerFirebaseConfig();
+            
+            if (document.getElementById('fb-apiKey')) {
+                document.getElementById('fb-apiKey').value = config.apiKey || '';
+                document.getElementById('fb-projectId').value = config.projectId || '';
+                document.getElementById('fb-authDomain').value = config.authDomain || '';
+                document.getElementById('fb-appId').value = config.appId || '';
+            }
 
             try {
                 const existingApps = getApps();
@@ -689,41 +690,16 @@
 
                 await signInAnonymously(auth);
                 
-                actualizarEstadoNubeVisual(true, "Nube Sincronizada");
+                actualizarEstadoNubeVisual(true, "Nube Sincronizada (Firebase / Cloudflare)");
                 window.iniciarSincronizacionNube();
             } catch (err) {
                 console.warn("⚠️ Advertencia al conectar con Firebase:", err);
-                actualizarEstadoNubeVisual(false, "Modo Local");
+                actualizarEstadoNubeVisual(false, "Modo Local (Haz clic en 'Credenciales' para conectar Nube)");
                 
                 if (typeof cargarVentasLocalStorage === 'function') {
                     cargarVentasLocalStorage();
                 }
             }
-        };
-
-        window.guardarYConectarFirebaseCustom = async function() {
-            const apiKey = document.getElementById('fb-apiKey').value.trim();
-            const projectId = document.getElementById('fb-projectId').value.trim();
-            const authDomain = document.getElementById('fb-authDomain').value.trim();
-            const appId = document.getElementById('fb-appId').value.trim();
-
-            if (!apiKey || !projectId) {
-                alert("Por favor completa al menos la API Key y el Project ID.");
-                return;
-            }
-
-            const nuevaConfig = {
-                apiKey,
-                projectId,
-                authDomain: authDomain || `${projectId}.firebaseapp.com`,
-                appId: appId || "1:923520470959:web:default",
-                storageBucket: `${projectId}.appspot.com`,
-                messagingSenderId: "923520470959"
-            };
-
-            localStorage.setItem('vitalia_firebase_config_custom', JSON.stringify(nuevaConfig));
-            cerrarModalFirebase();
-            await window.inicializarFirebaseNube();
         };
 
         window.iniciarSincronizacionNube = function() {
@@ -752,7 +728,7 @@
                     }
                 }, (error) => {
                     console.warn("Error en subscripción onSnapshot:", error);
-                    actualizarEstadoNubeVisual(false, "Error de sincronización");
+                    actualizarEstadoNubeVisual(false, "Error de sincronización en tiempo real");
                 });
             } catch (e) {
                 console.warn("Error al iniciar colección:", e);
@@ -818,20 +794,18 @@
             medioPago: 'Efectivo'
         };
 
-        function copiarDatoEspecifico(textoDato, btn) {
-            const textarea = document.createElement('textarea');
-            textarea.value = textoDato;
-            document.body.appendChild(textarea);
-            textarea.select();
+        function copiarTextoCredencial(idInput, btn) {
+            const input = document.getElementById(idInput);
+            input.select();
+            input.setSelectionRange(0, 99999);
             document.execCommand('copy');
-            document.body.removeChild(textarea);
 
             const originalHTML = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-check text-green-700"></i> ¡Copiado!';
-            btn.classList.add('bg-green-100', 'text-green-800');
+            btn.innerHTML = '<i class="fa-solid fa-check text-emerald-600"></i> ¡Copiado!';
+            btn.classList.add('bg-emerald-50', 'text-emerald-700', 'border-emerald-300');
             setTimeout(() => {
                 btn.innerHTML = originalHTML;
-                btn.classList.remove('bg-green-100', 'text-green-800');
+                btn.classList.remove('bg-emerald-50', 'text-emerald-700', 'border-emerald-300');
             }, 1500);
         }
 
@@ -853,6 +827,13 @@
 
         window.cerrarModalFirebase = function() {
             document.getElementById('modal-firebase-config').classList.add('hidden');
+        };
+
+        window.restablecerFirebaseDefault = function() {
+            localStorage.removeItem('vitalia_firebase_config_custom');
+            alert("Restableciendo conexión...");
+            cerrarModalFirebase();
+            location.reload();
         };
 
         window.cambiarAnchoImpresora = function(val) {
@@ -1603,4 +1584,3 @@ Total: ${totPersonas}`;
     </script>
 </body>
 </html>
-```eof
