@@ -31,6 +31,7 @@
             const svgLogo = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="%231b4332"/><circle cx="50" cy="50" r="42" fill="none" stroke="%23d4af37" stroke-width="3"/><path d="M35 65 L35 35 M30 35 L40 35 M35 45 L40 45" stroke="%23d4af37" stroke-width="3" stroke-linecap="round"/><path d="M60 35 Q68 45 60 55 L60 65" stroke="%23d4af37" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M50 25 C45 35 45 45 50 25 Z" fill="%232e7d32" stroke="%23d4af37" stroke-width="1.5"/></svg>`;
             imgEl.src = svgLogo;
         }
+        window.usarLogoSvgPorDefecto = usarLogoSvgPorDefecto;
     </script>
 
     <style>
@@ -58,7 +59,7 @@
 </head>
 <body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col font-sans">
 
-    <!-- HEADER PRINCIPAL CON LOGO OFICIAL -->
+    <!-- HEADER PRINCIPAL CON LOGO OFICIAL Y ESTADO DE NUBE -->
     <header class="bg-vitalia-dark text-white shadow-md">
         <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-3">
@@ -76,7 +77,14 @@
 
                 <div>
                     <h1 class="text-lg md:text-xl font-extrabold tracking-wide uppercase text-vitalia-gold">Tenedor Libre Vitalia Campestre</h1>
-                    <p id="subtitulo-estado" class="text-xs text-green-200">Sistema Local / Sincronizable en la Nube</p>
+                    <div class="flex items-center gap-2">
+                        <p id="subtitulo-estado" class="text-xs text-green-200 flex items-center gap-1.5">
+                            <i class="fa-solid fa-spinner animate-spin"></i> Conectando a la nube...
+                        </p>
+                        <button onclick="abrirModalFirebase()" class="text-[10px] bg-white/10 hover:bg-white/20 text-vitalia-gold px-2 py-0.5 rounded border border-vitalia-gold/40 transition flex items-center gap-1" title="Configurar credenciales de Firebase">
+                            <i class="fa-solid fa-gear"></i> Credenciales
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -155,7 +163,7 @@
                         </div>
                     </div>
 
-                    <!-- Consumos Extras (Cervezas, Tragos, etc.) -->
+                    <!-- Consumos Extras -->
                     <div class="mb-4 bg-amber-50 p-4 rounded-lg border border-amber-200">
                         <label class="block text-xs font-bold text-amber-900 mb-2 flex items-center gap-2">
                             <i class="fa-solid fa-beer-mug-empty text-amber-600"></i> Agregar Consumos Extras (Bebidas / Tragos / Varios)
@@ -185,7 +193,7 @@
                         </div>
                     </div>
 
-                    <!-- DESGLOSE DESTACADO DE PROPINA Y TOTAL PARA EL GARZÓN -->
+                    <!-- DESGLOSE DESTACADO DE PROPINA Y TOTAL -->
                     <div class="bg-vitalia-lightGreen p-4 rounded-xl border border-green-200 space-y-3">
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 border-b border-green-200 pb-3">
                             <div>
@@ -280,7 +288,7 @@
                     <h3 class="font-bold text-sm text-gray-700 uppercase tracking-wider flex items-center gap-2">
                         <i class="fa-solid fa-list-check text-vitalia-green"></i> Historial de Pre-cuentas & Registros
                     </h3>
-                    <button onclick="vaciarRegistrosDia()" class="text-xs text-red-600 hover:text-red-800 font-semibold flex items-center gap-1">
+                    <button onclick="vaciarRegistrosDia()" class="text-xs text-red-600 hover:text-red-800 font-semibold flex items-center gap-1 bg-red-50 hover:bg-red-100 border border-red-200 px-3 py-1.5 rounded-lg transition">
                         <i class="fa-solid fa-trash-can"></i> Reiniciar Día
                     </button>
                 </div>
@@ -431,7 +439,7 @@
                                         <span>SUBTOTAL CONSUMO:</span>
                                         <span class="ticket-subtotal-val">$0</span>
                                     </div>
-                                    <div id="ticket-reserva-row" style="display: flex; justify-content: space-between; margin-bottom: 1px;">
+                                    <div id="ticket-reserva-row" style="display: flex; justify-between; margin-bottom: 1px;">
                                         <span>ABONO RESERVA:</span>
                                         <span class="ticket-reserva-val">-$0</span>
                                     </div>
@@ -539,23 +547,203 @@
 
     </main>
 
+    <!-- MODAL DE CONFIGURACIÓN DE FIREBASE PARA CLOUDFLARE PAGES -->
+    <div id="modal-firebase-config" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-100 space-y-4">
+            <div class="flex items-center justify-between border-b pb-3">
+                <h3 class="font-extrabold text-vitalia-dark text-base flex items-center gap-2">
+                    <i class="fa-solid fa-cloud-arrow-up text-vitalia-gold"></i> Configuración Nube Firebase
+                </h3>
+                <button onclick="cerrarModalFirebase()" class="text-gray-400 hover:text-gray-600 text-lg font-bold">&times;</button>
+            </div>
+            <p class="text-xs text-gray-600 leading-relaxed">
+                Pega aquí tu configuración de **Firebase Firestore** para sincronizar en tiempo real entre todos tus teléfonos, tablets y computadores alojados en Cloudflare Pages.
+            </p>
+
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">API Key:</label>
+                    <input type="text" id="fb-apiKey" placeholder="AIzaSy..." class="w-full border border-gray-300 rounded px-3 py-1.5 font-mono focus:ring-2 focus:ring-vitalia-green focus:outline-none">
+                </div>
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">Project ID:</label>
+                    <input type="text" id="fb-projectId" placeholder="vitalia-pos-cloud" class="w-full border border-gray-300 rounded px-3 py-1.5 font-mono focus:ring-2 focus:ring-vitalia-green focus:outline-none">
+                </div>
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">Auth Domain:</label>
+                    <input type="text" id="fb-authDomain" placeholder="vitalia-pos.firebaseapp.com" class="w-full border border-gray-300 rounded px-3 py-1.5 font-mono focus:ring-2 focus:ring-vitalia-green focus:outline-none">
+                </div>
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">App ID:</label>
+                    <input type="text" id="fb-appId" placeholder="1:123456789:web:abcdef..." class="w-full border border-gray-300 rounded px-3 py-1.5 font-mono focus:ring-2 focus:ring-vitalia-green focus:outline-none">
+                </div>
+            </div>
+
+            <div class="pt-2 flex gap-2">
+                <button onclick="guardarConfigFirebaseCustom()" class="flex-1 bg-vitalia-green hover:bg-vitalia-dark text-white font-bold py-2 px-4 rounded-lg text-xs shadow transition">
+                    Guardar y Conectar
+                </button>
+
+                <button onclick="restablecerFirebaseDefault()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 px-3 rounded-lg text-xs transition">
+                    Reintentar
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- FOOTER -->
     <footer class="bg-gray-800 text-gray-400 text-xs py-4 text-center mt-auto">
         Tenedor Libre Vitalia Campestre &copy; <span id="year-copy"></span> - Sistema de Caja
     </footer>
 
-    <!-- SCRIPT PRINCIPAL -->
+    <!-- SDKs DE FIREBASE CON EXCEPCIONES MANEJADAS 100% PARA CLOUDFLARE PAGES -->
+    <script type="module">
+        import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, getDocs, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        let db = null;
+        let auth = null;
+        let unsubscribeSnapshot = null;
+
+        // Configuración por defecto de Firebase (O configurable por la persona)
+        function obtenerFirebaseConfig() {
+            const configGuardada = localStorage.getItem('vitalia_firebase_config_custom');
+            if (configGuardada) {
+                try {
+                    return JSON.parse(configGuardada);
+                } catch(e) {}
+            }
+            return {
+                apiKey: "AIzaSyD-vitalia-campestre-cloud-auth",
+                authDomain: "vitalia-pos.firebaseapp.com",
+                projectId: "vitalia-pos-cloud",
+                storageBucket: "vitalia-pos.appspot.com",
+                messagingSenderId: "123456789",
+                appId: "1:123456:web:vitalia"
+            };
+        }
+
+        window.inicializarFirebaseNube = async function() {
+            const config = obtenerFirebaseConfig();
+            
+            // Llenar modal con valores actuales
+            if (document.getElementById('fb-apiKey')) {
+                document.getElementById('fb-apiKey').value = config.apiKey || '';
+                document.getElementById('fb-projectId').value = config.projectId || '';
+                document.getElementById('fb-authDomain').value = config.authDomain || '';
+                document.getElementById('fb-appId').value = config.appId || '';
+            }
+
+            try {
+                // Prevenir duplicados de inicialización
+                const existingApps = getApps();
+                const app = existingApps.length === 0 ? initializeApp(config) : existingApps[0];
+                
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                // Autenticar anónimamente
+                await signInAnonymously(auth);
+                
+                actualizarEstadoNubeVisual(true, "Nube Sincronizada (Firebase / Cloudflare)");
+                window.iniciarSincronizacionNube();
+            } catch (err) {
+                console.warn("⚠️ Advertencia al conectar con Firebase:", err);
+                actualizarEstadoNubeVisual(false, "Modo Local (Haz clic en 'Credenciales' para conectar Nube)");
+                
+                // Cargar desde cache local si falla la red
+                if (typeof cargarVentasLocalStorage === 'function') {
+                    cargarVentasLocalStorage();
+                }
+            }
+        };
+
+        window.iniciarSincronizacionNube = function() {
+            if (!db) return;
+            if (unsubscribeSnapshot) unsubscribeSnapshot();
+
+            const fechaKey = window.fechaActualGlobal || new Date().toISOString().split('T')[0];
+            
+            try {
+                const colRef = collection(db, "vitalia_pos_ventas", `fecha_${fechaKey}`, "items");
+
+                unsubscribeSnapshot = onSnapshot(colRef, (snapshot) => {
+                    let ventasRemotas = [];
+                    snapshot.forEach((docSnap) => {
+                        ventasRemotas.push(docSnap.data());
+                    });
+                    ventasRemotas.sort((a, b) => a.id - b.id);
+                    
+                    window.ventasGlobalesCache = ventasRemotas;
+                    
+                    // Sincronizar también con copia local de respaldo
+                    if (typeof guardarVentasLocalStorage === 'function') {
+                        guardarVentasLocalStorage();
+                    }
+                    if (typeof cargarDatosCajaDia === 'function') {
+                        cargarDatosCajaDia(ventasRemotas);
+                    }
+                }, (error) => {
+                    console.warn("Error en subscripción onSnapshot:", error);
+                    actualizarEstadoNubeVisual(false, "Error de sincronización en tiempo real");
+                });
+            } catch (e) {
+                console.warn("Error al iniciar colección:", e);
+            }
+        };
+
+        window.guardarVentaEnNube = async function(venta) {
+            if (!db) {
+                // Si la nube falla, se mantiene guardado en LocalStorage
+                return true;
+            }
+            try {
+                const fechaKey = window.fechaActualGlobal || new Date().toISOString().split('T')[0];
+                const docRef = doc(db, "vitalia_pos_ventas", `fecha_${fechaKey}`, "items", String(venta.id));
+                await setDoc(docRef, venta);
+                return true;
+            } catch (e) {
+                console.error("Error al guardar en Firebase:", e);
+                return true; // Continuar localmente sin bloquear la app
+            }
+        };
+
+        window.eliminarDiaEnNube = async function() {
+            if (!db) return true;
+            try {
+                const fechaKey = window.fechaActualGlobal || new Date().toISOString().split('T')[0];
+                const colRef = collection(db, "vitalia_pos_ventas", `fecha_${fechaKey}`, "items");
+                const snapshot = await getDocs(colRef);
+                
+                const promesas = [];
+                snapshot.forEach((documento) => {
+                    promesas.push(deleteDoc(documento.ref));
+                });
+                await Promise.all(promesas);
+                return true;
+            } catch (e) {
+                console.error("Error al borrar en Firebase:", e);
+                return false;
+            }
+        };
+
+        // Iniciar Firebase automáticamente al cargar
+        window.inicializarFirebaseNube();
+    </script>
+
+    <!-- SCRIPT PRINCIPAL DE LA APLICACIÓN -->
     <script>
-        // Precios base
         const PRECIO_ADULTO = 22000;
         const PRECIO_NINO = 11000;
         const PRECIO_CHICO = 5000;
 
-        // Variables de estado
         let fechaActual = new Date().toISOString().split('T')[0];
+        window.fechaActualGlobal = fechaActual;
+
         let extrasFormularioActual = [];
         let ventaSeleccionadaBoletaId = null;
-        let anchoPapelMm = '58'; // Default 58mm
+        let anchoPapelMm = '58';
         window.ventasGlobalesCache = [];
 
         window.datosBoletaActual = {
@@ -568,7 +756,51 @@
             medioPago: 'Efectivo'
         };
 
-        // Cambiar ancho de visualización del ticket preview
+        function actualizarEstadoNubeVisual(conectado, texto) {
+            const el = document.getElementById('subtitulo-estado');
+            if (!el) return;
+            if (conectado) {
+                el.className = "text-xs text-green-200 flex items-center gap-1.5 font-bold";
+                el.innerHTML = `<i class="fa-solid fa-cloud text-green-300 animate-pulse"></i> ${texto}`;
+            } else {
+                el.className = "text-xs text-yellow-200 flex items-center gap-1.5 font-semibold";
+                el.innerHTML = `<i class="fa-solid fa-cloud-sun text-yellow-300"></i> ${texto}`;
+            }
+        }
+
+        window.abrirModalFirebase = function() {
+            document.getElementById('modal-firebase-config').classList.remove('hidden');
+        };
+
+        window.cerrarModalFirebase = function() {
+            document.getElementById('modal-firebase-config').classList.add('hidden');
+        };
+
+        window.guardarConfigFirebaseCustom = function() {
+            const apiKey = document.getElementById('fb-apiKey').value.trim();
+            const projectId = document.getElementById('fb-projectId').value.trim();
+            const authDomain = document.getElementById('fb-authDomain').value.trim();
+            const appId = document.getElementById('fb-appId').value.trim();
+
+            if (!apiKey || !projectId) {
+                alert("Ingresa al menos la API Key y Project ID.");
+                return;
+            }
+
+            const customConfig = { apiKey, projectId, authDomain, appId };
+            localStorage.setItem('vitalia_firebase_config_custom', JSON.stringify(customConfig));
+            alert("Credenciales guardadas. Reintentando conexión con la nube...");
+            cerrarModalFirebase();
+            location.reload();
+        };
+
+        window.restablecerFirebaseDefault = function() {
+            localStorage.removeItem('vitalia_firebase_config_custom');
+            alert("Restableciendo valores por defecto...");
+            cerrarModalFirebase();
+            location.reload();
+        };
+
         window.cambiarAnchoImpresora = function(val) {
             anchoPapelMm = val;
             const container = document.getElementById('contenedor-ticket-preview');
@@ -584,12 +816,10 @@
             renderBoletaTicket();
         };
 
-        // Función para formatear moneda
         function formatMoney(amount) {
             return (amount || 0).toLocaleString('es-CL');
         }
 
-        // Inicialización al cargar el DOM
         document.addEventListener('DOMContentLoaded', function() {
             const yearEl = document.getElementById('year-copy');
             if (yearEl) yearEl.textContent = new Date().getFullYear();
@@ -597,7 +827,6 @@
             const inputFecha = document.getElementById('fecha-trabajo');
             if (inputFecha) inputFecha.value = fechaActual;
 
-            // Cargar logo en LocalStorage si existe
             const logoGuardado = localStorage.getItem('vitalia_logo_base64');
             if (logoGuardado) {
                 const imgHeader = document.getElementById('img-logo-header');
@@ -605,24 +834,36 @@
             }
 
             actualizarLabelFecha();
-            
-            cargarDatosCajaDia([]);
-            window.sincronizarVentasNube();
+            cargarVentasLocalStorage();
         });
 
-        // Cambio de Fecha
+        function cargarVentasLocalStorage() {
+            try {
+                const data = localStorage.getItem(`vitalia_ventas_${fechaActual}`);
+                if (data) {
+                    window.ventasGlobalesCache = JSON.parse(data);
+                    cargarDatosCajaDia(window.ventasGlobalesCache);
+                }
+            } catch(e) {}
+        }
+
+        function guardarVentasLocalStorage() {
+            try {
+                localStorage.setItem(`vitalia_ventas_${fechaActual}`, JSON.stringify(window.ventasGlobalesCache || []));
+            } catch(e) {}
+        }
+
         window.cambiarFechaTrabajo = function() {
             const inputFecha = document.getElementById('fecha-trabajo');
             if (inputFecha && inputFecha.value) {
                 fechaActual = inputFecha.value;
+                window.fechaActualGlobal = fechaActual;
             }
             actualizarLabelFecha();
+            cargarVentasLocalStorage();
 
-            window.ventasGlobalesCache = [];
-            cargarDatosCajaDia([]);
-
-            if (typeof window.sincronizarVentasNube === 'function') {
-                window.sincronizarVentasNube();
+            if (typeof window.iniciarSincronizacionNube === 'function') {
+                window.iniciarSincronizacionNube();
             }
         };
 
@@ -639,7 +880,12 @@
             });
         }
 
-        // Logo Local
+        function usarLogoSvgPorDefecto(imgEl) {
+            imgEl.onerror = null;
+            const svgLogo = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="%231b4332"/><circle cx="50" cy="50" r="42" fill="none" stroke="%23d4af37" stroke-width="3"/><path d="M35 65 L35 35 M30 35 L40 35 M35 45 L40 45" stroke="%23d4af37" stroke-width="3" stroke-linecap="round"/><path d="M60 35 Q68 45 60 55 L60 65" stroke="%23d4af37" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M50 25 C45 35 45 45 50 25 Z" fill="%232e7d32" stroke="%23d4af37" stroke-width="1.5"/></svg>`;
+            imgEl.src = svgLogo;
+        }
+
         window.cargarLogoLocal = function(event) {
             const file = event.target.files[0];
             if (file) {
@@ -653,7 +899,6 @@
             }
         };
 
-        // Cambiar de Pestaña
         window.switchTab = function(num) {
             const tab1 = document.getElementById('tab-1');
             const tab2 = document.getElementById('tab-2');
@@ -686,7 +931,6 @@
             }
         };
 
-        // Ajuste de cantidades en formulario
         window.adjustQty = function(id, delta) {
             const el = document.getElementById(id);
             if (!el) return;
@@ -757,7 +1001,6 @@
             document.getElementById('lbl-total-final').textContent = '$' + formatMoney(totalFinal);
         };
 
-        // Guardar Pre-cuenta
         window.guardarPreCuenta = async function() {
             const ad = parseInt(document.getElementById('qty-adultos').value) || 0;
             const ni = parseInt(document.getElementById('qty-ninos').value) || 0;
@@ -799,14 +1042,13 @@
 
             ventasActuales.push(nuevaVenta);
             window.ventasGlobalesCache = ventasActuales;
+            guardarVentasLocalStorage();
             cargarDatosCajaDia(ventasActuales);
 
             if (typeof window.guardarVentaEnNube === 'function') {
-                const guardada = await window.guardarVentaEnNube(nuevaVenta);
-                if (!guardada) return;
+                await window.guardarVentaEnNube(nuevaVenta);
             }
 
-            // Reset formulario
             document.getElementById('qty-adultos').value = 0;
             document.getElementById('qty-ninos').value = 0;
             document.getElementById('qty-chicos').value = 0;
@@ -823,11 +1065,10 @@
                 const v = window.ventasGlobalesCache.find(item => item.id == id);
                 if (v) {
                     v.anulada = true;
+                    guardarVentasLocalStorage();
                     cargarDatosCajaDia(window.ventasGlobalesCache);
-
                     if (typeof window.guardarVentaEnNube === 'function') {
-                        const guardada = await window.guardarVentaEnNube(v);
-                        if (!guardada) return;
+                        await window.guardarVentaEnNube(v);
                     }
                 }
             }
@@ -920,21 +1161,30 @@
             return 'bg-purple-100 text-purple-800';
         }
 
-        // Reiniciar Día con Contraseña
+        // REINICIAR DÍA PROTEGIDO CON CONTRASEÑA "Chinitoj0@"
         window.vaciarRegistrosDia = async function() {
-            if (confirm("⚠️ ¿Desea eliminar DEFINITIVAMENTE todas las ventas de este día?")) {
+            const passwordIngresada = prompt("⚠️ ACCIÓN PROTEGIDA POR SUPERVISOR\n\nPor favor ingrese la contraseña para reiniciar el día:");
+            
+            if (passwordIngresada === null) return;
+
+            if (passwordIngresada !== "Chinitoj0@") {
+                alert("❌ Contraseña incorrecta. Se ha cancelado la reinicialización de la caja.");
+                return;
+            }
+
+            if (confirm("¿Está completamente seguro de ELIMINAR TODOS los registros de hoy? Esta acción afectará a todos los dispositivos conectados.")) {
                 window.ventasGlobalesCache = [];
+                guardarVentasLocalStorage();
                 cargarDatosCajaDia([]);
 
-                if (typeof window.vaciarDiaEnNube === 'function') {
-                    const eliminado = await window.vaciarDiaEnNube();
-                    if (!eliminado) return;
+                if (typeof window.eliminarDiaEnNube === 'function') {
+                    await window.eliminarDiaEnNube();
                 }
-                alert("🗑️ Registros del día eliminados correctamente.");
+
+                alert("🗑️ Registros del día reiniciados con éxito.");
             }
         };
 
-        // Pestaña 2: Cierre
         window.poblaciónSelectorVentasBoleta = function() {
             const selector = document.getElementById('selector-ventas-boleta');
             if (!selector) return;
@@ -1093,18 +1343,17 @@
             v.total = Math.max(0, v.subtotal - (v.reserva || 0)) + propMonto;
             v.cerrada = true;
 
+            guardarVentasLocalStorage();
             cargarDatosCajaDia(window.ventasGlobalesCache);
 
             if (typeof window.guardarVentaEnNube === 'function') {
-                const guardada = await window.guardarVentaEnNube(v);
-                if (!guardada) return;
+                await window.guardarVentaEnNube(v);
             }
 
-            alert(`✅ Venta #${v.id} CERRADA y COBRADA con éxito en Caja (${medio}).`);
+            alert(`✅ Venta #${v.id} CERRADA y COBRADA con éxito (${medio}).`);
             cargarVentaEnBoleta(v.id);
         };
 
-        // IMPRESIÓN ULTRACOMPACTA ULTRA-OPTIMIZADA PARA IMPRESORAS TÉRMICAS
         window.imprimirBoletaLimpia = function() {
             const partes = fechaActual.split('-');
             const fechaFormateada = `${partes[2]}/${partes[1]}/${partes[0]}`;
@@ -1167,35 +1416,12 @@
                     <meta charset="utf-8">
                     <title>Boleta POS - Vitalia</title>
                     <style>
-                        @page {
-                            size: ${pageSizeCss};
-                            margin: 0mm !important;
-                        }
+                        @page { size: ${pageSizeCss}; margin: 0mm !important; }
                         @media print {
-                            html, body {
-                                width: ${bodyWidthCss} !important;
-                                height: max-content !important;
-                                margin: 0 !important;
-                                padding: 0 !important;
-                                overflow: hidden !important;
-                            }
+                            html, body { width: ${bodyWidthCss} !important; height: max-content !important; margin: 0 !important; padding: 0 !important; overflow: hidden !important; }
                         }
-                        * {
-                            box-sizing: border-box;
-                            margin: 0;
-                            padding: 0;
-                        }
-                        html, body {
-                            width: ${bodyWidthCss};
-                            margin: 0 auto;
-                            padding: 1mm;
-                            font-family: 'Courier New', Courier, monospace;
-                            font-size: ${fontSizeCss};
-                            line-height: 1.15;
-                            color: #000000;
-                            background: #ffffff;
-                            -webkit-print-color-adjust: exact;
-                        }
+                        * { box-sizing: border-box; margin: 0; padding: 0; }
+                        html, body { width: ${bodyWidthCss}; margin: 0 auto; padding: 1mm; font-family: 'Courier New', Courier, monospace; font-size: ${fontSizeCss}; line-height: 1.15; color: #000; background: #fff; }
                         table { width: 100%; border-collapse: collapse; margin: 1px 0; }
                         td, th { padding: 1px 0; font-size: ${fontSizeCss}; vertical-align: top; }
                         .center { text-align: center; }
@@ -1218,13 +1444,10 @@
                                 <th style="text-align:right; padding-bottom: 1px;">TOTAL</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            ${itemsTxt}
-                        </tbody>
+                        <tbody>${itemsTxt}</tbody>
                     </table>
 
                     <div class="line"></div>
-
                     <table>
                         <tr><td style="padding:1px 0;">TOT. PERSONAS:</td><td style="text-align:right; padding:1px 0;" class="bold">${cantPersonas}</td></tr>
                         <tr><td style="padding:1px 0;">SUBTOTAL CONSUMO:</td><td style="text-align:right; padding:1px 0;">$${formatMoney(subtotalConsumo)}</td></tr>
@@ -1233,7 +1456,6 @@
                     </table>
 
                     <div class="double-line"></div>
-
                     <table>
                         <tr class="bold" style="font-size: ${fontSizeHeaderCss};">
                             <td style="padding: 2px 0;">TOTAL A PAGAR:</td>
@@ -1256,7 +1478,6 @@
             }, 300);
         };
 
-        // Pestaña 3: Cuadre
         window.actualizarTextoCuadreTab3 = function() {
             const ventas = (window.ventasGlobalesCache || []).filter(v => !v.anulada && v.cerrada);
 
@@ -1316,70 +1537,6 @@ Total: ${totPersonas}`;
             if (alerta) {
                 alerta.classList.remove('hidden');
                 setTimeout(() => alerta.classList.add('hidden'), 3000);
-            }
-        };
-    </script>
-
-    <!-- SINCRONIZACIÓN CON NETLIFY DATABASE -->
-    <script>
-        const estadoConexion = document.getElementById('subtitulo-estado');
-
-        function actualizarEstadoConexion(mensaje, icono, color) {
-            if (estadoConexion) {
-                estadoConexion.innerHTML = `<i class="fa-solid ${icono} ${color}"></i> ${mensaje}`;
-            }
-        }
-
-        window.sincronizarVentasNube = async function() {
-            actualizarEstadoConexion('Cargando ventas desde Netlify', 'fa-cloud-arrow-down', 'text-green-300');
-            try {
-                const response = await fetch(`/api/sales?date=${encodeURIComponent(fechaActual)}`);
-                if (!response.ok) throw new Error('No se pudieron cargar las ventas');
-                const ventas = await response.json();
-                ventas.sort((a, b) => a.id - b.id);
-                window.ventasGlobalesCache = ventas;
-                cargarDatosCajaDia(ventas);
-                actualizarEstadoConexion('Netlify Database conectada', 'fa-cloud', 'text-green-300');
-            } catch (error) {
-                console.error(error);
-                actualizarEstadoConexion('Sin conexión con la base de datos', 'fa-triangle-exclamation', 'text-yellow-300');
-            }
-        };
-
-        window.guardarVentaEnNube = async function(venta) {
-            try {
-                const response = await fetch(`/api/sales?date=${encodeURIComponent(fechaActual)}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ sale: venta })
-                });
-                if (!response.ok) throw new Error('No se pudo guardar la venta');
-                actualizarEstadoConexion('Venta guardada en Netlify', 'fa-cloud-check', 'text-green-300');
-                return true;
-            } catch (error) {
-                console.error(error);
-                actualizarEstadoConexion('Error al guardar la venta', 'fa-triangle-exclamation', 'text-yellow-300');
-                alert('No se pudo guardar la venta. Revisa la conexión e inténtalo nuevamente.');
-                await window.sincronizarVentasNube();
-                return false;
-            }
-        };
-
-        window.vaciarDiaEnNube = async function() {
-            try {
-                const response = await fetch(`/api/sales?date=${encodeURIComponent(fechaActual)}`, {
-                    method: 'DELETE',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ confirmation: 'ELIMINAR DIA' })
-                });
-                if (!response.ok) throw new Error('No se pudo eliminar el día');
-                actualizarEstadoConexion('Registros eliminados de Netlify', 'fa-cloud', 'text-green-300');
-                return true;
-            } catch (error) {
-                console.error(error);
-                alert('No se pudieron eliminar los registros. Revisa la conexión e inténtalo nuevamente.');
-                await window.sincronizarVentasNube();
-                return false;
             }
         };
     </script>
