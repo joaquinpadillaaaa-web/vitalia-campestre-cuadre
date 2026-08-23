@@ -56,14 +56,17 @@
             text-decoration: none !important;
         }
 
-        .floor-plan-grid {
-            background-color: #f8fafc;
-            background-image: linear-gradient(to right, #e2e8f0 1px, transparent 1px), linear-gradient(to bottom, #e2e8f0 1px, transparent 1px);
-            background-size: 24px 24px;
+        /* Textura de madera rústica campestre para el mapa */
+        .wood-floor-grid {
+            background-color: #fef3c7;
+            background-image: 
+                linear-gradient(90deg, rgba(146, 64, 14, 0.06) 50px, transparent 50px),
+                linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+            background-size: 100px 30px;
         }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col font-sans">
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col font-sans">
 
     <!-- HEADER PRINCIPAL -->
     <header class="bg-vitalia-dark text-white shadow-md">
@@ -101,506 +104,311 @@
         </div>
     </header>
 
-    <!-- NAVEGACIÓN PESTAÑAS (Con icono gris en Mesas & Mapas) -->
-    <div class="bg-white border-b border-gray-200 shadow-sm">
+    <!-- NAVEGACIÓN PESTAÑAS -->
+    <div class="bg-white border-b border-slate-200 shadow-xs">
         <div class="max-w-7xl mx-auto px-4 flex overflow-x-auto">
             <button id="btn-tab-1" onclick="switchTab(1)" class="py-3 px-5 font-bold text-sm border-b-2 border-vitalia-green text-vitalia-green flex items-center gap-2 whitespace-nowrap transition-all">
                 <i class="fa-solid fa-cash-register"></i> 1. Pre-cuentas & Garzones
             </button>
-            <button id="btn-tab-2" onclick="switchTab(2)" class="py-3 px-5 font-semibold text-sm border-b-2 border-transparent text-gray-500 hover:text-vitalia-green flex items-center gap-2 whitespace-nowrap transition-all">
+            <button id="btn-tab-2" onclick="switchTab(2)" class="py-3 px-5 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-vitalia-green flex items-center gap-2 whitespace-nowrap transition-all">
                 <i class="fa-solid fa-receipt"></i> 2. Cierre & Boleta POS
             </button>
-            <button id="btn-tab-3" onclick="switchTab(3)" class="py-3 px-5 font-semibold text-sm border-b-2 border-transparent text-gray-500 hover:text-vitalia-green flex items-center gap-2 whitespace-nowrap transition-all">
+            <button id="btn-tab-3" onclick="switchTab(3)" class="py-3 px-5 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-vitalia-green flex items-center gap-2 whitespace-nowrap transition-all">
                 <i class="fa-solid fa-calculator"></i> 3. Cuadre Automático
             </button>
-            <button id="btn-tab-4" onclick="switchTab(4)" class="py-3 px-5 font-semibold text-sm border-b-2 border-transparent text-gray-500 hover:text-vitalia-green flex items-center gap-2 whitespace-nowrap transition-all">
-                <i class="fa-solid fa-chair text-slate-500"></i> 4. Mesas & Mapas
+            <button id="btn-tab-4" onclick="switchTab(4)" class="py-3 px-5 font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-vitalia-green flex items-center gap-2 whitespace-nowrap transition-all">
+                <i class="fa-solid fa-chair text-amber-600"></i> 4. Mesas & Mapas
             </button>
         </div>
     </div>
 
     <!-- CONTENIDO -->
-    <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full">
+    <main class="max-w-7xl mx-auto px-4 py-5 flex-1 w-full space-y-4">
 
-        <!-- ================= PESTAÑA 1: INGRESO DE PRE-CUENTAS (Estilo clásico restaurado) ================= -->
+        <!-- ================= PESTAÑA 1: INGRESO DE PRE-CUENTAS ================= -->
         <div id="tab-1" class="space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- FORMULARIO DE NUEVA PRE-CUENTA -->
-                <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-                    <div class="flex items-center justify-between border-b pb-3 mb-4">
-                        <h2 class="text-lg font-bold text-vitalia-dark flex items-center gap-2">
+                <div class="lg:col-span-2 bg-white rounded-2xl shadow-xs border border-slate-200 p-6 space-y-4">
+                    <div class="flex items-center justify-between border-b pb-3">
+                        <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
                             <i class="fa-solid fa-plus-circle text-vitalia-green"></i> Nueva Pre-Cuenta para Garzón
                         </h2>
-                        <span class="text-xs font-semibold bg-green-100 text-green-800 px-2.5 py-1 rounded-full">Garzones / Pre-boleta</span>
+                        <span class="text-xs font-semibold bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-200">Garzones / Pre-boleta</span>
                     </div>
 
                     <!-- Vincular Mesa Opcional -->
-                    <div class="mb-4 bg-amber-50 p-3 rounded-lg border border-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="bg-amber-50/70 p-3 rounded-xl border border-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
                         <div class="flex items-center gap-2">
-                            <i class="fa-solid fa-chair text-amber-600"></i>
+                            <i class="fa-solid fa-chair text-amber-600 text-base"></i>
                             <div>
-                                <label class="block text-xs font-bold text-amber-900">Vincular a Mesa del Restaurante:</label>
-                                <span class="text-xs text-amber-700 font-semibold" id="lbl-mesa-vinculada-desc">Ninguna mesa seleccionada (opcional)</span>
+                                <label class="block font-bold text-amber-950">Vincular a Mesa del Restaurante:</label>
+                                <span class="text-amber-800" id="lbl-mesa-vinculada-desc">Ninguna mesa seleccionada (opcional)</span>
                             </div>
                         </div>
                         <input type="hidden" id="input-mesa-id-vinculada" value="">
-                        <button type="button" onclick="switchTab(4)" class="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs px-4 py-2 rounded shadow transition flex items-center gap-1.5 whitespace-nowrap">
+                        <button type="button" onclick="switchTab(4)" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-3 py-1.5 rounded-lg shadow-xs transition flex items-center gap-1.5 whitespace-nowrap">
                             <i class="fa-solid fa-map-location-dot"></i> Seleccionar en Mapa
                         </button>
                     </div>
 
-                    <!-- Tramos de Personas -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                        <div class="bg-gray-50 p-3 rounded-lg border border-gray-200 hover:border-vitalia-green transition">
-                            <label class="block text-xs font-bold text-gray-600 mb-1">Adultos (13+ yrs)</label>
-                            <span class="text-xs text-vitalia-green font-extrabold block mb-2">$22.000 c/u</span>
-                            <div class="flex items-center">
-                                <button type="button" onclick="adjustQty('qty-adultos', -1)" class="bg-gray-200 text-gray-700 px-3 py-1.5 rounded-l font-bold hover:bg-gray-300">-</button>
-                                <input type="number" id="qty-adultos" value="0" min="0" class="w-full text-center font-bold text-gray-800 border-y border-gray-200 py-1.5 focus:outline-none" oninput="calcularTotalFormulario()">
-                                <button type="button" onclick="adjustQty('qty-adultos', 1)" class="bg-gray-200 text-gray-700 px-3 py-1.5 rounded-r font-bold hover:bg-gray-300">+</button>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div class="bg-slate-50 p-3 rounded-xl border text-center">
+                            <p class="text-xs font-bold text-slate-700">Adultos (13+ yrs)</p>
+                            <p class="text-xs text-vitalia-green font-extrabold mb-2">$22.000 c/u</p>
+                            <div class="flex items-center justify-center gap-2">
+                                <button type="button" onclick="adjustQty('qty-adultos', -1)" class="w-8 h-8 bg-white border rounded-lg font-bold">-</button>
+                                <input type="number" id="qty-adultos" value="0" min="0" class="w-12 text-center font-bold bg-transparent text-sm" oninput="calcularTotalFormulario()">
+                                <button type="button" onclick="adjustQty('qty-adultos', 1)" class="w-8 h-8 bg-vitalia-green text-white rounded-lg font-bold">+</button>
                             </div>
                         </div>
 
-                        <div class="bg-gray-50 p-3 rounded-lg border border-gray-200 hover:border-vitalia-green transition">
-                            <label class="block text-xs font-bold text-gray-600 mb-1">Niños (6-12 yrs)</label>
-                            <span class="text-xs text-vitalia-green font-extrabold block mb-2">$11.000 c/u</span>
-                            <div class="flex items-center">
-                                <button type="button" onclick="adjustQty('qty-ninos', -1)" class="bg-gray-200 text-gray-700 px-3 py-1.5 rounded-l font-bold hover:bg-gray-300">-</button>
-                                <input type="number" id="qty-ninos" value="0" min="0" class="w-full text-center font-bold text-gray-800 border-y border-gray-200 py-1.5 focus:outline-none" oninput="calcularTotalFormulario()">
-                                <button type="button" onclick="adjustQty('qty-ninos', 1)" class="bg-gray-200 text-gray-700 px-3 py-1.5 rounded-r font-bold hover:bg-gray-300">+</button>
+                        <div class="bg-slate-50 p-3 rounded-xl border text-center">
+                            <p class="text-xs font-bold text-slate-700">Niños (6-12 yrs)</p>
+                            <p class="text-xs text-vitalia-green font-extrabold mb-2">$11.000 c/u</p>
+                            <div class="flex items-center justify-center gap-2">
+                                <button type="button" onclick="adjustQty('qty-ninos', -1)" class="w-8 h-8 bg-white border rounded-lg font-bold">-</button>
+                                <input type="number" id="qty-ninos" value="0" min="0" class="w-12 text-center font-bold bg-transparent text-sm" oninput="calcularTotalFormulario()">
+                                <button type="button" onclick="adjustQty('qty-ninos', 1)" class="w-8 h-8 bg-vitalia-green text-white rounded-lg font-bold">+</button>
                             </div>
                         </div>
 
-                        <div class="bg-gray-50 p-3 rounded-lg border border-gray-200 hover:border-vitalia-green transition">
-                            <label class="block text-xs font-bold text-gray-600 mb-1">Niños Chicos (4-5 yrs)</label>
-                            <span class="text-xs text-vitalia-green font-extrabold block mb-2">$5.000 c/u</span>
-                            <div class="flex items-center">
-                                <button type="button" onclick="adjustQty('qty-chicos', -1)" class="bg-gray-200 text-gray-700 px-3 py-1.5 rounded-l font-bold hover:bg-gray-300">-</button>
-                                <input type="number" id="qty-chicos" value="0" min="0" class="w-full text-center font-bold text-gray-800 border-y border-gray-200 py-1.5 focus:outline-none" oninput="calcularTotalFormulario()">
-                                <button type="button" onclick="adjustQty('qty-chicos', 1)" class="bg-gray-200 text-gray-700 px-3 py-1.5 rounded-r font-bold hover:bg-gray-300">+</button>
+                        <div class="bg-slate-50 p-3 rounded-xl border text-center">
+                            <p class="text-xs font-bold text-slate-700">Niños Chicos (4-5 yrs)</p>
+                            <p class="text-xs text-vitalia-green font-extrabold mb-2">$5.000 c/u</p>
+                            <div class="flex items-center justify-center gap-2">
+                                <button type="button" onclick="adjustQty('qty-chicos', -1)" class="w-8 h-8 bg-white border rounded-lg font-bold">-</button>
+                                <input type="number" id="qty-chicos" value="0" min="0" class="w-12 text-center font-bold bg-transparent text-sm" oninput="calcularTotalFormulario()">
+                                <button type="button" onclick="adjustQty('qty-chicos', 1)" class="w-8 h-8 bg-vitalia-green text-white rounded-lg font-bold">+</button>
                             </div>
                         </div>
                     </div>
 
                     <!-- Consumos Extras -->
-                    <div class="mb-4 bg-amber-50 p-4 rounded-lg border border-amber-200">
-                        <label class="block text-xs font-bold text-amber-900 mb-2 flex items-center gap-2">
+                    <div class="bg-amber-50/50 p-3.5 rounded-xl border border-amber-200 space-y-2 text-xs">
+                        <label class="font-bold text-slate-700 flex items-center gap-1.5">
                             <i class="fa-solid fa-beer-mug-empty text-amber-600"></i> Agregar Consumos Extras (Bebidas / Tragos / Varios)
                         </label>
-                        <div class="flex flex-col sm:flex-row gap-2">
-                            <input type="text" id="extra-nombre" placeholder="Ej: Cerveza Heineken" class="flex-1 text-sm border border-gray-300 rounded px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-amber-500">
-                            <input type="number" id="extra-precio" placeholder="Precio ($)" min="0" class="w-full sm:w-28 text-sm border border-gray-300 rounded px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-amber-500">
-                            <input type="number" id="extra-cant" value="1" min="1" class="w-full sm:w-16 text-sm border border-gray-300 rounded px-2 py-1.5 text-center focus:outline-none">
-                            <button type="button" onclick="agregarItemExtra()" class="bg-amber-600 text-white font-bold text-xs px-4 py-1.5 rounded hover:bg-amber-700 transition flex items-center justify-center gap-1">
-                                <i class="fa-solid fa-plus"></i> Añadir
-                            </button>
+                        <div class="flex gap-2">
+                            <input type="text" id="extra-nombre" placeholder="Ej: Cerveza Heineken" class="flex-1 border rounded-lg px-3 py-2 bg-white">
+                            <input type="number" id="extra-precio" placeholder="Precio ($)" min="0" class="w-28 border rounded-lg px-3 py-2 bg-white font-bold">
+                            <input type="number" id="extra-cant" value="1" min="1" class="w-16 border rounded-lg px-2 py-2 text-center bg-white">
+                            <button type="button" onclick="agregarItemExtra()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2 rounded-lg shadow-xs">Añadir</button>
                         </div>
-                        <div id="lista-extras-temp" class="mt-3 flex flex-wrap gap-2"></div>
+                        <div id="lista-extras-temp" class="space-y-1 pt-1"></div>
                     </div>
 
-                    <!-- SECCIÓN DE ABONO RESERVA -->
-                    <div class="mb-5 bg-blue-50 p-3.5 rounded-lg border border-blue-200">
-                        <label class="block text-xs font-bold text-blue-900 mb-1 flex items-center gap-2">
+                    <!-- Abono Reserva -->
+                    <div class="bg-blue-50/60 p-3.5 rounded-xl border border-blue-200 text-xs space-y-1">
+                        <label class="font-bold text-blue-900 flex items-center gap-1.5">
                             <i class="fa-solid fa-bookmark text-blue-600"></i> Abono Reserva (Se descuenta del saldo a pagar)
                         </label>
-                        <div class="flex items-center gap-3">
-                            <div class="relative flex-1 max-w-xs">
-                                <span class="absolute left-3 top-2 text-gray-500 text-xs font-bold">$</span>
-                                <input type="number" id="monto-reserva" value="0" min="0" step="1000" placeholder="Ej: 10000" class="w-full text-sm font-bold border border-gray-300 rounded pl-7 pr-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500" oninput="calcularTotalFormulario()">
-                            </div>
-                            <span class="text-[11px] text-blue-700 font-semibold">* La propina sugerida (10%) se calcula sobre el consumo total antes de descontar la reserva.</span>
-                        </div>
+                        <input type="number" id="monto-reserva" value="0" min="0" step="1000" class="w-full border rounded-lg px-3 py-2 bg-white font-bold text-blue-800 text-sm" oninput="calcularTotalFormulario()">
                     </div>
 
-                    <!-- DESGLOSE DESTACADO DE PROPINA Y TOTAL -->
-                    <div class="bg-vitalia-lightGreen p-4 rounded-xl border border-green-200 space-y-3">
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 border-b border-green-200 pb-3">
-                            <div>
-                                <span class="text-[11px] font-bold text-gray-500 uppercase block">Subtotal Consumo:</span>
-                                <span id="lbl-subtotal" class="text-base font-extrabold text-gray-800">$0</span>
-                            </div>
-                            <div>
-                                <span class="text-[11px] font-extrabold text-vitalia-green uppercase block">Propina Sugerida (10%):</span>
-                                <span id="lbl-propina-sugerida-garzon" class="text-base font-black text-vitalia-green">$0</span>
-                            </div>
-                            <div>
-                                <span class="text-[11px] font-bold text-blue-800 uppercase block">Reserva Descontada:</span>
-                                <span id="lbl-monto-reserva-desc" class="text-base font-bold text-blue-800">-$0</span>
-                            </div>
+                    <!-- Desglose -->
+                    <div class="bg-vitalia-lightGreen p-4 rounded-xl border border-green-200 space-y-2 text-xs">
+                        <div class="grid grid-cols-3 gap-2 border-b border-green-200 pb-2">
+                            <div><span class="font-bold text-slate-500 uppercase block">Subtotal:</span><span id="lbl-subtotal" class="font-black text-slate-800 text-sm">$0</span></div>
+                            <div><span class="font-bold text-vitalia-green uppercase block">Propina 10%:</span><span id="lbl-propina-sugerida-garzon" class="font-black text-vitalia-green text-sm">$0</span></div>
+                            <div><span class="font-bold text-blue-800 uppercase block">Reserva:</span><span id="lbl-monto-reserva-desc" class="font-bold text-blue-800 text-sm">-$0</span></div>
                         </div>
-
-                        <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
+                        <div class="flex justify-between items-center pt-1">
                             <div>
-                                <span class="text-xs font-bold text-gray-600">Total Personas: <strong id="lbl-total-personas" class="text-gray-900">0</strong></span>
-                                <div class="text-lg font-black text-vitalia-dark mt-0.5">
-                                    TOTAL CON PROPINA: <span id="lbl-total-final" class="text-vitalia-green">$0</span>
-                                </div>
+                                <span class="text-slate-600 font-bold">Personas: <strong id="lbl-total-personas" class="text-slate-900">0</strong></span>
+                                <div class="text-base font-black text-slate-900">TOTAL: <span id="lbl-total-final" class="text-vitalia-green text-lg">$0</span></div>
                             </div>
-                            <button type="button" onclick="guardarPreCuenta()" class="w-full sm:w-auto bg-vitalia-green hover:bg-vitalia-dark text-white font-extrabold text-sm px-6 py-3 rounded-lg shadow transition flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-paper-plane"></i> Generar Pre-Boleta
+                            <button type="button" onclick="guardarPreCuenta()" class="bg-vitalia-green hover:bg-vitalia-dark text-white font-extrabold py-2.5 px-5 rounded-xl shadow-sm transition text-xs">
+                                Generar Pre-Boleta
                             </button>
                         </div>
                     </div>
-
                 </div>
 
-                <!-- RESUMEN EN TIEMPO REAL CAJA -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 flex flex-col justify-between">
-                    <div>
-                        <div class="border-b pb-3 mb-4 flex justify-between items-center">
-                            <h2 class="text-lg font-bold text-vitalia-dark flex items-center gap-2">
-                                <i class="fa-solid fa-chart-line text-vitalia-gold"></i> Balance de Caja
-                            </h2>
-                            <span id="badge-fecha-actual" class="text-xs bg-gray-100 text-gray-700 font-mono px-2 py-0.5 rounded">--/--/----</span>
+                <!-- Balance -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="border-b pb-3 flex justify-between items-center">
+                            <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wide">Balance de Caja</h2>
+                            <span id="badge-fecha-actual" class="text-xs bg-slate-100 px-2.5 py-1 rounded-md font-mono text-slate-600">--/--/----</span>
                         </div>
-
-                        <div class="space-y-3 mb-6">
-                            <div class="bg-gray-50 p-3 rounded-lg flex justify-between items-center border">
-                                <span class="text-xs font-bold text-gray-600 flex items-center gap-1.5">
-                                    <i class="fa-solid fa-money-bill-wave text-green-600"></i> Efectivo:
-                                </span>
-                                <span id="caja-efectivo" class="font-extrabold text-sm text-gray-900">$0</span>
-                            </div>
-                            <div class="bg-gray-50 p-3 rounded-lg flex justify-between items-center border">
-                                <span class="text-xs font-bold text-gray-600 flex items-center gap-1.5">
-                                    <i class="fa-solid fa-mobile-screen text-blue-600"></i> Transferencias:
-                                </span>
-                                <span id="caja-transferencia" class="font-extrabold text-sm text-gray-900">$0</span>
-                            </div>
-                            <div class="bg-gray-50 p-3 rounded-lg flex justify-between items-center border">
-                                <span class="text-xs font-bold text-gray-600 flex items-center gap-1.5">
-                                    <i class="fa-solid fa-credit-card text-purple-600"></i> Débito / Crédito:
-                                </span>
-                                <span id="caja-tarjeta" class="font-extrabold text-sm text-gray-900">$0</span>
-                            </div>
+                        <div class="space-y-2.5 text-xs font-semibold">
+                            <div class="bg-slate-50 p-3 rounded-xl border flex justify-between"><span>💵 Efectivo:</span><span id="caja-efectivo" class="font-extrabold text-slate-900">$0</span></div>
+                            <div class="bg-slate-50 p-3 rounded-xl border flex justify-between"><span>📱 Transferencias:</span><span id="caja-transferencia" class="font-extrabold text-slate-900">$0</span></div>
+                            <div class="bg-slate-50 p-3 rounded-xl border flex justify-between"><span>💳 Débito/Crédito:</span><span id="caja-tarjeta" class="font-extrabold text-slate-900">$0</span></div>
                         </div>
-
-                        <div class="border-t pt-4 space-y-2">
-                            <div class="flex justify-between items-center text-xs text-gray-600">
-                                <span>Total Consumos Netos:</span>
-                                <span id="caja-neto" class="font-bold text-gray-800">$0</span>
-                            </div>
-                            <div class="flex justify-between items-center text-xs text-blue-700">
-                                <span>Total Reservas Descontadas:</span>
-                                <span id="caja-reservas" class="font-bold">-$0</span>
-                            </div>
-                            <div class="flex justify-between items-center text-xs text-gray-600">
-                                <span>Total Propinas Reales CERRADAS:</span>
-                                <span id="caja-propinas" class="font-bold text-green-700">$0</span>
-                            </div>
-                            <div class="flex justify-between items-center text-sm font-black text-vitalia-dark pt-2 border-t">
-                                <span>TOTAL GENERAL EN CAJA:</span>
-                                <span id="caja-total-general" class="text-base text-vitalia-green">$0</span>
-                            </div>
+                        <div class="border-t pt-3 space-y-1.5 text-xs font-semibold">
+                            <div class="flex justify-between text-slate-600"><span>Neto:</span><span id="caja-neto" class="font-bold">$0</span></div>
+                            <div class="flex justify-between text-blue-700"><span>Reservas:</span><span id="caja-reservas" class="font-bold">-$0</span></div>
+                            <div class="flex justify-between text-emerald-700"><span>Propinas:</span><span id="caja-propinas" class="font-bold">$0</span></div>
+                            <div class="flex justify-between text-sm font-black text-slate-900 pt-2 border-t"><span>TOTAL GENERAL:</span><span id="caja-total-general" class="text-base text-vitalia-green">$0</span></div>
                         </div>
                     </div>
-
-                    <div class="mt-6 pt-4 border-t text-center">
-                        <span class="text-xs text-gray-500 font-medium">Asistentes acumulados hoy: <strong id="caja-total-personas" class="text-gray-900">0</strong> personas</span>
+                    <div class="pt-3 border-t text-center text-xs text-slate-500 font-medium">
+                        Asistentes hoy: <strong id="caja-total-personas" class="text-slate-900">0</strong> personas
                     </div>
                 </div>
             </div>
 
-            <!-- HISTORIAL DE PRE-CUENTAS -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div class="p-4 bg-gray-50 border-b flex justify-between items-center">
-                    <h3 class="font-bold text-sm text-gray-700 uppercase tracking-wider flex items-center gap-2">
-                        <i class="fa-solid fa-list-check text-vitalia-green"></i> Historial de Pre-cuentas & Registros
+            <!-- Historial -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-list text-vitalia-green"></i> Pre-cuentas Registradas
                     </h3>
-                    <button onclick="vaciarRegistrosDia()" class="text-xs text-red-600 hover:text-red-800 font-semibold flex items-center gap-1 bg-red-50 hover:bg-red-100 border border-red-200 px-3 py-1.5 rounded-lg transition">
-                        <i class="fa-solid fa-trash-can"></i> Reiniciar Día
-                    </button>
+                    <button onclick="vaciarRegistrosDia()" class="text-xs text-rose-600 hover:text-rose-800 font-semibold bg-rose-50 px-3 py-1 rounded-lg border border-rose-200">Reiniciar Día</button>
                 </div>
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse text-xs">
-                        <thead>
-                            <tr class="bg-gray-100 text-gray-600 font-bold border-b uppercase">
-                                <th class="p-3"># Reg</th>
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-100 text-slate-600 font-bold uppercase">
+                            <tr>
+                                <th class="p-3 rounded-l-lg"># Reg</th>
                                 <th class="p-3">Mesa</th>
-                                <th class="p-3">Detalle Asistentes</th>
+                                <th class="p-3">Personas</th>
                                 <th class="p-3">Extras</th>
                                 <th class="p-3 text-right">Reserva</th>
-                                <th class="p-3 text-right">Consumo Real</th>
+                                <th class="p-3 text-right">Consumo</th>
                                 <th class="p-3 text-right">Propina</th>
-                                <th class="p-3 text-right">Total Final</th>
-                                <th class="p-3 text-center">Estado / Pago</th>
-                                <th class="p-3 text-center">Acciones</th>
+                                <th class="p-3 text-right">Total</th>
+                                <th class="p-3 text-center">Estado</th>
+                                <th class="p-3 rounded-r-lg text-center">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody id="tabla-ventas-body" class="divide-y divide-gray-200"></tbody>
+                        <tbody id="tabla-ventas-body" class="divide-y divide-slate-100"></tbody>
                     </table>
                 </div>
             </div>
-
         </div>
 
         <!-- ================= PESTAÑA 2: CIERRE & BOLETA POS ================= -->
         <div id="tab-2" class="hidden space-y-6">
-
             <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                <div class="md:col-span-5 bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
+                    <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-receipt text-vitalia-green"></i> Cierre de Cuenta & Pago
+                    </h2>
 
-                <!-- CONTROLES Y MÓDULO DE CIERRE -->
-                <div class="md:col-span-5 bg-white rounded-xl shadow-sm border border-gray-200 p-5 space-y-5">
-                    <div class="border-b pb-3">
-                        <h2 class="text-lg font-bold text-vitalia-dark flex items-center gap-2">
-                            <i class="fa-solid fa-receipt text-vitalia-green"></i> Cierre de Cuenta & Pago
-                        </h2>
-                        <p class="text-xs text-gray-500">Selecciona la pre-cuenta, ajusta la propina real ingresada y cierra la venta.</p>
-                    </div>
-
-                    <!-- Selector de Ventas -->
                     <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Seleccionar Pre-cuenta:</label>
-                        <select id="selector-ventas-boleta" class="w-full text-sm font-semibold border border-gray-300 rounded-lg px-3 py-2 bg-white focus:ring-2 focus:ring-vitalia-green focus:outline-none" onchange="cargarVentaEnBoleta(this.value)">
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Seleccionar Pre-cuenta:</label>
+                        <select id="selector-ventas-boleta" class="w-full text-sm font-semibold border rounded-xl px-3 py-2 bg-white" onchange="cargarVentaEnBoleta(this.value)">
                             <option value="">-- Seleccionar Pre-cuenta --</option>
                         </select>
                     </div>
 
-                    <!-- Selector de Formato de Impresora Térmica -->
-                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-200 space-y-2">
-                        <div class="flex items-center justify-between">
-                            <label class="text-xs font-bold text-gray-700 flex items-center gap-1.5">
-                                <i class="fa-solid fa-print text-vitalia-green"></i> Formato Térmico POS:
-                            </label>
-                            <span class="text-[10px] bg-vitalia-green/10 text-vitalia-green font-extrabold px-2 py-0.5 rounded">Formato Ultracompacto</span>
-                        </div>
-                        <select id="selector-ancho-papel" class="w-full text-xs font-bold border border-gray-300 rounded px-2.5 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-vitalia-green" onchange="cambiarAnchoImpresora(this.value)">
-                            <option value="58" selected>🖨️ 58mm - Térmica Compacta POS (48mm útil)</option>
-                            <option value="80">🖨️ 80mm - Estándar Gastronomía (72mm útil)</option>
+                    <div class="bg-slate-50 p-3 rounded-xl border space-y-1 text-xs">
+                        <label class="font-bold text-slate-700">Formato Impresora:</label>
+                        <select id="selector-ancho-papel" class="w-full font-bold border rounded-lg p-2 bg-white" onchange="cambiarAnchoImpresora(this.value)">
+                            <option value="58" selected>🖨️ 58mm Compacta</option>
+                            <option value="80">🖨️ 80mm Estándar</option>
                         </select>
                     </div>
 
-                    <!-- Módulo de Cierre -->
-                    <div id="módulo-cierre-caja" class="space-y-3 bg-gray-50 p-4 rounded-lg border border-gray-200">
-                        <h3 class="text-xs font-extrabold text-vitalia-dark uppercase border-b pb-2 flex justify-between">
+                    <div class="space-y-3 bg-slate-50 p-4 rounded-xl border text-xs">
+                        <div class="flex justify-between items-center border-b pb-2 font-bold uppercase">
                             <span>Cobro Final</span>
-                            <span id="badge-estado-venta" class="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded text-[10px]">PENDIENTE</span>
-                        </h3>
+                            <span id="badge-estado-venta" class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-[10px]">PENDIENTE</span>
+                        </div>
 
-                        <!-- Medio de Pago -->
                         <div>
-                            <label class="block text-xs font-bold text-gray-700 mb-1">Medio de Pago:</label>
-                            <select id="bol-medio-pago" class="w-full text-sm font-bold border border-gray-300 rounded px-3 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-vitalia-green" onchange="actualizarBoletaManual()">
+                            <label class="block font-bold text-slate-700 mb-1">Medio de Pago:</label>
+                            <select id="bol-medio-pago" class="w-full font-bold border rounded-lg px-3 py-2 bg-white" onchange="actualizarBoletaManual()">
                                 <option value="Efectivo">💵 Efectivo</option>
-                                <option value="Transferencia">📱 Transferencia Bancaria</option>
+                                <option value="Transferencia">📱 Transferencia</option>
                                 <option value="Débito">💳 Débito / Crédito</option>
                             </select>
                         </div>
 
-                        <!-- Propina Ingresada/Ajustada por el Cajero -->
-                        <div class="border-t pt-2">
+                        <div>
                             <div class="flex justify-between items-center mb-1">
-                                <label class="text-xs font-bold text-gray-700">Monto Propina ($):</label>
-                                <button type="button" onclick="setPropinaDiezPorCiento()" class="text-[10px] text-vitalia-green font-bold bg-green-100 px-2 py-0.5 rounded hover:bg-green-200">10% Sugerido</button>
+                                <label class="font-bold text-slate-700">Propina ($):</label>
+                                <button type="button" onclick="setPropinaDiezPorCiento()" class="text-[10px] text-vitalia-green font-bold bg-green-100 px-2 py-0.5 rounded">10% Sugerido</button>
                             </div>
-                            <input type="number" id="bol-monto-propina" value="0" min="0" step="500" class="w-full text-sm font-bold border border-gray-300 rounded px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-vitalia-green" oninput="actualizarBoletaManual()">
-                            <p class="text-[10px] text-gray-500 mt-1">Ingresa el monto de propina que dejó el cliente.</p>
+                            <input type="number" id="bol-monto-propina" value="0" min="0" step="500" class="w-full font-bold border rounded-lg px-3 py-2" oninput="actualizarBoletaManual()">
                         </div>
 
-                        <div class="border-t pt-3 space-y-1 text-xs">
-                            <div class="flex justify-between text-gray-600">
-                                <span>Subtotal Consumo:</span>
-                                <strong id="cierre-lbl-subtotal">$0</strong>
-                            </div>
-                            <div id="cierre-row-reserva" class="flex justify-between text-blue-700 hidden">
-                                <span>Abono Reserva:</span>
-                                <strong id="cierre-lbl-reserva">-$0</strong>
-                            </div>
-                            <div class="flex justify-between text-green-800">
-                                <span>Propina Ingresada:</span>
-                                <strong id="cierre-lbl-propina">$0</strong>
-                            </div>
-                            <div class="flex justify-between text-sm font-black text-vitalia-dark pt-2 border-t">
-                                <span>TOTAL A COBRAR:</span>
-                                <strong id="cierre-lbl-total" class="text-vitalia-green">$0</strong>
-                            </div>
+                        <div class="border-t pt-3 space-y-1">
+                            <div class="flex justify-between text-slate-600"><span>Subtotal:</span><strong id="cierre-lbl-subtotal">$0</strong></div>
+                            <div id="cierre-row-reserva" class="flex justify-between text-blue-700 hidden"><span>Reserva:</span><strong id="cierre-lbl-reserva">-$0</strong></div>
+                            <div class="flex justify-between text-emerald-800"><span>Propina:</span><strong id="cierre-lbl-propina">$0</strong></div>
+                            <div class="flex justify-between text-sm font-black text-slate-900 pt-2 border-t"><span>TOTAL:</span><strong id="cierre-lbl-total" class="text-vitalia-green text-base">$0</strong></div>
                         </div>
 
                         <div class="pt-2 flex items-center gap-2">
-                            <input type="checkbox" id="chk-liberar-mesa-cierre" checked class="rounded border-gray-300 text-vitalia-green">
-                            <label for="chk-liberar-mesa-cierre" class="text-xs font-bold text-gray-700">Liberar mesa automáticamente al cobrar</label>
+                            <input type="checkbox" id="chk-liberar-mesa-cierre" checked class="rounded border-slate-300 text-vitalia-green">
+                            <label for="chk-liberar-mesa-cierre" class="font-bold text-slate-700">Liberar mesa automáticamente al cobrar</label>
                         </div>
 
-                        <button type="button" onclick="cerrarYGuardarVentaFinal()" class="w-full mt-2 bg-vitalia-green hover:bg-vitalia-dark text-white font-extrabold text-sm py-2.5 rounded-lg shadow transition flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-lock"></i> COBRAR Y CERRAR VENTA
+                        <button type="button" onclick="cerrarYGuardarVentaFinal()" class="w-full mt-2 bg-vitalia-green hover:bg-vitalia-dark text-white font-extrabold py-3 rounded-xl shadow-xs transition">
+                            COBRAR Y CERRAR VENTA
                         </button>
                     </div>
 
-                    <!-- Botón Imprimir Comprobante -->
-                    <button type="button" onclick="imprimirBoletaLimpia()" class="w-full bg-vitalia-gold hover:bg-yellow-600 text-vitalia-dark font-extrabold text-base py-3 px-4 rounded-xl shadow-md transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-print text-xl"></i> IMPRIMIR BOLETA
+                    <button type="button" onclick="imprimirBoletaLimpia()" class="w-full bg-vitalia-gold hover:bg-yellow-600 text-slate-950 font-extrabold py-3 rounded-xl shadow-xs transition text-xs">
+                        IMPRIMIR BOLETA
                     </button>
                 </div>
 
-                <!-- UNICA VISTA PREVIA DEL TICKET -->
+                <!-- Ticket Preview -->
                 <div class="md:col-span-7 flex justify-center">
-                    <div id="contenedor-ticket-preview" class="ticket-preview p-5 rounded-2xl border-2 border-dashed border-gray-300 shadow-inner max-w-xs w-full transition-all duration-300">
-                        <div class="bg-white p-3 shadow rounded border border-gray-200">
-                            <div>
-                                <div style="text-align: center; margin-bottom: 4px;">
-                                    <h2 style="font-size: 12px; font-weight: bold; margin: 0; text-transform: uppercase;">TENEDOR LIBRE</h2>
-                                    <h3 style="font-size: 11px; font-weight: bold; margin: 0; text-transform: uppercase;">VITALIA CAMPESTRE</h3>
-                                    <p style="font-size: 9px; margin: 1px 0 0 0;" class="ticket-linea-sep">--------------------------------</p>
-                                    <p style="font-size: 9px; margin: 1px 0;" class="ticket-fecha-val">Fecha: 00/00/0000</p>
-                                    <p style="font-size: 9px; margin: 2px 0; font-weight: bold; text-transform: uppercase;" id="ticket-cant-detalle-mesa" class="hidden">CANT DETALLE MESA -</p>
-                                    <p style="font-size: 9px; margin: 0;" class="ticket-linea-sep">--------------------------------</p>
-                                </div>
-
-                                <table style="width: 100%; border-collapse: collapse; margin-bottom: 4px;">
-                                    <thead>
-                                        <tr style="border-bottom: 1px dashed #000; font-size: 9px; text-align: left;">
-                                            <th style="padding-bottom: 2px;">CANT DETALLE</th>
-                                            <th style="text-align: right; padding-bottom: 2px;">TOTAL</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="ticket-items-body-val" style="font-size: 9px;"></tbody>
-                                </table>
-
-                                <div style="border-top: 1px dashed #000; padding-top: 3px; font-size: 9px;">
-                                    <div style="display: flex; justify-content: space-between; margin-bottom: 1px;">
-                                        <span>TOT. PERSONAS:</span>
-                                        <strong class="ticket-cant-personas-val">0</strong>
-                                    </div>
-                                    <div style="display: flex; justify-content: space-between; margin-bottom: 1px;">
-                                        <span>SUBTOTAL CONSUMO:</span>
-                                        <span class="ticket-subtotal-val">$0</span>
-                                    </div>
-                                    <div id="ticket-reserva-row" style="display: flex; justify-content: space-between; margin-bottom: 1px;">
-                                        <span>ABONO RESERVA:</span>
-                                        <span class="ticket-reserva-val">-$0</span>
-                                    </div>
-                                    <div style="display: flex; justify-content: space-between; margin-bottom: 1px;">
-                                        <span>PROPINA:</span>
-                                        <span class="ticket-propina-val">$0</span>
-                                    </div>
-                                    <div style="border-top: 1px double #000; margin-top: 2px; padding-top: 2px; display: flex; justify-content: space-between; font-size: 11px; font-weight: bold;">
-                                        <span>TOTAL A PAGAR:</span>
-                                        <span class="ticket-total-val">$0</span>
-                                    </div>
-                                </div>
-
-                                <div style="text-align: center; margin-top: 6px; border-top: 1px dashed #000; padding-top: 4px;">
-                                    <p style="font-size: 8px; font-weight: bold; margin: 0;">¡GRACIAS POR SU VISITA!</p>
-                                    <p style="font-size: 8px; font-weight: bold; margin: 2px 0 0 0; text-transform: uppercase; line-height: 1;">
-                                        CONSERVE ESTE COMPROBANTE
-                                    </p>
-                                </div>
+                    <div id="contenedor-ticket-preview" class="ticket-preview p-5 rounded-2xl border-2 border-dashed border-slate-300 shadow-inner max-w-xs w-full">
+                        <div class="bg-white p-4 shadow-xs rounded-xl border border-slate-200">
+                            <div style="text-align: center; margin-bottom: 4px;">
+                                <h2 style="font-size: 12px; font-weight: bold; margin: 0; text-transform: uppercase;">TENEDOR LIBRE</h2>
+                                <h3 style="font-size: 11px; font-weight: bold; margin: 0; text-transform: uppercase;">VITALIA CAMPESTRE</h3>
+                                <p style="font-size: 9px; margin: 1px 0;" class="ticket-linea-sep">--------------------------------</p>
+                                <p style="font-size: 9px; margin: 1px 0;" class="ticket-fecha-val">Fecha: 00/00/0000</p>
+                                <p style="font-size: 9px; margin: 2px 0; font-weight: bold; text-transform: uppercase;" id="ticket-cant-detalle-mesa" class="hidden">CANT DETALLE MESA -</p>
+                                <p style="font-size: 9px; margin: 0;" class="ticket-linea-sep">--------------------------------</p>
+                            </div>
+                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 4px;">
+                                <thead>
+                                    <tr style="border-bottom: 1px dashed #000; font-size: 9px; text-align: left;">
+                                        <th style="padding-bottom: 2px;">CANT DETALLE</th>
+                                        <th style="text-align: right; padding-bottom: 2px;">TOTAL</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="ticket-items-body-val" style="font-size: 9px;"></tbody>
+                            </table>
+                            <div style="border-top: 1px dashed #000; padding-top: 3px; font-size: 9px;">
+                                <div style="display: flex; justify-content: space-between;"><span>TOT. PERSONAS:</span><strong class="ticket-cant-personas-val">0</strong></div>
+                                <div style="display: flex; justify-content: space-between;"><span>SUBTOTAL:</span><span class="ticket-subtotal-val">$0</span></div>
+                                <div id="ticket-reserva-row" style="display: flex; justify-content: space-between;"><span>ABONO:</span><span class="ticket-reserva-val">-$0</span></div>
+                                <div style="display: flex; justify-content: space-between;"><span>PROPINA:</span><span class="ticket-propina-val">$0</span></div>
+                                <div style="border-top: 1px double #000; margin-top: 2px; padding-top: 2px; display: flex; justify-content: space-between; font-weight: bold;"><span>TOTAL:</span><span class="ticket-total-val">$0</span></div>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
-
         </div>
 
-        <!-- ================= PESTAÑA 3: CUADRE AUTOMÁTICO DE CAJA ================= -->
+        <!-- ================= PESTAÑA 3: CUADRE AUTOMÁTICO ================= -->
         <div id="tab-3" class="hidden space-y-6">
-
             <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-
-                <!-- INFORMACIÓN Y BOTÓN COPIAR -->
-                <div class="md:col-span-5 bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-5">
-                    <div class="border-b pb-3">
-                        <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
-                            <i class="fa-solid fa-clipboard-check text-vitalia-green"></i> Reporte de Cuadre Diario
-                        </h2>
-                        <p class="text-xs text-slate-500">Calculado automáticamente con los cobros cerrados y no anulados del día.</p>
-                    </div>
-
-                    <!-- BOTÓN ACCESO EXCEL -->
-                    <a href="https://docs.google.com/spreadsheets/d/1N-kLiHZX6o3eygOlojn8TxtC2eHyqlku/edit?usp=sharing&ouid=115513602026994452010&rtpof=true&sd=true" target="_blank" class="block w-full bg-green-600 hover:bg-green-700 text-white p-3 rounded-xl shadow-sm border border-green-700 flex items-center justify-between transition group">
-                        <div class="flex items-center gap-3">
-                            <i class="fa-solid fa-file-excel text-xl"></i>
-                            <div>
-                                <div class="text-xs font-bold uppercase tracking-wider">Acceso a Excel</div>
-                                <div class="text-[10px] opacity-80">Hoja de cálculo central</div>
-                            </div>
-                        </div>
-                        <i class="fa-solid fa-arrow-up-right-from-square text-sm opacity-50 group-hover:opacity-100"></i>
+                <div class="md:col-span-5 bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
+                    <h2 class="text-base font-bold text-slate-800">Reporte de Cuadre Diario</h2>
+                    <a href="https://docs.google.com/spreadsheets/d/1N-kLiHZX6o3eygOlojn8TxtC2eHyqlku/edit?usp=sharing&ouid=115513602026994452010&rtpof=true&sd=true" target="_blank" class="block w-full bg-emerald-600 hover:bg-emerald-700 text-white p-3.5 rounded-xl shadow-xs flex items-center justify-between transition text-xs font-bold uppercase">
+                        <div class="flex items-center gap-3"><i class="fa-solid fa-file-excel text-lg"></i><span>Acceso a Hoja de Excel</span></div>
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
                     </a>
-
-                    <div class="bg-amber-50 border border-amber-200 p-3.5 rounded-xl text-xs text-amber-900 space-y-1">
-                        <p class="font-bold flex items-center gap-1.5 text-amber-950">
-                            <i class="fa-solid fa-circle-info text-amber-600"></i> Copia rápida para WhatsApp / Reportes
-                        </p>
-                        <p>Presiona el botón para copiar el texto estructurado exactamente como lo necesitas para tu cuadre de caja.</p>
-                    </div>
-
-                    <button type="button" onclick="copiarTextoCuadre()" class="w-full bg-vitalia-green hover:bg-vitalia-dark text-white font-extrabold text-sm py-3.5 px-4 rounded-xl shadow transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-copy text-lg"></i> COPIAR CUADRE PARA WHATSAPP
+                    <button type="button" onclick="copiarTextoCuadre()" class="w-full bg-vitalia-green hover:bg-vitalia-dark text-white font-extrabold text-xs py-3.5 px-4 rounded-xl shadow-xs transition">
+                        COPIAR CUADRE PARA WHATSAPP
                     </button>
-
-                    <div id="alerta-copiado" class="hidden bg-green-100 border border-green-300 text-green-800 text-xs font-bold p-2.5 rounded-xl text-center">
-                        <i class="fa-solid fa-circle-check"></i> ¡Texto del cuadre copiado al portapapeles!
-                    </div>
+                    <div id="alerta-copiado" class="hidden bg-green-100 text-green-800 text-xs font-bold p-2.5 rounded-xl text-center">¡Copiado al portapapeles!</div>
                 </div>
-
-                <!-- PLANTILLA VISUAL EMOJI REDISEÑADA PARA CUADRE -->
                 <div class="md:col-span-7 bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center gap-2 mb-4 pb-3 border-b border-slate-100">
-                            <span class="text-xl">📊</span>
-                            <div>
-                                <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Resumen Visual del Día</h3>
-                                <p class="text-[11px] text-slate-400">Diseño amigable listo para verificar o compartir</p>
-                            </div>
-                        </div>
-
-                        <!-- TARJETAS VISUALES CON EMOJIS -->
-                        <div class="space-y-3">
-                            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 flex justify-between items-center">
-                                <span class="text-xs font-bold text-slate-600 flex items-center gap-2"><span>🏷️</span> Total Consumos Netos:</span>
-                                <span id="visual-neto" class="text-sm font-black text-slate-900">$0</span>
-                            </div>
-                            <div class="bg-emerald-50/70 p-3.5 rounded-xl border border-emerald-200 flex justify-between items-center">
-                                <span class="text-xs font-bold text-emerald-800 flex items-center gap-2"><span>💵</span> Propinas Acumuladas:</span>
-                                <span id="visual-propina" class="text-sm font-black text-emerald-700">$0</span>
-                            </div>
-                            <div class="bg-amber-50/70 p-3.5 rounded-xl border border-amber-200 flex justify-between items-center">
-                                <span class="text-xs font-bold text-amber-900 flex items-center gap-2"><span>🌟</span> Total con Propina:</span>
-                                <span id="visual-con-propina" class="text-sm font-black text-amber-900">$0</span>
-                            </div>
-                            <div class="bg-blue-50/70 p-3.5 rounded-xl border border-blue-200 flex justify-between items-center">
-                                <span class="text-xs font-bold text-blue-900 flex items-center gap-2"><span>🔖</span> Abonos de Reserva:</span>
-                                <span id="visual-reserva" class="text-sm font-black text-blue-800">$0</span>
-                            </div>
-
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2">
-                                <div class="bg-gray-50 p-3 rounded-xl border text-center">
-                                    <span class="text-[10px] text-slate-500 font-bold block">📱 Transferencias</span>
-                                    <span id="visual-transf" class="text-xs font-black text-slate-800">$0</span>
-                                </div>
-                                <div class="bg-gray-50 p-3 rounded-xl border text-center">
-                                    <span class="text-[10px] text-slate-500 font-bold block">💵 Efectivo</span>
-                                    <span id="visual-efectivo" class="text-xs font-black text-slate-800">$0</span>
-                                </div>
-                                <div class="bg-gray-50 p-3 rounded-xl border text-center">
-                                    <span class="text-[10px] text-slate-500 font-bold block">💳 Débito / Crédito</span>
-                                    <span id="visual-debito" class="text-xs font-black text-slate-800">$0</span>
-                                </div>
-                            </div>
-
-                            <div class="bg-slate-900 text-white p-4 rounded-xl flex justify-between items-center mt-3">
-                                <span class="text-xs font-bold uppercase text-amber-400">👥 Asistencia Total del Día:</span>
-                                <span id="visual-asistencia" class="text-sm font-black text-amber-300">0 personas</span>
-                            </div>
-                        </div>
+                    <div class="space-y-3 text-xs">
+                        <div class="bg-slate-50 p-3.5 rounded-xl border flex justify-between items-center"><span class="font-bold">🏷️ Netos:</span><span id="visual-neto" class="text-sm font-black">$0</span></div>
+                        <div class="bg-emerald-50 p-3.5 rounded-xl border flex justify-between items-center"><span class="font-bold text-emerald-800">💵 Propinas:</span><span id="visual-propina" class="text-sm font-black text-emerald-700">$0</span></div>
+                        <div class="bg-amber-50 p-3.5 rounded-xl border flex justify-between items-center"><span class="font-bold text-amber-900">🌟 Total con Propina:</span><span id="visual-con-propina" class="text-sm font-black text-amber-900">$0</span></div>
+                        <div class="bg-blue-50 p-3.5 rounded-xl border flex justify-between items-center"><span class="font-bold text-blue-900">🔖 Reservas:</span><span id="visual-reserva" class="text-sm font-black text-blue-800">$0</span></div>
+                        <div class="bg-slate-900 text-white p-4 rounded-xl flex justify-between items-center mt-3"><span class="font-bold uppercase text-amber-400">👥 Asistencia Total:</span><span id="visual-asistencia" class="text-sm font-black text-amber-300">0 personas</span></div>
                     </div>
-
-                    <!-- Textarea oculto para mantener compatibilidad con la función copiar -->
                     <textarea id="box-cuadre-texto" readonly class="hidden"></textarea>
-
-                    <div class="mt-4 pt-3 border-t text-right">
-                        <span class="text-[11px] text-slate-400">Tenedor Libre Vitalia Campestre</span>
-                    </div>
                 </div>
-
             </div>
-
         </div>
 
-        <!-- ================= PESTAÑA 4: MESAS & MAPAS (3 Zonas, Banner Compacto, Textura Madera) ================= -->
+        <!-- ================= PESTAÑA 4: MESAS & MAPAS (3 Zonas, Textura Madera, Banner Compacto) ================= -->
         <div id="tab-4" class="hidden space-y-5">
 
             <!-- BANNER COMPACTO DE RESERVAS -->
@@ -620,57 +428,57 @@
                 </div>
             </a>
 
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 space-y-4">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b pb-3">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-3">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b pb-3">
                     <div>
-                        <h2 class="text-lg font-black text-vitalia-dark flex items-center gap-2">
-                            <i class="fa-solid fa-chair text-slate-500"></i> Mapa Interactivo del Restaurante
+                        <h2 class="text-base font-black text-vitalia-dark flex items-center gap-2">
+                            <i class="fa-solid fa-chair text-vitalia-green"></i> Mapa Interactivo del Restaurante
                         </h2>
                         <p class="text-xs text-slate-500">Activa <b>"✋ Activar Mover"</b> para reorganizar mesas, elementos y paredes con seguridad.</p>
                     </div>
 
-                    <!-- Botones de Control y Firebase -->
-                    <div class="flex flex-wrap items-center gap-2">
-                        <button onclick="guardarMapaEnFirebaseYLocal()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-3.5 py-2.5 rounded-xl transition shadow flex items-center gap-1.5">
-                            <i class="fa-solid fa-cloud-arrow-up"></i> 💾 Guardar en Firebase
+                    <!-- Botones de Control -->
+                    <div class="flex flex-wrap items-center gap-1.5">
+                        <button onclick="guardarMapaEnFirebaseYLocal()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-3 py-2 rounded-xl transition shadow-xs flex items-center gap-1">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> 💾 Guardar
                         </button>
-                        <button onclick="modoMoverMesasToggle()" id="btn-toggle-mover" class="text-xs bg-slate-800 hover:bg-slate-900 text-white font-bold px-3.5 py-2.5 rounded-xl transition shadow flex items-center gap-1.5">
-                            <i class="fa-solid fa-hand"></i> ✋ Activar Mover
+                        <button onclick="modoMoverMesasToggle()" id="btn-toggle-mover" class="text-xs bg-slate-800 hover:bg-slate-900 text-white font-bold px-3 py-2 rounded-xl transition shadow-xs flex items-center gap-1">
+                            <i class="fa-solid fa-hand"></i> ✋ Mover
                         </button>
-                        <button onclick="modoCrearParedesToggle()" id="btn-toggle-paredes" class="text-xs bg-blue-700 hover:bg-blue-800 text-white font-bold px-3.5 py-2.5 rounded-xl transition shadow flex items-center gap-1.5">
-                            <i class="fa-solid fa-wall"></i> 🧱 Crear Pared
+                        <button onclick="modoCrearParedesToggle()" id="btn-toggle-paredes" class="text-xs bg-blue-700 hover:bg-blue-800 text-white font-bold px-3 py-2 rounded-xl transition shadow-xs flex items-center gap-1">
+                            <i class="fa-solid fa-wall"></i> 🧱 Pared
                         </button>
-                        <button onclick="modoUnirMesasToggle()" id="btn-toggle-unir" class="text-xs bg-purple-700 hover:bg-purple-800 text-white font-bold px-3.5 py-2.5 rounded-xl transition shadow flex items-center gap-1.5">
-                            <i class="fa-solid fa-link"></i> 🔗 Unir Mesas
+                        <button onclick="modoUnirMesasToggle()" id="btn-toggle-unir" class="text-xs bg-purple-700 hover:bg-purple-800 text-white font-bold px-3 py-2 rounded-xl transition shadow-xs flex items-center gap-1">
+                            <i class="fa-solid fa-link"></i> 🔗 Unir
                         </button>
-                        <button onclick="abrirModalNuevaMesa()" class="text-xs bg-vitalia-green hover:bg-vitalia-dark text-white font-bold px-3.5 py-2.5 rounded-xl transition shadow flex items-center gap-1.5">
-                            <i class="fa-solid fa-plus"></i> Añadir Mesa
+                        <button onclick="abrirModalNuevaMesa()" class="text-xs bg-vitalia-green hover:bg-vitalia-dark text-white font-bold px-3 py-2 rounded-xl transition shadow-xs flex items-center gap-1">
+                            <i class="fa-solid fa-plus"></i> Mesa
                         </button>
-                        <button onclick="abrirModalNuevoLandmark()" class="text-xs bg-amber-600 hover:bg-amber-700 text-white font-bold px-3.5 py-2.5 rounded-xl transition shadow flex items-center gap-1.5">
-                            <i class="fa-solid fa-landmark"></i> Añadir Elemento
+                        <button onclick="abrirModalNuevoLandmark()" class="text-xs bg-amber-600 hover:bg-amber-700 text-white font-bold px-3 py-2 rounded-xl transition shadow-xs flex items-center gap-1">
+                            <i class="fa-solid fa-landmark"></i> Elemento
                         </button>
                     </div>
                 </div>
 
                 <!-- SUBNAVEGACIÓN 3 ZONAS -->
                 <div class="flex gap-2 overflow-x-auto pb-1">
-                    <button id="subtab-salon" onclick="switchZonaMesas('salon')" class="py-2.5 px-4 rounded-xl text-xs font-bold bg-vitalia-dark text-vitalia-gold flex items-center gap-2 transition whitespace-nowrap border shadow">
+                    <button id="subtab-salon" onclick="switchZonaMesas('salon')" class="py-2 px-3.5 rounded-xl text-xs font-bold bg-vitalia-dark text-vitalia-gold flex items-center gap-2 transition whitespace-nowrap border shadow-xs">
                         🏛️ SALÓN <span id="cnt-salon" class="bg-white/20 px-2 py-0.5 rounded-full text-[10px]">0 mesas</span>
                     </button>
-                    <button id="subtab-terraza-bar" onclick="switchZonaMesas('terraza-bar')" class="py-2.5 px-4 rounded-xl text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 flex items-center gap-2 transition whitespace-nowrap border">
+                    <button id="subtab-terraza-bar" onclick="switchZonaMesas('terraza-bar')" class="py-2 px-3.5 rounded-xl text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 flex items-center gap-2 transition whitespace-nowrap border">
                         🍸 TERRAZA BAR <span id="cnt-terraza-bar" class="bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full text-[10px]">0 mesas</span>
                     </button>
-                    <button id="subtab-terraza-parrillas" onclick="switchZonaMesas('terraza-parrillas')" class="py-2.5 px-4 rounded-xl text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 flex items-center gap-2 transition whitespace-nowrap border">
+                    <button id="subtab-terraza-parrillas" onclick="switchZonaMesas('terraza-parrillas')" class="py-2 px-3.5 rounded-xl text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 flex items-center gap-2 transition whitespace-nowrap border">
                         🔥 TERRAZA PARRILLAS <span id="cnt-terraza-parrillas" class="bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full text-[10px]">0 mesas</span>
                     </button>
                 </div>
 
-                <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-50 p-3 rounded-xl border text-xs">
-                    <div class="flex items-center gap-4 flex-wrap">
-                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span> Disponible</span>
-                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-blue-500 inline-block"></span> Reservada</span>
-                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span> Ocupada</span>
-                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-purple-600 inline-block"></span> Unida</span>
+                <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-50 p-2.5 rounded-xl border text-xs">
+                    <div class="flex items-center gap-3 flex-wrap">
+                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> Disponible</span>
+                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block"></span> Reservada</span>
+                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> Ocupada</span>
+                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-purple-600 inline-block"></span> Unida</span>
                     </div>
                     <div class="font-bold text-slate-700">
                         Capacidad Zona: <span class="text-vitalia-green" id="txt-sillas-zona">0 sillas</span>
@@ -678,10 +486,10 @@
                 </div>
             </div>
 
-            <!-- CANVAS INTERACTIVO CON TEXTURA DE MADERA -->
-            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 overflow-hidden min-h-[620px]">
-                <div id="canvas-mapa-mesas" onclick="clicEnCanvasMapa(event)" class="wood-floor-grid relative w-full h-[600px] rounded-2xl border border-amber-900/20 overflow-hidden bg-white shadow-inner">
-                    <!-- Mesas, elementos, paredes renderizadas aquí -->
+            <!-- CANVAS CON TEXTURA DE MADERA -->
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-5 overflow-hidden min-h-[580px]">
+                <div id="canvas-mapa-mesas" onclick="clicEnCanvasMapa(event)" class="wood-floor-grid relative w-full h-[540px] rounded-2xl border border-amber-900/20 overflow-hidden shadow-inner">
+                    <!-- Elementos renderizados aquí -->
                 </div>
             </div>
 
@@ -689,7 +497,7 @@
 
     </main>
 
-    <!-- MODAL DETALLE MESA -->
+    <!-- MODAL DETALLE MESA (Tacho de basura al lado de Mesa X + cierre al clickear fuera) -->
     <div id="modal-detalle-mesa" onclick="detectarClicAfueraModal(event)" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div id="modal-contenido-interno" class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border space-y-4 text-xs">
             <div class="flex items-center justify-between border-b pb-3">
@@ -766,7 +574,7 @@
         </div>
     </div>
 
-    <!-- MODAL AGREGAR ELEMENTO -->
+    <!-- MODAL AGREGAR ELEMENTO (Incluyendo opción "Otro / Personalizado") -->
     <div id="modal-agregar-landmark" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border space-y-4 text-xs">
             <h3 class="font-bold text-slate-800 text-base border-b pb-2">🏛️ Añadir Elemento Físico</h3>
@@ -883,7 +691,7 @@
             if (!db) return;
             if (unsubscribeMapaSnapshot) unsubscribeMapaSnapshot();
             try {
-                const docRef = doc(db, "vitalia_mapa_restaurante", "layout_general_v13");
+                const docRef = doc(db, "vitalia_mapa_restaurante", "layout_general_v12");
                 unsubscribeMapaSnapshot = onSnapshot(docRef, (docSnap) => {
                     if (docSnap.exists()) {
                         const data = docSnap.data();
@@ -900,7 +708,7 @@
         window.guardarMapaCompletoEnNube = async function() {
             if (!db) return alert("Modo Local: Cambios guardados en este dispositivo.");
             try {
-                const docRef = doc(db, "vitalia_mapa_restaurante", "layout_general_v13");
+                const docRef = doc(db, "vitalia_mapa_restaurante", "layout_general_v12");
                 await setDoc(docRef, {
                     mesas: window.mesasGlobales,
                     landmarks: window.landmarksGlobales,
@@ -975,9 +783,9 @@
 
         function cargarMapaLocalStorage() {
             try {
-                const mData = localStorage.getItem('vitalia_mesas_v13');
-                const lData = localStorage.getItem('vitalia_landmarks_v13');
-                const pData = localStorage.getItem('vitalia_paredes_v13');
+                const mData = localStorage.getItem('vitalia_mesas_v12');
+                const lData = localStorage.getItem('vitalia_landmarks_v12');
+                const pData = localStorage.getItem('vitalia_paredes_v12');
                 if (mData) window.mesasGlobales = JSON.parse(mData);
                 if (lData) window.landmarksGlobales = JSON.parse(lData);
                 if (pData) window.paredesGlobales = JSON.parse(pData);
@@ -985,9 +793,9 @@
         }
         function guardarMapaLocalStorage() {
             try {
-                localStorage.setItem('vitalia_mesas_v13', JSON.stringify(window.mesasGlobales));
-                localStorage.setItem('vitalia_landmarks_v13', JSON.stringify(window.landmarksGlobales));
-                localStorage.setItem('vitalia_paredes_v13', JSON.stringify(window.paredesGlobales));
+                localStorage.setItem('vitalia_mesas_v12', JSON.stringify(window.mesasGlobales));
+                localStorage.setItem('vitalia_landmarks_v12', JSON.stringify(window.landmarksGlobales));
+                localStorage.setItem('vitalia_paredes_v12', JSON.stringify(window.paredesGlobales));
             } catch(e) {}
         }
 
@@ -1415,9 +1223,8 @@
             document.getElementById('modal-agregar-landmark').classList.add('hidden');
         };
         window.confirmarAgregarLandmark = function() {
-            const tipoSel = document.getElementById('new-lm-tipo-select').value;
-            let tipo = tipoSel;
-            if (tipoSel === 'otro') {
+            let tipo = document.getElementById('new-lm-tipo-select').value;
+            if (tipo === 'otro') {
                 tipo = document.getElementById('new-lm-nombre-custom').value.trim() || 'Elemento';
             }
             const orientacion = document.getElementById('new-lm-orientacion').value;
