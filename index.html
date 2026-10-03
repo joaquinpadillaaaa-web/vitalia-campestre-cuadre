@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tenedor Libre Vitalia Campestre - Sistema de Caja</title>
+    <title>Tenedor Libre Vitalia Campestre - Sistema de Caja & Mesas</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -32,6 +32,49 @@
             imgEl.src = svgLogo;
         }
         window.usarLogoSvgPorDefecto = usarLogoSvgPorDefecto;
+
+        window.actualizarEstadoNubeVisual = function(conectado, texto) {
+            const el = document.getElementById('subtitulo-estado');
+            if (!el) return;
+            if (conectado) {
+                el.className = "text-xs text-green-200 flex items-center gap-1.5 font-bold cursor-pointer hover:underline";
+                el.innerHTML = `<i class="fa-solid fa-cloud text-green-300 animate-pulse"></i> ${texto}`;
+            } else {
+                el.className = "text-xs text-yellow-200 flex items-center gap-1.5 font-semibold cursor-pointer hover:underline";
+                el.innerHTML = `<i class="fa-solid fa-cloud-sun text-yellow-300"></i> ${texto}`;
+            }
+        };
+
+        window.mostrarNotificacion = function(mensaje, tipo = 'info') {
+            const toast = document.getElementById('app-toast-global');
+            if (!toast) return;
+            const textoEl = document.getElementById('app-toast-texto');
+            const iconoEl = document.getElementById('app-toast-icono');
+            const card = toast.firstElementChild;
+            
+            if (textoEl) textoEl.textContent = mensaje;
+            if (card) {
+                if (tipo === 'exito') {
+                    card.className = "bg-emerald-900/95 text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 text-xs font-bold border border-emerald-400 backdrop-blur-md";
+                    if (iconoEl) iconoEl.className = "fa-solid fa-circle-check text-emerald-300 text-base";
+                } else if (tipo === 'error') {
+                    card.className = "bg-rose-900/95 text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 text-xs font-bold border border-rose-400 backdrop-blur-md";
+                    if (iconoEl) iconoEl.className = "fa-solid fa-circle-exclamation text-rose-300 text-base";
+                } else {
+                    card.className = "bg-slate-900/95 text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 text-xs font-bold border border-slate-600 backdrop-blur-md";
+                    if (iconoEl) iconoEl.className = "fa-solid fa-circle-info text-amber-400 text-base";
+                }
+            }
+
+            toast.classList.remove('-translate-y-8', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            if (window._toastTimeout) clearTimeout(window._toastTimeout);
+            window._toastTimeout = setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('-translate-y-8', 'opacity-0');
+            }, 3000);
+        };
     </script>
 
     <style>
@@ -55,22 +98,30 @@
         .venta-anulada .no-line-through {
             text-decoration: none !important;
         }
+
+        /* Textura de madera rústica campestre para el plano de mesas */
+        .wood-floor-texture {
+            background-color: #b47537;
+            background-image: 
+                linear-gradient(90deg, rgba(50, 25, 0, 0.35) 0px, rgba(50, 25, 0, 0.35) 2px, transparent 2px, transparent 110px),
+                linear-gradient(0deg, rgba(255, 255, 255, 0.08) 0px, rgba(255, 255, 255, 0.08) 1px, transparent 1px, transparent 32px),
+                radial-gradient(ellipse at 50% 50%, rgba(180, 117, 55, 0.3) 0%, rgba(80, 40, 5, 0.6) 100%);
+            background-size: 110px 100%, 100% 32px, 100% 100%;
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col font-sans">
 
-    <!-- HEADER PRINCIPAL CON LOGO OFICIAL Y ESTADO DE NUBE -->
     <header class="bg-vitalia-dark text-white shadow-md">
         <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-3">
-                <!-- Contenedor del Logo interactivo -->
                 <div class="relative group cursor-pointer" onclick="document.getElementById('input-logo-file').click()" title="Haz clic para seleccionar tu logo local">
                     <div class="bg-white p-1 rounded-xl shadow-md border-2 border-vitalia-gold flex items-center justify-center w-12 h-12 overflow-hidden">
                         <img id="img-logo-header" src="assets/vitalia-logo.svg" alt="Logo de Vitalia Campestre" class="w-full h-full object-cover rounded-lg" onerror="usarLogoSvgPorDefecto(this)">
                     </div>
                     <div class="absolute inset-0 bg-black/60 rounded-xl flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white text-[9px] font-bold text-center p-0.5">
                         <i class="fa-solid fa-camera text-xs mb-0.5"></i>
-                        <span>Cambiar Logo</span>
+                        <span>Cambiar</span>
                     </div>
                 </div>
                 <input type="file" id="input-logo-file" accept="image/*" class="hidden" onchange="cargarLogoLocal(event)">
@@ -78,28 +129,27 @@
                 <div>
                     <h1 class="text-lg md:text-xl font-extrabold tracking-wide uppercase text-vitalia-gold">Tenedor Libre Vitalia Campestre</h1>
                     <div class="flex items-center gap-2">
-                        <p id="subtitulo-estado" class="text-xs text-green-200 flex items-center gap-1.5">
-                            <i class="fa-solid fa-spinner animate-spin"></i> Conectando a la nube...
+                        <p id="subtitulo-estado" onclick="abrirModalFirebase()" class="text-xs text-yellow-200 flex items-center gap-1.5 font-bold cursor-pointer hover:underline" title="Ver estado de conexión con Firebase">
+                            <i class="fa-solid fa-cloud-arrow-up text-yellow-300"></i> Conectando a Firebase...
                         </p>
-                        <button onclick="abrirModalFirebase()" class="text-[10px] bg-white/10 hover:bg-white/20 text-vitalia-gold px-2 py-0.5 rounded border border-vitalia-gold/40 transition flex items-center gap-1" title="Configurar credenciales de Firebase">
-                            <i class="fa-solid fa-gear"></i> Credenciales
-                        </button>
                     </div>
                 </div>
             </div>
 
-            <!-- Selector de Fecha de Trabajo -->
+            <!-- Selector de Fecha -->
             <div class="flex flex-wrap items-center gap-3">
                 <div class="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg border border-white/20">
                     <i class="fa-solid fa-calendar-day text-vitalia-gold"></i>
                     <span class="text-xs text-gray-200 font-semibold uppercase">Fecha:</span>
                     <input type="date" id="fecha-trabajo" class="bg-white text-gray-800 font-bold text-xs px-2 py-1 rounded shadow focus:outline-none focus:ring-2 focus:ring-vitalia-gold cursor-pointer" onchange="cambiarFechaTrabajo()">
                 </div>
+                <button onclick="abrirModalFirebase()" class="bg-white/10 hover:bg-white/20 text-white text-xs px-2.5 py-1.5 rounded-lg border border-white/20 flex items-center gap-1 transition" title="Configuración de Firebase">
+                    <i class="fa-solid fa-fire text-amber-400"></i>
+                </button>
             </div>
         </div>
     </header>
 
-    <!-- NAVEGACIÓN PESTAÑAS -->
     <div class="bg-white border-b border-gray-200 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 flex overflow-x-auto">
             <button id="btn-tab-1" onclick="switchTab(1)" class="py-3 px-5 font-bold text-sm border-b-2 border-vitalia-green text-vitalia-green flex items-center gap-2 whitespace-nowrap transition-all">
@@ -109,13 +159,15 @@
                 <i class="fa-solid fa-receipt"></i> 2. Cierre & Boleta POS
             </button>
             <button id="btn-tab-3" onclick="switchTab(3)" class="py-3 px-5 font-semibold text-sm border-b-2 border-transparent text-gray-500 hover:text-vitalia-green flex items-center gap-2 whitespace-nowrap transition-all">
-                <i class="fa-solid fa-calculator"></i> 3. Cuadre Automático de Caja
+                <i class="fa-solid fa-calculator"></i> 3. Cuadre Automático
+            </button>
+            <button id="btn-tab-4" onclick="switchTab(4)" class="py-3 px-5 font-semibold text-sm border-b-2 border-transparent text-gray-500 hover:text-vitalia-green flex items-center gap-2 whitespace-nowrap transition-all">
+                <i class="fa-solid fa-chair text-slate-500"></i> 4. Mesas & Mapas
             </button>
         </div>
     </div>
 
-    <!-- CONTENIDO DE PESTAÑAS -->
-    <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full">
+    <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full space-y-4">
 
         <!-- ================= PESTAÑA 1: INGRESO DE PRE-CUENTAS ================= -->
         <div id="tab-1" class="space-y-6">
@@ -128,6 +180,21 @@
                             <i class="fa-solid fa-plus-circle text-vitalia-green"></i> Nueva Pre-Cuenta para Garzón
                         </h2>
                         <span class="text-xs font-semibold bg-green-100 text-green-800 px-2.5 py-1 rounded-full">Garzones / Pre-boleta</span>
+                    </div>
+
+                    <!-- Vincular Mesa Opcional -->
+                    <div class="mb-4 bg-amber-50 p-3 rounded-lg border border-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-chair text-amber-600"></i>
+                            <div>
+                                <label class="block text-xs font-bold text-amber-900">Vincular a Mesa del Restaurante:</label>
+                                <span class="text-xs text-amber-700 font-semibold" id="lbl-mesa-vinculada-desc">Ninguna mesa seleccionada (opcional)</span>
+                            </div>
+                        </div>
+                        <input type="hidden" id="input-mesa-id-vinculada" value="">
+                        <button type="button" onclick="switchTab(4)" class="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs px-4 py-2 rounded shadow transition flex items-center gap-1.5 whitespace-nowrap">
+                            <i class="fa-solid fa-map-location-dot"></i> Seleccionar en Mapa
+                        </button>
                     </div>
 
                     <!-- Tramos de Personas -->
@@ -282,11 +349,10 @@
                 </div>
             </div>
 
-            <!-- HISTORIAL DE PRE-CUENTAS -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div class="p-4 bg-gray-50 border-b flex justify-between items-center">
                     <h3 class="font-bold text-sm text-gray-700 uppercase tracking-wider flex items-center gap-2">
-                        <i class="fa-solid fa-list-check text-vitalia-green"></i> Historial de Pre-cuentas & Registros
+                        <i class="fa-solid fa-list-check text-vitalia-green"></i> Pre-cuentas Registradas
                     </h3>
                     <button onclick="vaciarRegistrosDia()" class="text-xs text-red-600 hover:text-red-800 font-semibold flex items-center gap-1 bg-red-50 hover:bg-red-100 border border-red-200 px-3 py-1.5 rounded-lg transition">
                         <i class="fa-solid fa-trash-can"></i> Reiniciar Día
@@ -297,6 +363,7 @@
                         <thead>
                             <tr class="bg-gray-100 text-gray-600 font-bold border-b uppercase">
                                 <th class="p-3"># Reg</th>
+                                <th class="p-3">Mesa</th>
                                 <th class="p-3">Detalle Asistentes</th>
                                 <th class="p-3">Extras</th>
                                 <th class="p-3 text-right">Reserva</th>
@@ -314,7 +381,6 @@
 
         </div>
 
-        <!-- ================= PESTAÑA 2: CIERRE & BOLETA POS ================= -->
         <div id="tab-2" class="hidden space-y-6">
 
             <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
@@ -396,7 +462,12 @@
                             </div>
                         </div>
 
-                        <button type="button" onclick="cerrarYGuardarVentaFinal()" class="w-full mt-2 bg-vitalia-green hover:bg-vitalia-dark text-white font-extrabold text-sm py-2.5 rounded-lg shadow transition flex items-center justify-center gap-2">
+                        <div class="pt-2 flex items-center gap-2">
+                            <input type="checkbox" id="chk-liberar-mesa-cierre" checked class="rounded border-gray-300 text-vitalia-green">
+                            <label for="chk-liberar-mesa-cierre" class="text-xs font-bold text-gray-700">Liberar mesa automáticamente al cobrar</label>
+                        </div>
+
+                        <button type="button" id="btn-cobrar-cerrar" onclick="cerrarYGuardarVentaFinal()" class="w-full mt-2 bg-vitalia-green hover:bg-vitalia-dark text-white font-extrabold text-sm py-2.5 rounded-lg shadow transition flex items-center justify-center gap-2">
                             <i class="fa-solid fa-lock"></i> COBRAR Y CERRAR VENTA
                         </button>
                     </div>
@@ -417,6 +488,7 @@
                                     <h3 style="font-size: 11px; font-weight: bold; margin: 0; text-transform: uppercase;">VITALIA CAMPESTRE</h3>
                                     <p style="font-size: 9px; margin: 1px 0 0 0;" class="ticket-linea-sep">--------------------------------</p>
                                     <p style="font-size: 9px; margin: 1px 0;" class="ticket-fecha-val">Fecha: 00/00/0000</p>
+                                    <p style="font-size: 9px; margin: 2px 0; font-weight: bold; text-transform: uppercase;" id="ticket-cant-detalle-mesa" class="hidden">CANT DETALLE MESA -</p>
                                     <p style="font-size: 9px; margin: 0;" class="ticket-linea-sep">--------------------------------</p>
                                 </div>
 
@@ -439,7 +511,7 @@
                                         <span>SUBTOTAL CONSUMO:</span>
                                         <span class="ticket-subtotal-val">$0</span>
                                     </div>
-                                    <div id="ticket-reserva-row" style="display: flex; justify-between; margin-bottom: 1px;">
+                                    <div id="ticket-reserva-row" style="display: flex; justify-content: space-between; margin-bottom: 1px;">
                                         <span>ABONO RESERVA:</span>
                                         <span class="ticket-reserva-val">-$0</span>
                                     </div>
@@ -468,7 +540,6 @@
 
         </div>
 
-        <!-- ================= PESTAÑA 3: CUADRE AUTOMÁTICO DE CAJA (DISEÑO VISUAL CON EMOJIS) ================= -->
         <div id="tab-3" class="hidden space-y-6">
 
             <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
@@ -574,203 +645,270 @@
 
         </div>
 
+        <div id="tab-4" class="hidden space-y-4">
+
+            <!-- BANNER COMPACTO DE RESERVAS -->
+            <a href="https://docs.google.com/spreadsheets/d/131E4nlA6MqfZ_igahiMedcv0l1v7sAhurf1jejtP5hM/edit?gid=907128383#gid=907128383" target="_blank" class="block bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-slate-950 p-2.5 rounded-xl shadow-xs border border-amber-600 transition-all hover:scale-[1.01] hover:shadow group">
+                <div class="flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl animate-bounce">📅</span>
+                        <div>
+                            <h3 class="text-xs font-black uppercase tracking-wide">¡Revisa si hay reservas para hoy haciendo clic aquí!</h3>
+                        </div>
+                    </div>
+                    <div class="bg-slate-950 text-amber-400 font-extrabold text-[10px] px-2.5 py-1 rounded-lg flex items-center gap-1 shadow whitespace-nowrap group-hover:bg-slate-900 transition">
+                        <span>Ver Planilla</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                    </div>
+                </div>
+            </a>
+
+            <!-- PANEL SUPERIOR MINIMALISTA -->
+            <div class="bg-white rounded-2xl shadow-xs border border-slate-200 p-3.5 space-y-3">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-b pb-2.5">
+                    <div>
+                        <h2 class="text-sm font-black text-slate-800 flex items-center gap-1.5">
+                            <i class="fa-solid fa-chair text-slate-500"></i> Mapa Interactivo del Restaurante
+                        </h2>
+                        <p class="text-[11px] text-slate-500">Activa <b>"✋ Mover"</b> para reorganizar tu plano de mesas.</p>
+                    </div>
+
+                    <!-- Botones de Control Compactos -->
+                    <div class="flex flex-wrap items-center gap-1.5">
+                        <button onclick="guardarMapaEnFirebaseYLocal()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-3 py-1.5 rounded-lg transition shadow-xs flex items-center gap-1">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> 💾 Guardar
+                        </button>
+                        <button onclick="modoMoverMesasToggle()" id="btn-toggle-mover" class="text-xs bg-slate-800 hover:bg-slate-900 text-white font-bold px-3 py-1.5 rounded-lg transition shadow-xs flex items-center gap-1">
+                            <i class="fa-solid fa-hand"></i> ✋ Mover
+                        </button>
+                        <button onclick="modoCrearParedesToggle()" id="btn-toggle-paredes" class="text-xs bg-blue-700 hover:bg-blue-800 text-white font-bold px-3 py-1.5 rounded-lg transition shadow-xs flex items-center gap-1">
+                            <i class="fa-solid fa-wall"></i> 🧱 Pared
+                        </button>
+                        <button onclick="modoUnirMesasToggle()" id="btn-toggle-unir" class="text-xs bg-purple-700 hover:bg-purple-800 text-white font-bold px-3 py-1.5 rounded-lg transition shadow-xs flex items-center gap-1">
+                            <i class="fa-solid fa-link"></i> 🔗 Unir
+                        </button>
+                        <button onclick="abrirModalNuevaMesa()" class="text-xs bg-vitalia-green hover:bg-vitalia-dark text-white font-bold px-3 py-1.5 rounded-lg transition shadow-xs flex items-center gap-1">
+                            <i class="fa-solid fa-plus"></i> Mesa
+                        </button>
+                        <button onclick="abrirModalNuevoLandmark()" class="text-xs bg-amber-600 hover:bg-amber-700 text-white font-bold px-3 py-1.5 rounded-lg transition shadow-xs flex items-center gap-1">
+                            <i class="fa-solid fa-landmark"></i> Elemento
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ZONAS Y LEYENDA COMPACTA -->
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
+                    <div class="flex gap-1.5 overflow-x-auto">
+                        <button id="subtab-salon" onclick="switchZonaMesas('salon')" class="py-1.5 px-3 rounded-lg font-bold bg-vitalia-dark text-vitalia-gold flex items-center gap-1.5 transition whitespace-nowrap border shadow-xs">
+                            🏛️ SALÓN <span id="cnt-salon" class="bg-white/20 px-1.5 py-0.5 rounded-full text-[9px]">0 mesas</span>
+                        </button>
+                        <button id="subtab-terraza-bar" onclick="switchZonaMesas('terraza-bar')" class="py-1.5 px-3 rounded-lg font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 flex items-center gap-1.5 transition whitespace-nowrap border">
+                            🍸 TERRAZA BAR <span id="cnt-terraza-bar" class="bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded-full text-[9px]">0 mesas</span>
+                        </button>
+                        <button id="subtab-terraza-parrillas" onclick="switchZonaMesas('terraza-parrillas')" class="py-1.5 px-3 rounded-lg font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 flex items-center gap-1.5 transition whitespace-nowrap border">
+                            🔥 TERRAZA PARRILLAS <span id="cnt-terraza-parrillas" class="bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded-full text-[9px]">0 mesas</span>
+                        </button>
+                    </div>
+                    <div class="font-bold text-slate-700 whitespace-nowrap">
+                        Capacidad Zona: <span class="text-vitalia-green" id="txt-sillas-zona">0 sillas</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CANVAS INTERACTIVO CON TEXTURA DE MADERA RÚSTICA -->
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-4 overflow-hidden min-h-[580px]">
+                <div id="canvas-mapa-mesas" onclick="clicEnCanvasMapa(event)" class="wood-floor-texture relative w-full h-[540px] rounded-2xl border-2 border-amber-900/30 overflow-hidden shadow-inner">
+                    <!-- Elementos del mapa -->
+                </div>
+            </div>
+
+        </div>
+
     </main>
 
-    <!-- MODAL DE CONFIGURACIÓN DE FIREBASE CON BOTONES DE COPIAR -->
-    <div id="modal-firebase-config" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-gray-100 space-y-4">
+    <!-- MODAL DETALLE MESA -->
+    <div id="modal-detalle-mesa" onclick="detectarClicAfueraModal(event)" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div id="modal-contenido-interno" class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border space-y-4 text-xs">
             <div class="flex items-center justify-between border-b pb-3">
-                <h3 class="font-extrabold text-vitalia-dark text-base flex items-center gap-2">
-                    <i class="fa-solid fa-cloud-arrow-up text-vitalia-gold"></i> Credenciales Firebase Nube
+                <div class="flex items-center gap-2.5">
+                    <button onclick="eliminarMesaSeleccionada()" class="text-rose-600 hover:text-rose-800 p-1.5 bg-rose-50 rounded-lg transition" title="Eliminar mesa">
+                        <i class="fa-solid fa-trash-can text-sm"></i>
+                    </button>
+                    <div>
+                        <h3 id="modal-mesa-titulo" class="font-extrabold text-vitalia-dark text-base">Mesa N°</h3>
+                        <p id="modal-mesa-subtitulo" class="text-xs text-slate-500">Zona</p>
+                    </div>
+                </div>
+                <button onclick="cerrarModalMesa()" class="text-gray-400 font-bold text-lg">&times;</button>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded-xl border">
+                <div>
+                    <label class="block font-bold text-slate-600 mb-1">Capacidad Sillas:</label>
+                    <div class="flex items-center gap-2">
+                        <button onclick="modificarSillasMesaSeleccionada(-1)" class="w-8 h-8 bg-white border font-bold rounded-lg">-</button>
+                        <span id="modal-mesa-sillas" class="font-extrabold text-sm w-8 text-center">4</span>
+                        <button onclick="modificarSillasMesaSeleccionada(1)" class="w-8 h-8 bg-vitalia-green text-white font-bold rounded-lg">+</button>
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-600 mb-1">Orientación:</label>
+                    <select id="modal-mesa-orientacion" class="w-full font-bold border rounded-lg p-2 bg-white" onchange="cambiarOrientacionMesaSeleccionada(this.value)">
+                        <option value="horizontal">Horizontal ↔</option>
+                        <option value="vertical">Vertical ↕</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Nombre Reserva / Cliente:</label>
+                <input type="text" id="res-cliente-nombre" placeholder="Ej: Familia Pérez" class="w-full border rounded-lg p-2.5 font-semibold text-sm">
+            </div>
+
+            <div class="pt-2 grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <button onclick="guardarReservaMesa()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-2 rounded-xl transition shadow-xs">Guardar Reserva</button>
+                <button onclick="crearPrecuentaDesdeMesa()" class="bg-vitalia-green hover:bg-vitalia-dark text-white font-bold py-2.5 px-2 rounded-xl transition shadow-xs">Generar Pre-Cuenta</button>
+                <button onclick="liberarMesaSeleccionada()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-2 rounded-xl transition">Liberar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL AGREGAR NUEVA MESA -->
+    <div id="modal-agregar-mesa" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border space-y-4 text-xs">
+            <h3 class="font-bold text-slate-800 text-base border-b pb-2">➕ Añadir Nueva Mesa</h3>
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Zona:</label>
+                <select id="new-mesa-zona" class="w-full border rounded-lg p-2 bg-white font-bold">
+                    <option value="salon">SALÓN</option>
+                    <option value="terraza-bar">TERRAZA BAR</option>
+                    <option value="terraza-parrillas">TERRAZA PARRILLAS</option>
+                </select>
+            </div>
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Orientación:</label>
+                <select id="new-mesa-orientacion" class="w-full border rounded-lg p-2 bg-white font-bold">
+                    <option value="horizontal">Horizontal ↔</option>
+                    <option value="vertical">Vertical ↕</option>
+                </select>
+            </div>
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Sillas:</label>
+                <input type="number" id="new-mesa-sillas" value="4" min="1" max="12" class="w-full border rounded-lg p-2 font-bold">
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="cerrarModalAgregarMesa()" class="px-4 py-2 bg-gray-100 font-bold rounded-lg">Cancelar</button>
+                <button onclick="confirmarAgregarNuevaMesa()" class="px-4 py-2 bg-vitalia-green text-white font-bold rounded-lg shadow">Crear Mesa</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL AGREGAR ELEMENTO -->
+    <div id="modal-agregar-landmark" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border space-y-4 text-xs">
+            <h3 class="font-bold text-slate-800 text-base border-b pb-2">🏛️ Añadir Elemento Físico</h3>
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Tipo de Elemento:</label>
+                <select id="new-lm-tipo-select" class="w-full border rounded-lg p-2 bg-white font-bold" onchange="verificarOpcionOtroLandmark(this.value)">
+                    <option value="Escenario 🎭">Escenario 🎭</option>
+                    <option value="Entrada 🚪">Entrada 🚪</option>
+                    <option value="Barra 🍸">Barra 🍸</option>
+                    <option value="Baño María 🍲">Baño María 🍲</option>
+                    <option value="Parrillas 🔥">Parrillas 🔥</option>
+                    <option value="otro">Otro (Personalizado) ✏️</option>
+                </select>
+            </div>
+            <div id="contenedor-otro-landmark" class="hidden">
+                <label class="block font-bold text-slate-700 mb-1">Nombre del Elemento:</label>
+                <input type="text" id="new-lm-nombre-custom" placeholder="Ej: Caja, Exhibidor..." class="w-full border rounded-lg p-2 font-bold">
+            </div>
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Orientación:</label>
+                <select id="new-lm-orientacion" class="w-full border rounded-lg p-2 bg-white font-bold">
+                    <option value="horizontal">Horizontal ↔</option>
+                    <option value="vertical">Vertical ↕</option>
+                </select>
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="cerrarModalNuevoLandmark()" class="px-4 py-2 bg-gray-100 font-bold rounded-lg">Cancelar</button>
+                <button onclick="confirmarAgregarLandmark()" class="px-4 py-2 bg-amber-600 text-white font-bold rounded-lg shadow">Añadir</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL FIREBASE -->
+    <div id="modal-firebase-config" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border space-y-4 text-xs">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-fire text-amber-500"></i> Conexión Firebase Nube
                 </h3>
-                <button onclick="cerrarModalFirebase()" class="text-gray-400 hover:text-gray-600 text-lg font-bold">&times;</button>
+                <button onclick="cerrarModalFirebase()" class="text-gray-400 font-bold text-base">&times;</button>
             </div>
-            <p class="text-xs text-gray-600 leading-relaxed">
-                Haz clic en el botón <i class="fa-solid fa-copy text-vitalia-green"></i> de cada campo para copiar el valor fácilmente y pegarlo donde lo necesites.
+            <p class="text-slate-500 text-[11px]">
+                Tu aplicación está sincronizada directamente con tu proyecto Firebase <b>vitalia-cuadre</b> en tiempo real.
             </p>
-
-            <div class="space-y-3 text-xs">
-                <div>
-                    <label class="block font-bold text-gray-700 mb-1">API Key</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="fb-apiKey" readonly class="w-full border border-gray-300 rounded-xl px-3 py-2 font-mono bg-slate-50 text-slate-700 select-all">
-                        <button onclick="copiarTextoCredencial('fb-apiKey', this)" class="bg-gray-100 hover:bg-emerald-50 hover:text-emerald-700 border text-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1">
-                            <i class="fa-solid fa-copy"></i> Copiar
-                        </button>
-                    </div>
-                </div>
-                <div>
-                    <label class="block font-bold text-gray-700 mb-1">Project ID</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="fb-projectId" readonly class="w-full border border-gray-300 rounded-xl px-3 py-2 font-mono bg-slate-50 text-slate-700 select-all">
-                        <button onclick="copiarTextoCredencial('fb-projectId', this)" class="bg-gray-100 hover:bg-emerald-50 hover:text-emerald-700 border text-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1">
-                            <i class="fa-solid fa-copy"></i> Copiar
-                        </button>
-                    </div>
-                </div>
-                <div>
-                    <label class="block font-bold text-gray-700 mb-1">Auth Domain</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="fb-authDomain" readonly class="w-full border border-gray-300 rounded-xl px-3 py-2 font-mono bg-slate-50 text-slate-700 select-all">
-                        <button onclick="copiarTextoCredencial('fb-authDomain', this)" class="bg-gray-100 hover:bg-emerald-50 hover:text-emerald-700 border text-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1">
-                            <i class="fa-solid fa-copy"></i> Copiar
-                        </button>
-                    </div>
-                </div>
-                <div>
-                    <label class="block font-bold text-gray-700 mb-1">App ID</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="fb-appId" readonly class="w-full border border-gray-300 rounded-xl px-3 py-2 font-mono bg-slate-50 text-slate-700 select-all">
-                        <button onclick="copiarTextoCredencial('fb-appId', this)" class="bg-gray-100 hover:bg-emerald-50 hover:text-emerald-700 border text-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1">
-                            <i class="fa-solid fa-copy"></i> Copiar
-                        </button>
-                    </div>
-                </div>
+            <div class="space-y-2">
+                <div><label class="font-bold text-slate-600">Project ID</label><input type="text" id="fb-projectId" readonly value="vitalia-cuadre" class="w-full border rounded p-1.5 font-mono bg-slate-50 select-all"></div>
+                <div><label class="font-bold text-slate-600">Auth Domain</label><input type="text" id="fb-authDomain" readonly value="vitalia-cuadre.firebaseapp.com" class="w-full border rounded p-1.5 font-mono bg-slate-50 select-all"></div>
+                <div><label class="font-bold text-slate-600">App ID</label><input type="text" id="fb-appId" readonly value="1:923520470959:web:d33f549ae4bea0ffb8295a" class="w-full border rounded p-1.5 font-mono bg-slate-50 select-all"></div>
+                <div><label class="font-bold text-slate-600">Estado de Sincronización</label><div id="fb-conn-status" class="p-2 rounded bg-emerald-50 text-emerald-800 font-bold border border-emerald-200">Sincronizando automáticamente en vivo</div></div>
             </div>
-
-            <div class="pt-2 flex gap-2">
-                <button onclick="cerrarModalFirebase()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 px-4 rounded-xl text-xs transition">
-                    Cerrar
-                </button>
-                <button onclick="restablecerFirebaseDefault()" class="bg-vitalia-green hover:bg-vitalia-dark text-white font-bold py-2.5 px-4 rounded-xl text-xs transition shadow">
-                    Reconectar
-                </button>
+            <div class="flex justify-end pt-2">
+                <button onclick="cerrarModalFirebase()" class="px-4 py-2 bg-vitalia-green text-white font-bold rounded-lg shadow">Listo</button>
             </div>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRMACIÓN ANULAR VENTA -->
+    <div id="modal-confirmar-anulacion" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border space-y-4 text-xs text-center">
+            <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto text-xl font-bold">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="font-bold text-slate-800 text-base">¿Estás seguro de eliminar la venta <span id="txt-venta-a-anular-id" class="text-rose-600 font-extrabold"></span>?</h3>
+            <p class="text-slate-500">Esta acción marcará la pre-cuenta como anulada y no se sumará al cuadre de caja.</p>
+            <div class="flex justify-center gap-3 pt-2">
+                <button onclick="cerrarModalAnulacion()" class="flex-1 py-2.5 bg-gray-100 hover:bg-gray-200 text-slate-700 font-bold rounded-xl transition">No, Volver</button>
+                <button onclick="confirmarAnulacionVenta()" class="flex-1 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl shadow transition">Sí, Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CONTRASEÑA REINICIAR DÍA -->
+    <div id="modal-password-reiniciar" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border space-y-4 text-xs">
+            <div class="flex items-center justify-between border-b pb-2">
+                <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-lock text-vitalia-green"></i> Seguridad: Reiniciar Día
+                </h3>
+                <button onclick="cerrarModalReiniciar()" class="text-gray-400 font-bold text-base">&times;</button>
+            </div>
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Ingrese contraseña de administrador:</label>
+                <input type="password" id="input-password-reiniciar" placeholder="Contraseña..." class="w-full border rounded-lg p-2.5 font-bold tracking-widest text-sm focus:ring-2 focus:ring-vitalia-green focus:outline-none" onkeydown="if(event.key==='Enter') confirmarReiniciarDiaConPassword()">
+                <p id="error-password-reiniciar" class="text-rose-600 font-bold mt-1.5 hidden">❌ Contraseña incorrecta</p>
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="cerrarModalReiniciar()" class="px-4 py-2 bg-gray-100 font-bold rounded-xl">Cancelar</button>
+                <button onclick="confirmarReiniciarDiaConPassword()" class="px-4 py-2 bg-vitalia-green hover:bg-vitalia-dark text-white font-bold rounded-xl shadow transition">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST DE NOTIFICACIÓN GLOBAL -->
+    <div id="app-toast-global" class="fixed top-6 right-6 z-[99999] pointer-events-none transform -translate-y-8 opacity-0 transition-all duration-300">
+        <div class="bg-emerald-900/95 text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 text-xs font-bold border border-emerald-400 backdrop-blur-md">
+            <i id="app-toast-icono" class="fa-solid fa-circle-check text-emerald-300 text-base"></i>
+            <span id="app-toast-texto">Notificación</span>
         </div>
     </div>
 
     <!-- FOOTER -->
     <footer class="bg-gray-800 text-gray-400 text-xs py-4 text-center mt-auto">
-        Tenedor Libre Vitalia Campestre &copy; <span id="year-copy"></span> - Sistema de Caja
+        Tenedor Libre Vitalia Campestre &copy; <span id="year-copy"></span> - Sistema de Caja & Mesas
     </footer>
 
-    <!-- SDKs DE FIREBASE CON EXCEPCIONES MANEJADAS 100% PARA CLOUDFLARE PAGES -->
-    <script type="module">
-        import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, getDocs, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        let db = null;
-        let auth = null;
-        let unsubscribeSnapshot = null;
-
-        function obtenerFirebaseConfig() {
-            const configGuardada = localStorage.getItem('vitalia_firebase_config_custom');
-            if (configGuardada) {
-                try {
-                    return JSON.parse(configGuardada);
-                } catch(e) {}
-            }
-            return {
-                apiKey: "AIzaSyD81SdFCXLVf-zVRwqIui8wr_gxI5EVxIA",
-                authDomain: "vitalia-cuadre.firebaseapp.com",
-                projectId: "vitalia-cuadre",
-                storageBucket: "vitalia-cuadre.appspot.com",
-                messagingSenderId: "923520470959",
-                appId: "1:923520470959:web:d33f549ae4bea0ffb8295a"
-            };
-        }
-
-        window.inicializarFirebaseNube = async function() {
-            const config = obtenerFirebaseConfig();
-            
-            if (document.getElementById('fb-apiKey')) {
-                document.getElementById('fb-apiKey').value = config.apiKey || '';
-                document.getElementById('fb-projectId').value = config.projectId || '';
-                document.getElementById('fb-authDomain').value = config.authDomain || '';
-                document.getElementById('fb-appId').value = config.appId || '';
-            }
-
-            try {
-                const existingApps = getApps();
-                const app = existingApps.length === 0 ? initializeApp(config) : existingApps[0];
-                
-                db = getFirestore(app);
-                auth = getAuth(app);
-
-                await signInAnonymously(auth);
-                
-                actualizarEstadoNubeVisual(true, "Nube Sincronizada (Firebase / Cloudflare)");
-                window.iniciarSincronizacionNube();
-            } catch (err) {
-                console.warn("⚠️ Advertencia al conectar con Firebase:", err);
-                actualizarEstadoNubeVisual(false, "Modo Local (Haz clic en 'Credenciales' para conectar Nube)");
-                
-                if (typeof cargarVentasLocalStorage === 'function') {
-                    cargarVentasLocalStorage();
-                }
-            }
-        };
-
-        window.iniciarSincronizacionNube = function() {
-            if (!db) return;
-            if (unsubscribeSnapshot) unsubscribeSnapshot();
-
-            const fechaKey = window.fechaActualGlobal || new Date().toISOString().split('T')[0];
-            
-            try {
-                const colRef = collection(db, "vitalia_pos_ventas", `fecha_${fechaKey}`, "items");
-
-                unsubscribeSnapshot = onSnapshot(colRef, (snapshot) => {
-                    let ventasRemotas = [];
-                    snapshot.forEach((docSnap) => {
-                        ventasRemotas.push(docSnap.data());
-                    });
-                    ventasRemotas.sort((a, b) => a.id - b.id);
-                    
-                    window.ventasGlobalesCache = ventasRemotas;
-                    
-                    if (typeof guardarVentasLocalStorage === 'function') {
-                        guardarVentasLocalStorage();
-                    }
-                    if (typeof cargarDatosCajaDia === 'function') {
-                        cargarDatosCajaDia(ventasRemotas);
-                    }
-                }, (error) => {
-                    console.warn("Error en subscripción onSnapshot:", error);
-                    actualizarEstadoNubeVisual(false, "Error de sincronización en tiempo real");
-                });
-            } catch (e) {
-                console.warn("Error al iniciar colección:", e);
-            }
-        };
-
-        window.guardarVentaEnNube = async function(venta) {
-            if (!db) return true;
-            try {
-                const fechaKey = window.fechaActualGlobal || new Date().toISOString().split('T')[0];
-                const docRef = doc(db, "vitalia_pos_ventas", `fecha_${fechaKey}`, "items", String(venta.id));
-                await setDoc(docRef, venta);
-                return true;
-            } catch (e) {
-                console.error("Error al guardar en Firebase:", e);
-                return true;
-            }
-        };
-
-        window.eliminarDiaEnNube = async function() {
-            if (!db) return true;
-            try {
-                const fechaKey = window.fechaActualGlobal || new Date().toISOString().split('T')[0];
-                const colRef = collection(db, "vitalia_pos_ventas", `fecha_${fechaKey}`, "items");
-                const snapshot = await getDocs(colRef);
-                
-                const promesas = [];
-                snapshot.forEach((documento) => {
-                    promesas.push(deleteDoc(documento.ref));
-                });
-                await Promise.all(promesas);
-                return true;
-            } catch (e) {
-                console.error("Error al borrar en Firebase:", e);
-                return false;
-            }
-        };
-
-        window.inicializarFirebaseNube();
-    </script>
-
-    <!-- SCRIPT PRINCIPAL DE LA APLICACIÓN -->
     <script>
         const PRECIO_ADULTO = 22000;
         const PRECIO_NINO = 11000;
@@ -784,6 +922,27 @@
         let anchoPapelMm = '58';
         window.ventasGlobalesCache = [];
 
+        window.zonaMesasActual = 'salon';
+        window.mesaSeleccionadaId = null;
+        window.landmarkSeleccionadoId = null;
+        window.modoMoverMesas = false;
+        window.modoCrearParedes = false;
+        window.modoUnirMesas = false;
+        window.mesasSeleccionadasUnir = [];
+
+        let puntoParedInicio = null;
+        let elementoArrastrandoTipo = null;
+        let elementoArrastrandoId = null;
+        let dragOffsetX = 0;
+        let dragOffsetY = 0;
+
+        window.mesasGlobales = [];
+        window.landmarksGlobales = [
+            { id: 'lm-escenario', zona: 'salon', nombre: '🎭 Escenario', x: 250, y: 20, orientacion: 'horizontal' },
+            { id: 'lm-entrada', zona: 'salon', nombre: '🚪 Entrada', x: 20, y: 440, orientacion: 'horizontal' }
+        ];
+        window.paredesGlobales = [];
+
         window.datosBoletaActual = {
             adultos: 0,
             ninos: 0,
@@ -791,173 +950,18 @@
             reserva: 0,
             extras: [],
             propinaMonto: 0,
-            medioPago: 'Efectivo'
+            medioPago: 'Efectivo',
+            mesaId: null,
+            mesaNombre: null
         };
-
-        function copiarTextoCredencial(idInput, btn) {
-            const input = document.getElementById(idInput);
-            input.select();
-            input.setSelectionRange(0, 99999);
-            document.execCommand('copy');
-
-            const originalHTML = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-check text-emerald-600"></i> ¡Copiado!';
-            btn.classList.add('bg-emerald-50', 'text-emerald-700', 'border-emerald-300');
-            setTimeout(() => {
-                btn.innerHTML = originalHTML;
-                btn.classList.remove('bg-emerald-50', 'text-emerald-700', 'border-emerald-300');
-            }, 1500);
-        }
-
-        function actualizarEstadoNubeVisual(conectado, texto) {
-            const el = document.getElementById('subtitulo-estado');
-            if (!el) return;
-            if (conectado) {
-                el.className = "text-xs text-green-200 flex items-center gap-1.5 font-bold";
-                el.innerHTML = `<i class="fa-solid fa-cloud text-green-300 animate-pulse"></i> ${texto}`;
-            } else {
-                el.className = "text-xs text-yellow-200 flex items-center gap-1.5 font-semibold";
-                el.innerHTML = `<i class="fa-solid fa-cloud-sun text-yellow-300"></i> ${texto}`;
-            }
-        }
 
         window.abrirModalFirebase = function() {
-            document.getElementById('modal-firebase-config').classList.remove('hidden');
+            const m = document.getElementById('modal-firebase-config');
+            if (m) m.classList.remove('hidden');
         };
-
         window.cerrarModalFirebase = function() {
-            document.getElementById('modal-firebase-config').classList.add('hidden');
-        };
-
-        window.restablecerFirebaseDefault = function() {
-            localStorage.removeItem('vitalia_firebase_config_custom');
-            alert("Restableciendo conexión...");
-            cerrarModalFirebase();
-            location.reload();
-        };
-
-        window.cambiarAnchoImpresora = function(val) {
-            anchoPapelMm = val;
-            const container = document.getElementById('contenedor-ticket-preview');
-            const lineasSep = document.querySelectorAll('.ticket-linea-sep');
-
-            if (val === '80') {
-                if (container) container.style.maxWidth = '380px';
-                lineasSep.forEach(l => l.textContent = '------------------------------------------------');
-            } else {
-                if (container) container.style.maxWidth = '280px';
-                lineasSep.forEach(l => l.textContent = '--------------------------------');
-            }
-            renderBoletaTicket();
-        };
-
-        function formatMoney(amount) {
-            return (amount || 0).toLocaleString('es-CL');
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const yearEl = document.getElementById('year-copy');
-            if (yearEl) yearEl.textContent = new Date().getFullYear();
-
-            const inputFecha = document.getElementById('fecha-trabajo');
-            if (inputFecha) inputFecha.value = fechaActual;
-
-            const logoGuardado = localStorage.getItem('vitalia_logo_base64');
-            if (logoGuardado) {
-                const imgHeader = document.getElementById('img-logo-header');
-                if (imgHeader) imgHeader.src = logoGuardado;
-            }
-
-            actualizarLabelFecha();
-            cargarVentasLocalStorage();
-        });
-
-        function cargarVentasLocalStorage() {
-            try {
-                const data = localStorage.getItem(`vitalia_ventas_${fechaActual}`);
-                if (data) {
-                    window.ventasGlobalesCache = JSON.parse(data);
-                    cargarDatosCajaDia(window.ventasGlobalesCache);
-                }
-            } catch(e) {}
-        }
-
-        function guardarVentasLocalStorage() {
-            try {
-                localStorage.setItem(`vitalia_ventas_${fechaActual}`, JSON.stringify(window.ventasGlobalesCache || []));
-            } catch(e) {}
-        }
-
-        window.cambiarFechaTrabajo = function() {
-            const inputFecha = document.getElementById('fecha-trabajo');
-            if (inputFecha && inputFecha.value) {
-                fechaActual = inputFecha.value;
-                window.fechaActualGlobal = fechaActual;
-            }
-            actualizarLabelFecha();
-            cargarVentasLocalStorage();
-
-            if (typeof window.iniciarSincronizacionNube === 'function') {
-                window.iniciarSincronizacionNube();
-            }
-        };
-
-        function actualizarLabelFecha() {
-            if (!fechaActual) return;
-            const partes = fechaActual.split('-');
-            const fechaFormateada = `${partes[2]}/${partes[1]}/${partes[0]}`;
-            
-            const badge = document.getElementById('badge-fecha-actual');
-            if (badge) badge.textContent = fechaFormateada;
-
-            document.querySelectorAll('.ticket-fecha-val').forEach(el => {
-                el.textContent = `Fecha: ${fechaFormateada}`;
-            });
-        }
-
-        window.cargarLogoLocal = function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const base64Img = e.target.result;
-                    document.getElementById('img-logo-header').src = base64Img;
-                    localStorage.setItem('vitalia_logo_base64', base64Img);
-                };
-                reader.readAsDataURL(file);
-            }
-        };
-
-        window.switchTab = function(num) {
-            const tab1 = document.getElementById('tab-1');
-            const tab2 = document.getElementById('tab-2');
-            const tab3 = document.getElementById('tab-3');
-            const btn1 = document.getElementById('btn-tab-1');
-            const btn2 = document.getElementById('btn-tab-2');
-            const btn3 = document.getElementById('btn-tab-3');
-
-            if (!tab1 || !tab2 || !tab3) return;
-
-            tab1.classList.add('hidden');
-            tab2.classList.add('hidden');
-            tab3.classList.add('hidden');
-
-            btn1.className = "py-3 px-5 font-semibold text-sm border-b-2 border-transparent text-gray-500 hover:text-vitalia-green flex items-center gap-2 whitespace-nowrap transition-all";
-            btn2.className = "py-3 px-5 font-semibold text-sm border-b-2 border-transparent text-gray-500 hover:text-vitalia-green flex items-center gap-2 whitespace-nowrap transition-all";
-            btn3.className = "py-3 px-5 font-semibold text-sm border-b-2 border-transparent text-gray-500 hover:text-vitalia-green flex items-center gap-2 whitespace-nowrap transition-all";
-
-            if (num === 1) {
-                tab1.classList.remove('hidden');
-                btn1.className = "py-3 px-5 font-bold text-sm border-b-2 border-vitalia-green text-vitalia-green flex items-center gap-2 whitespace-nowrap transition-all";
-            } else if (num === 2) {
-                tab2.classList.remove('hidden');
-                btn2.className = "py-3 px-5 font-bold text-sm border-b-2 border-vitalia-green text-vitalia-green flex items-center gap-2 whitespace-nowrap transition-all";
-                poblaciónSelectorVentasBoleta();
-            } else if (num === 3) {
-                tab3.classList.remove('hidden');
-                btn3.className = "py-3 px-5 font-bold text-sm border-b-2 border-vitalia-green text-vitalia-green flex items-center gap-2 whitespace-nowrap transition-all";
-                actualizarTextoCuadreTab3();
-            }
+            const m = document.getElementById('modal-firebase-config');
+            if (m) m.classList.add('hidden');
         };
 
         window.adjustQty = function(id, delta) {
@@ -966,7 +970,7 @@
             let val = parseInt(el.value) || 0;
             val = Math.max(0, val + delta);
             el.value = val;
-            calcularTotalFormulario();
+            window.calcularTotalFormulario();
         };
 
         window.agregarItemExtra = function() {
@@ -979,7 +983,7 @@
             const cant = parseInt(cantEl.value) || 1;
 
             if (!nombre || precio <= 0) {
-                alert("Por favor ingrese un nombre y precio válido para el consumo extra.");
+                window.mostrarNotificacion("Ingrese nombre y precio para el consumo extra.", "error");
                 return;
             }
 
@@ -989,13 +993,13 @@
             cantEl.value = 1;
 
             renderExtrasFormulario();
-            calcularTotalFormulario();
+            window.calcularTotalFormulario();
         };
 
         window.eliminarExtraTemp = function(idx) {
             extrasFormularioActual.splice(idx, 1);
             renderExtrasFormulario();
-            calcularTotalFormulario();
+            window.calcularTotalFormulario();
         };
 
         function renderExtrasFormulario() {
@@ -1010,10 +1014,15 @@
         }
 
         window.calcularTotalFormulario = function() {
-            const ad = parseInt(document.getElementById('qty-adultos').value) || 0;
-            const ni = parseInt(document.getElementById('qty-ninos').value) || 0;
-            const ch = parseInt(document.getElementById('qty-chicos').value) || 0;
-            const abonoReserva = parseInt(document.getElementById('monto-reserva').value) || 0;
+            const elAd = document.getElementById('qty-adultos');
+            const elNi = document.getElementById('qty-ninos');
+            const elCh = document.getElementById('qty-chicos');
+            const elRes = document.getElementById('monto-reserva');
+
+            const ad = parseInt(elAd ? elAd.value : 0) || 0;
+            const ni = parseInt(elNi ? elNi.value : 0) || 0;
+            const ch = parseInt(elCh ? elCh.value : 0) || 0;
+            const abonoReserva = parseInt(elRes ? elRes.value : 0) || 0;
 
             const totalPersonas = ad + ni + ch;
             const subtotalPersonas = (ad * PRECIO_ADULTO) + (ni * PRECIO_NINO) + (ch * PRECIO_CHICO);
@@ -1023,23 +1032,36 @@
             const propinaEstimada = Math.round(subtotalConsumoTotal * 0.10);
             const totalFinal = Math.max(0, subtotalConsumoTotal - abonoReserva) + propinaEstimada;
 
-            document.getElementById('lbl-total-personas').textContent = totalPersonas;
-            document.getElementById('lbl-subtotal').textContent = '$' + formatMoney(subtotalConsumoTotal);
-            document.getElementById('lbl-propina-sugerida-garzon').textContent = '$' + formatMoney(propinaEstimada);
-            document.getElementById('lbl-monto-reserva-desc').textContent = '-$' + formatMoney(abonoReserva);
-            document.getElementById('lbl-total-final').textContent = '$' + formatMoney(totalFinal);
+            if (document.getElementById('lbl-total-personas')) document.getElementById('lbl-total-personas').textContent = totalPersonas;
+            if (document.getElementById('lbl-subtotal')) document.getElementById('lbl-subtotal').textContent = '$' + formatMoney(subtotalConsumoTotal);
+            if (document.getElementById('lbl-propina-sugerida-garzon')) document.getElementById('lbl-propina-sugerida-garzon').textContent = '$' + formatMoney(propinaEstimada);
+            if (document.getElementById('lbl-monto-reserva-desc')) document.getElementById('lbl-monto-reserva-desc').textContent = '-$' + formatMoney(abonoReserva);
+            if (document.getElementById('lbl-total-final')) document.getElementById('lbl-total-final').textContent = '$' + formatMoney(totalFinal);
         };
 
         window.guardarPreCuenta = async function() {
-            const ad = parseInt(document.getElementById('qty-adultos').value) || 0;
-            const ni = parseInt(document.getElementById('qty-ninos').value) || 0;
-            const ch = parseInt(document.getElementById('qty-chicos').value) || 0;
-            const abonoReserva = parseInt(document.getElementById('monto-reserva').value) || 0;
+            const elAd = document.getElementById('qty-adultos');
+            const elNi = document.getElementById('qty-ninos');
+            const elCh = document.getElementById('qty-chicos');
+            const elRes = document.getElementById('monto-reserva');
+            const elMesa = document.getElementById('input-mesa-id-vinculada');
+
+            const ad = parseInt(elAd ? elAd.value : 0) || 0;
+            const ni = parseInt(elNi ? elNi.value : 0) || 0;
+            const ch = parseInt(elCh ? elCh.value : 0) || 0;
+            const abonoReserva = parseInt(elRes ? elRes.value : 0) || 0;
+            const mesaVinculadaId = elMesa ? elMesa.value : null;
             const totalPersonas = ad + ni + ch;
 
             if (totalPersonas === 0 && extrasFormularioActual.length === 0) {
-                alert("Ingrese al menos 1 asistente o consumo extra.");
+                window.mostrarNotificacion("Ingrese al menos 1 asistente o consumo extra.", "error");
                 return;
+            }
+
+            let mesaNombreVinculada = null;
+            if (mesaVinculadaId) {
+                const mMesa = window.mesasGlobales.find(m => m.id === mesaVinculadaId);
+                if (mMesa) mesaNombreVinculada = `${mMesa.nombre} (${getNombreZonaFormateado(mMesa.zona)})`;
             }
 
             const subtotalPersonas = (ad * PRECIO_ADULTO) + (ni * PRECIO_NINO) + (ch * PRECIO_CHICO);
@@ -1066,40 +1088,72 @@
                 total: totalEstimado,
                 medioPago: 'Pendiente',
                 cerrada: false,
-                anulada: false
+                anulada: false,
+                mesaId: mesaVinculadaId || null,
+                mesaNombre: mesaNombreVinculada || null
             };
 
             ventasActuales.push(nuevaVenta);
             window.ventasGlobalesCache = ventasActuales;
             guardarVentasLocalStorage();
             cargarDatosCajaDia(ventasActuales);
+            actualizarTextoCuadreTab3();
 
             if (typeof window.guardarVentaEnNube === 'function') {
-                await window.guardarVentaEnNube(nuevaVenta);
+                try {
+                    await window.guardarVentaEnNube(nuevaVenta);
+                } catch(e) {
+                    console.error("Error nube:", e);
+                }
             }
 
-            document.getElementById('qty-adultos').value = 0;
-            document.getElementById('qty-ninos').value = 0;
-            document.getElementById('qty-chicos').value = 0;
-            document.getElementById('monto-reserva').value = 0;
+            if (elAd) elAd.value = 0;
+            if (elNi) elNi.value = 0;
+            if (elCh) elCh.value = 0;
+            if (elRes) elRes.value = 0;
+            if (elMesa) elMesa.value = '';
+            const descMesa = document.getElementById('lbl-mesa-vinculada-desc');
+            if (descMesa) descMesa.textContent = 'Ninguna mesa seleccionada (opcional)';
             extrasFormularioActual = [];
             renderExtrasFormulario();
-            calcularTotalFormulario();
+            window.calcularTotalFormulario();
 
+            window.mostrarNotificacion(`Cuenta #${nuevoId} creada exitosamente`, "exito");
             irABoletaVenta(nuevoId);
         };
 
-        window.anularVenta = async function(id) {
-            if (confirm(`¿Está seguro de anular la Pre-cuenta #${id}?`)) {
-                const v = window.ventasGlobalesCache.find(item => item.id == id);
-                if (v) {
-                    v.anulada = true;
-                    guardarVentasLocalStorage();
-                    cargarDatosCajaDia(window.ventasGlobalesCache);
-                    if (typeof window.guardarVentaEnNube === 'function') {
-                        await window.guardarVentaEnNube(v);
-                    }
+        let ventaIdPendienteAnular = null;
+
+        window.anularVenta = function(id) {
+            ventaIdPendienteAnular = id;
+            const modal = document.getElementById('modal-confirmar-anulacion');
+            if (modal) {
+                document.getElementById('txt-venta-a-anular-id').textContent = `#${id}`;
+                modal.classList.remove('hidden');
+            }
+        };
+
+        window.cerrarModalAnulacion = function() {
+            ventaIdPendienteAnular = null;
+            const modal = document.getElementById('modal-confirmar-anulacion');
+            if (modal) modal.classList.add('hidden');
+        };
+
+        window.confirmarAnulacionVenta = async function() {
+            if (!ventaIdPendienteAnular) return;
+            const id = ventaIdPendienteAnular;
+            cerrarModalAnulacion();
+
+            const v = window.ventasGlobalesCache.find(item => item.id == id);
+            if (v) {
+                v.anulada = true;
+                guardarVentasLocalStorage();
+                cargarDatosCajaDia(window.ventasGlobalesCache);
+                actualizarTextoCuadreTab3();
+                if (typeof window.guardarVentaEnNube === 'function') {
+                    await window.guardarVentaEnNube(v);
                 }
+                window.mostrarNotificacion(`Pre-cuenta #${id} anulada.`, "info");
             }
         };
 
@@ -1116,7 +1170,7 @@
             let totPersonas = 0;
 
             if (!ventas || ventas.length === 0) {
-                body.innerHTML = `<tr><td colspan="9" class="p-6 text-center text-gray-400 italic">No hay registros para esta fecha.</td></tr>`;
+                body.innerHTML = `<tr><td colspan="10" class="p-6 text-center text-gray-400 italic">No hay registros para esta fecha.</td></tr>`;
             } else {
                 body.innerHTML = ventas.map(v => {
                     if (!v.anulada && v.cerrada) {
@@ -1152,6 +1206,7 @@
                     return `
                         <tr class="${rowClass} transition">
                             <td class="p-3 font-bold">#${v.id} <span class="text-[10px] opacity-75 font-normal">(${v.hora})</span></td>
+                            <td class="p-3 font-bold text-amber-900">${v.mesaNombre || 'Mostrador / General'}</td>
                             <td class="p-3 font-semibold">${detallePersonas.join(' + ') || 'Solo extras'}</td>
                             <td class="p-3 truncate max-w-xs">${detalleExtras}</td>
                             <td class="p-3 text-right font-semibold text-blue-700">${v.reserva > 0 ? '-$' + formatMoney(v.reserva) : '-'}</td>
@@ -1174,14 +1229,14 @@
                 }).join('');
             }
 
-            document.getElementById('caja-efectivo').textContent = '$' + formatMoney(totEfectivo);
-            document.getElementById('caja-transferencia').textContent = '$' + formatMoney(totTransf);
-            document.getElementById('caja-tarjeta').textContent = '$' + formatMoney(totTarjeta);
-            document.getElementById('caja-neto').textContent = '$' + formatMoney(totNeto);
-            document.getElementById('caja-reservas').textContent = '-$' + formatMoney(totReservas);
-            document.getElementById('caja-propinas').textContent = '$' + formatMoney(totPropinas);
-            document.getElementById('caja-total-general').textContent = '$' + formatMoney(totEfectivo + totTransf + totTarjeta);
-            document.getElementById('caja-total-personas').textContent = totPersonas;
+            if (document.getElementById('caja-efectivo')) document.getElementById('caja-efectivo').textContent = '$' + formatMoney(totEfectivo);
+            if (document.getElementById('caja-transferencia')) document.getElementById('caja-transferencia').textContent = '$' + formatMoney(totTransf);
+            if (document.getElementById('caja-tarjeta')) document.getElementById('caja-tarjeta').textContent = '$' + formatMoney(totTarjeta);
+            if (document.getElementById('caja-neto')) document.getElementById('caja-neto').textContent = '$' + formatMoney(totNeto);
+            if (document.getElementById('caja-reservas')) document.getElementById('caja-reservas').textContent = '-$' + formatMoney(totReservas);
+            if (document.getElementById('caja-propinas')) document.getElementById('caja-propinas').textContent = '$' + formatMoney(totPropinas);
+            if (document.getElementById('caja-total-general')) document.getElementById('caja-total-general').textContent = '$' + formatMoney(totEfectivo + totTransf + totTarjeta);
+            if (document.getElementById('caja-total-personas')) document.getElementById('caja-total-personas').textContent = totPersonas;
         }
 
         function getBadgeMedioPago(metodo) {
@@ -1190,196 +1245,53 @@
             return 'bg-purple-100 text-purple-800';
         }
 
-        window.vaciarRegistrosDia = async function() {
-            const passwordIngresada = prompt("⚠️ ACCIÓN PROTEGIDA POR SUPERVISOR\n\nPor favor ingrese la contraseña para reiniciar el día:");
-            
-            if (passwordIngresada === null) return;
+        window.vaciarRegistrosDia = function() {
+            const modal = document.getElementById('modal-password-reiniciar');
+            if (modal) {
+                document.getElementById('input-password-reiniciar').value = '';
+                document.getElementById('error-password-reiniciar').classList.add('hidden');
+                modal.classList.remove('hidden');
+            }
+        };
 
-            if (passwordIngresada !== "Chinitoj0@") {
-                alert("❌ Contraseña incorrecta. Se ha cancelado la reinicialización de la caja.");
+        window.cerrarModalReiniciar = function() {
+            const modal = document.getElementById('modal-password-reiniciar');
+            if (modal) modal.classList.add('hidden');
+        };
+
+        window.confirmarReiniciarDiaConPassword = async function() {
+            const pwdInput = document.getElementById('input-password-reiniciar').value;
+            const errorEl = document.getElementById('error-password-reiniciar');
+
+            if (pwdInput !== 'Chinitoj0@!') {
+                if (errorEl) errorEl.classList.remove('hidden');
+                window.mostrarNotificacion("Contraseña incorrecta", "error");
                 return;
             }
 
-            if (confirm("¿Está completamente seguro de ELIMINAR TODOS los registros de hoy? Esta acción afectará a todos los dispositivos conectados.")) {
-                window.ventasGlobalesCache = [];
-                guardarVentasLocalStorage();
-                cargarDatosCajaDia([]);
-
-                if (typeof window.eliminarDiaEnNube === 'function') {
-                    await window.eliminarDiaEnNube();
-                }
-
-                alert("🗑️ Registros del día reiniciados con éxito.");
-            }
-        };
-
-        window.poblaciónSelectorVentasBoleta = function() {
-            const selector = document.getElementById('selector-ventas-boleta');
-            if (!selector) return;
-
-            const ventas = (window.ventasGlobalesCache || []).filter(v => !v.anulada);
-
-            selector.innerHTML = `<option value="">-- Seleccionar Pre-cuenta --</option>` +
-                ventas.map(v => `<option value="${v.id}">#${v.id} - ${v.totalPersonas} pers - Subtotal $${formatMoney(v.subtotal)} [${v.cerrada ? 'CERRADA' : 'PENDIENTE'}]</option>`).join('');
-            
-            if (ventaSeleccionadaBoletaId) {
-                selector.value = ventaSeleccionadaBoletaId;
-            }
-        };
-
-        window.irABoletaVenta = function(id) {
-            switchTab(2);
-            ventaSeleccionadaBoletaId = id;
-            const selector = document.getElementById('selector-ventas-boleta');
-            if (selector) selector.value = id;
-            cargarVentaEnBoleta(id);
-        };
-
-        window.cargarVentaEnBoleta = function(id) {
-            if (!id) return;
-            ventaSeleccionadaBoletaId = id;
-            const v = (window.ventasGlobalesCache || []).find(item => item.id == id);
-            if (!v) return;
-
-            document.getElementById('bol-monto-propina').value = v.propina;
-            document.getElementById('bol-medio-pago').value = (v.medioPago !== 'Pendiente') ? v.medioPago : 'Efectivo';
-
-            const badge = document.getElementById('badge-estado-venta');
-            if (v.cerrada) {
-                badge.className = "bg-green-100 text-green-800 px-2 py-0.5 rounded text-[10px] font-bold";
-                badge.textContent = "CERRADA Y COBRADA";
-            } else {
-                badge.className = "bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-[10px] font-bold";
-                badge.textContent = "PENDIENTE DE PAGO";
-            }
-
-            datosBoletaActual = {
-                adultos: v.adultos,
-                ninos: v.ninos,
-                chicos: v.chicos,
-                reserva: v.reserva || 0,
-                extras: v.extras || [],
-                propinaMonto: v.propina,
-                medioPago: v.medioPago
-            };
-
-            renderBoletaTicket();
-        };
-
-        window.setPropinaDiezPorCiento = function() {
-            let subtotalConsumo = (datosBoletaActual.adultos * PRECIO_ADULTO) + 
-                                  (datosBoletaActual.ninos * PRECIO_NINO) + 
-                                  (datosBoletaActual.chicos * PRECIO_CHICO) + 
-                                  (datosBoletaActual.extras ? datosBoletaActual.extras.reduce((acc, e) => acc + e.total, 0) : 0);
-            
-            let p10 = Math.round(subtotalConsumo * 0.10);
-            document.getElementById('bol-monto-propina').value = p10;
-            actualizarBoletaManual();
-        };
-
-        window.actualizarBoletaManual = function() {
-            const propMonto = parseInt(document.getElementById('bol-monto-propina').value) || 0;
-            const medio = document.getElementById('bol-medio-pago').value;
-
-            datosBoletaActual.propinaMonto = propMonto;
-            datosBoletaActual.medioPago = medio;
-
-            renderBoletaTicket();
-        };
-
-        function renderBoletaTicket() {
-            let itemsHTML = '';
-            let cantPersonas = datosBoletaActual.adultos + datosBoletaActual.ninos + datosBoletaActual.chicos;
-            let subtotalConsumo = 0;
-
-            if (datosBoletaActual.adultos > 0) {
-                let tot = datosBoletaActual.adultos * PRECIO_ADULTO;
-                subtotalConsumo += tot;
-                itemsHTML += `<tr><td style="padding: 1px 0;">${datosBoletaActual.adultos} ADULTOS (13+)</td><td style="text-align: right; padding: 1px 0;">$${formatMoney(tot)}</td></tr>`;
-            }
-            if (datosBoletaActual.ninos > 0) {
-                let tot = datosBoletaActual.ninos * PRECIO_NINO;
-                subtotalConsumo += tot;
-                itemsHTML += `<tr><td style="padding: 1px 0;">${datosBoletaActual.ninos} NINOS (6-12)</td><td style="text-align: right; padding: 1px 0;">$${formatMoney(tot)}</td></tr>`;
-            }
-            if (datosBoletaActual.chicos > 0) {
-                let tot = datosBoletaActual.chicos * PRECIO_CHICO;
-                subtotalConsumo += tot;
-                itemsHTML += `<tr><td style="padding: 1px 0;">${datosBoletaActual.chicos} NINOS CHICOS (4-5)</td><td style="text-align: right; padding: 1px 0;">$${formatMoney(tot)}</td></tr>`;
-            }
-
-            if (datosBoletaActual.extras && datosBoletaActual.extras.length > 0) {
-                datosBoletaActual.extras.forEach(e => {
-                    subtotalConsumo += e.total;
-                    itemsHTML += `<tr><td style="padding: 1px 0;">${e.cant} ${e.nombre.toUpperCase()}</td><td style="text-align: right; padding: 1px 0;">$${formatMoney(e.total)}</td></tr>`;
-                });
-            }
-
-            if (!itemsHTML) {
-                itemsHTML = `<tr><td colspan="2" style="text-align: center; padding: 2px 0;">SIN ITEMS</td></tr>`;
-            }
-
-            const abonoReserva = datosBoletaActual.reserva || 0;
-            const propina = datosBoletaActual.propinaMonto || 0;
-            const totalPagar = Math.max(0, subtotalConsumo - abonoReserva) + propina;
-
-            document.querySelectorAll('.ticket-items-body-val').forEach(el => el.innerHTML = itemsHTML);
-            document.querySelectorAll('.ticket-cant-personas-val').forEach(el => el.textContent = cantPersonas);
-            document.querySelectorAll('.ticket-subtotal-val').forEach(el => el.textContent = '$' + formatMoney(subtotalConsumo));
-            
-            const rowReserva = document.getElementById('ticket-reserva-row');
-            if (rowReserva) {
-                if (abonoReserva > 0) {
-                    rowReserva.style.display = 'flex';
-                    document.querySelectorAll('.ticket-reserva-val').forEach(el => el.textContent = '-$' + formatMoney(abonoReserva));
-                } else {
-                    rowReserva.style.display = 'none';
-                }
-            }
-
-            document.querySelectorAll('.ticket-propina-val').forEach(el => el.textContent = '$' + formatMoney(propina));
-            document.querySelectorAll('.ticket-total-val').forEach(el => el.textContent = '$' + formatMoney(totalPagar));
-
-            document.getElementById('cierre-lbl-subtotal').textContent = '$' + formatMoney(subtotalConsumo);
-            const crRes = document.getElementById('cierre-row-reserva');
-            if (crRes) {
-                if (abonoReserva > 0) {
-                    crRes.classList.remove('hidden');
-                    document.getElementById('cierre-lbl-reserva').textContent = '-$' + formatMoney(abonoReserva);
-                } else {
-                    crRes.classList.add('hidden');
-                }
-            }
-            document.getElementById('cierre-lbl-propina').textContent = '$' + formatMoney(propina);
-            document.getElementById('cierre-lbl-total').textContent = '$' + formatMoney(totalPagar);
-        }
-
-        window.cerrarYGuardarVentaFinal = async function() {
-            if (!ventaSeleccionadaBoletaId) {
-                alert("Seleccione una pre-cuenta para cobrar y cerrar.");
-                return;
-            }
-
-            const v = (window.ventasGlobalesCache || []).find(item => item.id == ventaSeleccionadaBoletaId);
-            if (!v) return;
-
-            const propMonto = parseInt(document.getElementById('bol-monto-propina').value) || 0;
-            const medio = document.getElementById('bol-medio-pago').value;
-
-            v.propina = propMonto;
-            v.medioPago = medio;
-            v.total = Math.max(0, v.subtotal - (v.reserva || 0)) + propMonto;
-            v.cerrada = true;
-
+            cerrarModalReiniciar();
+            window.ventasGlobalesCache = [];
             guardarVentasLocalStorage();
-            cargarDatosCajaDia(window.ventasGlobalesCache);
-
-            if (typeof window.guardarVentaEnNube === 'function') {
-                await window.guardarVentaEnNube(v);
+            cargarDatosCajaDia([]);
+            actualizarTextoCuadreTab3();
+            if (typeof window.eliminarDiaEnNube === 'function') {
+                await window.eliminarDiaEnNube();
             }
+            window.mostrarNotificacion("Registros del día reiniciados con éxito.", "exito");
+        };
 
-            alert(`✅ Venta #${v.id} CERRADA y COBRADA con éxito (${medio}).`);
-            cargarVentaEnBoleta(v.id);
+        window.cambiarAnchoImpresora = function(val) {
+            anchoPapelMm = val;
+            const container = document.getElementById('contenedor-ticket-preview');
+            const lineasSep = document.querySelectorAll('.ticket-linea-sep');
+            if (val === '80') {
+                if (container) container.style.maxWidth = '380px';
+                lineasSep.forEach(l => l.textContent = '------------------------------------------------');
+            } else {
+                if (container) container.style.maxWidth = '280px';
+                lineasSep.forEach(l => l.textContent = '--------------------------------');
+            }
+            renderBoletaTicket();
         };
 
         window.imprimirBoletaLimpia = function() {
@@ -1394,36 +1306,37 @@
             const sepLine = es80mm ? '------------------------------------------------' : '--------------------------------';
 
             let itemsTxt = '';
-            let cantPersonas = datosBoletaActual.adultos + datosBoletaActual.ninos + datosBoletaActual.chicos;
+            let cantPersonas = window.datosBoletaActual.adultos + window.datosBoletaActual.ninos + window.datosBoletaActual.chicos;
             let subtotalConsumo = 0;
 
-            if (datosBoletaActual.adultos > 0) {
-                let tot = datosBoletaActual.adultos * PRECIO_ADULTO;
+            if (window.datosBoletaActual.adultos > 0) {
+                let tot = window.datosBoletaActual.adultos * PRECIO_ADULTO;
                 subtotalConsumo += tot;
-                itemsTxt += `<tr><td style="padding:1px 0;">${datosBoletaActual.adultos} ADULTOS (13+)</td><td style="text-align:right; padding:1px 0;">$${formatMoney(tot)}</td></tr>`;
+                itemsTxt += `<tr><td style="padding:1px 0;">${window.datosBoletaActual.adultos} ADULTOS (13+)</td><td style="text-align:right; padding:1px 0;">$${formatMoney(tot)}</td></tr>`;
             }
-            if (datosBoletaActual.ninos > 0) {
-                let tot = datosBoletaActual.ninos * PRECIO_NINO;
+            if (window.datosBoletaActual.ninos > 0) {
+                let tot = window.datosBoletaActual.ninos * PRECIO_NINO;
                 subtotalConsumo += tot;
-                itemsTxt += `<tr><td style="padding:1px 0;">${datosBoletaActual.ninos} NINOS (6-12)</td><td style="text-align:right; padding:1px 0;">$${formatMoney(tot)}</td></tr>`;
+                itemsTxt += `<tr><td style="padding:1px 0;">${window.datosBoletaActual.ninos} NIÑOS (6-12)</td><td style="text-align:right; padding:1px 0;">$${formatMoney(tot)}</td></tr>`;
             }
-            if (datosBoletaActual.chicos > 0) {
-                let tot = datosBoletaActual.chicos * PRECIO_CHICO;
+            if (window.datosBoletaActual.chicos > 0) {
+                let tot = window.datosBoletaActual.chicos * PRECIO_CHICO;
                 subtotalConsumo += tot;
-                itemsTxt += `<tr><td style="padding:1px 0;">${datosBoletaActual.chicos} NINOS CHICOS (4-5)</td><td style="text-align:right; padding:1px 0;">$${formatMoney(tot)}</td></tr>`;
+                itemsTxt += `<tr><td style="padding:1px 0;">${window.datosBoletaActual.chicos} NIÑOS CHICOS (4-5)</td><td style="text-align:right; padding:1px 0;">$${formatMoney(tot)}</td></tr>`;
             }
 
-            if (datosBoletaActual.extras) {
-                datosBoletaActual.extras.forEach(e => {
+            if (window.datosBoletaActual.extras) {
+                window.datosBoletaActual.extras.forEach(e => {
                     subtotalConsumo += e.total;
                     itemsTxt += `<tr><td style="padding:1px 0;">${e.cant} ${e.nombre.toUpperCase()}</td><td style="text-align:right; padding:1px 0;">$${formatMoney(e.total)}</td></tr>`;
                 });
             }
 
-            const abonoReserva = datosBoletaActual.reserva || 0;
-            const propina = datosBoletaActual.propinaMonto || 0;
+            const abonoReserva = window.datosBoletaActual.reserva || 0;
+            const propina = window.datosBoletaActual.propinaMonto || 0;
             const totalPagar = Math.max(0, subtotalConsumo - abonoReserva) + propina;
 
+            let mesaHeaderHtml = window.datosBoletaActual.mesaNombre ? `<div class="center bold" style="font-size: 9px; margin-top:1px;">CANT DETALLE MESA "${window.datosBoletaActual.mesaNombre.toUpperCase()}"</div>` : '';
             let reservaTxt = abonoReserva > 0 ? `<tr><td style="padding:1px 0;">ABONO RESERVA:</td><td style="text-align:right; padding:1px 0;">-$${formatMoney(abonoReserva)}</td></tr>` : '';
 
             const iframe = document.createElement('iframe');
@@ -1463,6 +1376,7 @@
                     <div class="center bold" style="font-size: ${fontSizeHeaderCss};">${es80mm ? 'TENEDOR LIBRE VITALIA CAMPESTRE' : 'TENEDOR LIBRE<br/>VITALIA CAMPESTRE'}</div>
                     <div class="sep">${sepLine}</div>
                     <div class="center" style="font-size: 9px;">Fecha: ${fechaFormateada} ${ventaSeleccionadaBoletaId ? '| Reg: #' + ventaSeleccionadaBoletaId : ''}</div>
+                    ${mesaHeaderHtml}
                     <div class="sep">${sepLine}</div>
 
                     <table>
@@ -1502,85 +1416,891 @@
             setTimeout(() => {
                 iframe.contentWindow.focus();
                 iframe.contentWindow.print();
-                setTimeout(() => document.body.removeChild(iframe), 1000);
+                setTimeout(() => {
+                    if (iframe.parentNode) document.body.removeChild(iframe);
+                }, 1500);
             }, 300);
+        };
+
+        function cargarMapaLocalStorage() {
+            try {
+                const mData = localStorage.getItem('vitalia_mesas_v19');
+                const lData = localStorage.getItem('vitalia_landmarks_v19');
+                const pData = localStorage.getItem('vitalia_paredes_v19');
+                if (mData) window.mesasGlobales = JSON.parse(mData);
+                if (lData) window.landmarksGlobales = JSON.parse(lData);
+                if (pData) window.paredesGlobales = JSON.parse(pData);
+            } catch(e) {}
+        }
+        function guardarMapaLocalStorage() {
+            try {
+                localStorage.setItem('vitalia_mesas_v19', JSON.stringify(window.mesasGlobales));
+                localStorage.setItem('vitalia_landmarks_v19', JSON.stringify(window.landmarksGlobales));
+                localStorage.setItem('vitalia_paredes_v19', JSON.stringify(window.paredesGlobales));
+            } catch(e) {}
+        }
+
+        window.guardarMapaEnFirebaseYLocal = async function() {
+            guardarMapaLocalStorage();
+            if (typeof window.guardarMapaCompletoEnNube === 'function') {
+                await window.guardarMapaCompletoEnNube();
+            } else {
+                window.mostrarNotificacion("Plano guardado localmente.", "info");
+            }
+        };
+
+        window.switchZonaMesas = function(zona) {
+            window.zonaMesasActual = zona;
+            const zonas = ['salon', 'terraza-bar', 'terraza-parrillas'];
+            zonas.forEach(z => {
+                const btn = document.getElementById(`subtab-${z}`);
+                if (btn) {
+                    if (z === zona) {
+                        btn.className = "py-1.5 px-3 rounded-lg font-bold bg-vitalia-dark text-vitalia-gold flex items-center gap-1.5 transition whitespace-nowrap border shadow-xs";
+                    } else {
+                        btn.className = "py-1.5 px-3 rounded-lg font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 flex items-center gap-1.5 transition whitespace-nowrap border";
+                    }
+                }
+            });
+            renderizarPlanoMesasActual();
+        };
+
+        window.modoMoverMesasToggle = function() {
+            window.modoMoverMesas = !window.modoMoverMesas;
+            window.modoCrearParedes = false;
+            window.modoUnirMesas = false;
+            puntoParedInicio = null;
+            const btn = document.getElementById('btn-toggle-mover');
+            if (window.modoMoverMesas) {
+                btn.innerHTML = '<i class="fa-solid fa-hand-holding"></i> ✋ Mover Activado';
+                btn.className = "text-xs bg-emerald-600 text-white font-extrabold px-3 py-1.5 rounded-lg transition shadow-xs animate-pulse";
+            } else {
+                btn.innerHTML = '<i class="fa-solid fa-hand"></i> ✋ Mover';
+                btn.className = "text-xs bg-slate-800 hover:bg-slate-900 text-white font-bold px-3 py-1.5 rounded-lg transition shadow-xs";
+            }
+            renderizarPlanoMesasActual();
+        };
+
+        window.modoCrearParedesToggle = function() {
+            window.modoCrearParedes = !window.modoCrearParedes;
+            window.modoMoverMesas = false;
+            window.modoUnirMesas = false;
+            puntoParedInicio = null;
+            const btn = document.getElementById('btn-toggle-paredes');
+            if (window.modoCrearParedes) {
+                btn.innerHTML = '🧱 Clic Inicio...';
+                btn.className = "text-xs bg-blue-600 text-white font-extrabold px-3 py-1.5 rounded-lg transition shadow-xs animate-pulse";
+            } else {
+                btn.innerHTML = '🧱 Pared';
+                btn.className = "text-xs bg-blue-700 hover:bg-blue-800 text-white font-bold px-3 py-1.5 rounded-lg transition shadow-xs";
+            }
+            renderizarPlanoMesasActual();
+        };
+
+        window.modoUnirMesasToggle = function() {
+            window.modoUnirMesas = !window.modoUnirMesas;
+            window.modoMoverMesas = false;
+            window.modoCrearParedes = false;
+            window.mesasSeleccionadasUnir = [];
+            puntoParedInicio = null;
+            const btn = document.getElementById('btn-toggle-unir');
+            if (window.modoUnirMesas) {
+                btn.innerHTML = '🔗 Clic en 2 mesas...';
+                btn.className = "text-xs bg-purple-900 text-white font-extrabold px-3 py-1.5 rounded-lg transition shadow-xs animate-pulse";
+            } else {
+                btn.innerHTML = '🔗 Unir';
+                btn.className = "text-xs bg-purple-700 hover:bg-purple-800 text-white font-bold px-3 py-1.5 rounded-lg transition shadow-xs";
+            }
+            renderizarPlanoMesasActual();
+        };
+
+        window.clicEnCanvasMapa = function(e) {
+            if (!window.modoCrearParedes) return;
+            const container = document.getElementById('canvas-mapa-mesas');
+            const rect = container.getBoundingClientRect();
+            const clickX = Math.round(e.clientX - rect.left);
+            const clickY = Math.round(e.clientY - rect.top);
+
+            if (!puntoParedInicio) {
+                puntoParedInicio = { x: clickX, y: clickY };
+                document.getElementById('btn-toggle-paredes').innerHTML = '🧱 Clic Final...';
+            } else {
+                const nuevaPared = {
+                    id: 'pared-' + Date.now(),
+                    zona: window.zonaMesasActual,
+                    x1: puntoParedInicio.x,
+                    y1: puntoParedInicio.y,
+                    x2: clickX,
+                    y2: clickY
+                };
+                window.paredesGlobales.push(nuevaPared);
+                guardarMapaLocalStorage();
+                puntoParedInicio = null;
+                document.getElementById('btn-toggle-paredes').innerHTML = '🧱 Pared';
+                window.modoCrearParedes = false;
+                document.getElementById('btn-toggle-paredes').className = "text-xs bg-blue-700 hover:bg-blue-800 text-white font-bold px-3 py-1.5 rounded-lg transition shadow-xs";
+                renderizarPlanoMesasActual();
+            }
+        };
+
+        window.verificarOpcionOtroLandmark = function(val) {
+            const cont = document.getElementById('contenedor-otro-landmark');
+            if (val === 'otro') {
+                cont.classList.remove('hidden');
+            } else {
+                cont.classList.add('hidden');
+            }
+        };
+
+        window.renderizarPlanoMesasActual = function() {
+            const container = document.getElementById('canvas-mapa-mesas');
+            if (!container) return;
+
+            const zona = window.zonaMesasActual;
+            const mesasZona = window.mesasGlobales.filter(m => m.zona === zona);
+            const lmsZona = window.landmarksGlobales.filter(l => l.zona === zona);
+            const paredesZona = window.paredesGlobales.filter(p => p.zona === zona);
+
+            let totalSillas = 0;
+            mesasZona.forEach(m => totalSillas += m.sillas);
+            document.getElementById('txt-sillas-zona').textContent = `${totalSillas} sillas`;
+            if (document.getElementById(`cnt-${zona}`)) {
+                document.getElementById(`cnt-${zona}`).textContent = `${mesasZona.length} mesas`;
+            }
+
+            let cursorMapStyle = window.modoMoverMesas ? 'cursor-move' : 'cursor-pointer';
+            if (window.modoCrearParedes) cursorMapStyle = 'cursor-crosshair';
+
+            let paredesHTML = paredesZona.map(p => {
+                let length = Math.hypot(p.x2 - p.x1, p.y2 - p.y1);
+                let angle = Math.atan2(p.y2 - p.y1, p.x2 - p.x1) * 180 / Math.PI;
+                let wallCursor = window.modoMoverMesas ? 'cursor-move' : 'cursor-pointer';
+                return `
+                    <div onmousedown="iniciarArrastreElemento(event, 'pared', '${p.id}')" ontouchstart="iniciarArrastreElemento(event, 'pared', '${p.id}')" onclick="clicParedMapa(event, '${p.id}')" style="left: ${p.x1}px; top: ${p.y1}px; width: ${length}px; transform: rotate(${angle}deg); transform-origin: 0 0;" class="absolute h-3.5 bg-amber-950 border border-amber-900 rounded-sm z-0 ${wallCursor} shadow-xs" title="Arrastra para mover o haz clic para eliminar en modo mover"></div>
+                `;
+            }).join('');
+
+            let landmarksHTML = lmsZona.map(l => {
+                let w = l.orientacion === 'vertical' ? 'w-16 h-28' : 'w-28 h-16';
+                let lmCursor = window.modoMoverMesas ? 'cursor-move' : 'cursor-default';
+                return `
+                    <div onmousedown="iniciarArrastreElemento(event, 'landmark', '${l.id}')" ontouchstart="iniciarArrastreElemento(event, 'landmark', '${l.id}')" style="left: ${l.x}px; top: ${l.y}px;" class="absolute ${lmCursor} select-none z-1">
+                        <div class="${w} bg-amber-100/95 border-2 border-dashed border-amber-900 text-amber-950 font-extrabold text-xs px-2 py-1 rounded-xl shadow-xs flex items-center justify-center text-center backdrop-blur-xs">
+                            ${l.nombre}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            let mesasHTML = mesasZona.map(m => {
+                let colorClass = 'bg-emerald-500 text-white border-emerald-600';
+                if (m.estado === 'reservada') colorClass = 'bg-blue-500 text-white border-blue-600';
+                else if (m.estado === 'ocupada') colorClass = 'bg-amber-500 text-slate-950 border-amber-600';
+
+                if (m.unidaCon) colorClass += ' ring-4 ring-purple-600';
+                if (window.mesasSeleccionadasUnir.includes(m.id)) colorClass += ' ring-4 ring-yellow-400 animate-bounce';
+
+                let width = 'w-24', height = 'h-14', rounded = 'rounded-xl';
+                if (m.orientacion === 'vertical') {
+                    width = 'w-14'; height = 'h-24';
+                }
+
+                let labelReserva = m.reserva ? `<div class="text-[9px] truncate max-w-[90%] bg-black/40 px-1 py-0.5 rounded text-white font-semibold mt-0.5">${m.reserva}</div>` : '';
+                let badgeUnida = m.unidaCon ? `<span class="absolute -top-2 -right-2 bg-purple-700 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow">🔗</span>` : '';
+
+                return `
+                    <div onmousedown="iniciarArrastreElemento(event, 'mesa', '${m.id}')" ontouchstart="iniciarArrastreElemento(event, 'mesa', '${m.id}')" onclick="clickEnMesaMapa('${m.id}')" style="left: ${m.x}px; top: ${m.y}px;" class="absolute ${cursorMapStyle} select-none z-10 transition-transform">
+                        <div class="${width} ${height} ${rounded} ${colorClass} shadow-md border-2 p-1.5 flex flex-col items-center justify-center text-center relative">
+                            ${badgeUnida}
+                            <span class="font-black text-xs leading-none">${m.nombre}</span>
+                            <span class="text-[10px] opacity-90 font-bold">${m.sillas}s</span>
+                            ${labelReserva}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = paredesHTML + landmarksHTML + mesasHTML;
+        };
+
+        window.clicParedMapa = function(e, id) {
+            if (!window.modoMoverMesas) return;
+            window.paredesGlobales = window.paredesGlobales.filter(p => p.id !== id);
+            guardarMapaLocalStorage();
+            renderizarPlanoMesasActual();
+            window.mostrarNotificacion("Pared eliminada.", "info");
+            e.stopPropagation();
+        };
+
+        window.iniciarArrastreElemento = function(e, tipo, id) {
+            if (!window.modoMoverMesas) return;
+            elementoArrastrandoTipo = tipo;
+            elementoArrastrandoId = id;
+            const targetDiv = e.currentTarget;
+            const rect = targetDiv.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+            dragOffsetX = clientX - rect.left;
+            dragOffsetY = clientY - rect.top;
+
+            document.addEventListener('mousemove', moverArrastreElemento);
+            document.addEventListener('touchmove', moverArrastreElemento);
+            document.addEventListener('mouseup', finalizarArrastreElemento);
+            document.addEventListener('touchend', finalizarArrastreElemento);
+            e.stopPropagation();
+        };
+
+        function moverArrastreElemento(e) {
+            if (!elementoArrastrandoId) return;
+            const container = document.getElementById('canvas-mapa-mesas');
+            if (!container) return;
+            const containerRect = container.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+            let newX = clientX - containerRect.left - dragOffsetX;
+            let newY = clientY - containerRect.top - dragOffsetY;
+
+            newX = Math.max(5, Math.min(containerRect.width - 80, newX));
+            newY = Math.max(5, Math.min(containerRect.height - 60, newY));
+
+            if (elementoArrastrandoTipo === 'mesa') {
+                const m = window.mesasGlobales.find(item => item.id === elementoArrastrandoId);
+                if (m) { m.x = Math.round(newX); m.y = Math.round(newY); renderizarPlanoMesasActual(); }
+            } else if (elementoArrastrandoTipo === 'landmark') {
+                const l = window.landmarksGlobales.find(item => item.id === elementoArrastrandoId);
+                if (l) { l.x = Math.round(newX); l.y = Math.round(newY); renderizarPlanoMesasActual(); }
+            } else if (elementoArrastrandoTipo === 'pared') {
+                const p = window.paredesGlobales.find(item => item.id === elementoArrastrandoId);
+                if (p) {
+                    let diffX = newX - p.x1;
+                    let diffY = newY - p.y1;
+                    p.x1 += diffX; p.y1 += diffY;
+                    p.x2 += diffX; p.y2 += diffY;
+                    renderizarPlanoMesasActual();
+                }
+            }
+        }
+
+        function finalizarArrastreElemento() {
+            if (elementoArrastrandoId) {
+                guardarMapaLocalStorage();
+                elementoArrastrandoId = null;
+                elementoArrastrandoTipo = null;
+            }
+            document.removeEventListener('mousemove', moverArrastreElemento);
+            document.removeEventListener('touchmove', moverArrastreElemento);
+            document.removeEventListener('mouseup', finalizarArrastreElemento);
+            document.removeEventListener('touchend', finalizarArrastreElemento);
+        }
+
+        window.clickEnMesaMapa = function(id) {
+            if (window.modoMoverMesas || window.modoCrearParedes) return;
+            const m = window.mesasGlobales.find(item => item.id === id);
+            if (!m) return;
+
+            if (window.modoUnirMesas) {
+                if (!window.mesasSeleccionadasUnir.includes(id)) {
+                    window.mesasSeleccionadasUnir.push(id);
+                } else {
+                    window.mesasSeleccionadasUnir = window.mesasSeleccionadasUnir.filter(item => item !== id);
+                }
+
+                if (window.mesasSeleccionadasUnir.length >= 2) {
+                    const m1 = window.mesasGlobales.find(item => item.id === window.mesasSeleccionadasUnir[0]);
+                    const m2 = window.mesasGlobales.find(item => item.id === window.mesasSeleccionadasUnir[1]);
+
+                    if (m1 && m2) {
+                        m1.unidaCon = m2.id;
+                        m2.unidaCon = m1.id;
+                        m1.sillas += m2.sillas;
+                        guardarMapaLocalStorage();
+                        window.mostrarNotificacion(`🔗 ${m1.nombre} y ${m2.nombre} unidas (${m1.sillas} sillas).`, "exito");
+                    }
+                    window.modoUnirMesas = false;
+                    window.mesasSeleccionadasUnir = [];
+                    document.getElementById('btn-toggle-unir').innerHTML = '🔗 Unir';
+                }
+                renderizarPlanoMesasActual();
+                return;
+            }
+
+            window.mesaSeleccionadaId = id;
+            document.getElementById('modal-mesa-titulo').textContent = m.nombre;
+            document.getElementById('modal-mesa-subtitulo').textContent = `Zona: ${getNombreZonaFormateado(m.zona)}`;
+            document.getElementById('modal-mesa-sillas').textContent = m.sillas;
+            document.getElementById('modal-mesa-orientacion').value = m.orientacion || 'horizontal';
+            document.getElementById('res-cliente-nombre').value = m.reserva || '';
+
+            document.getElementById('modal-detalle-mesa').classList.remove('hidden');
+        };
+
+        function getNombreZonaFormateado(z) {
+            if (z === 'salon') return 'Salón';
+            if (z === 'terraza-bar') return 'Terraza Bar';
+            if (z === 'terraza-parrillas') return 'Terraza Parrillas';
+            return 'Salón';
+        }
+
+        window.cerrarModalMesa = function() {
+            document.getElementById('modal-detalle-mesa').classList.add('hidden');
+            window.mesaSeleccionadaId = null;
+        };
+
+        window.detectarClicAfueraModal = function(e) {
+            const contenido = document.getElementById('modal-contenido-interno');
+            if (contenido && !contenido.contains(e.target)) {
+                cerrarModalMesa();
+            }
+        };
+
+        window.modificarSillasMesaSeleccionada = function(delta) {
+            if (!window.mesaSeleccionadaId) return;
+            const m = window.mesasGlobales.find(item => item.id === window.mesaSeleccionadaId);
+            if (m) {
+                m.sillas = Math.max(1, m.sillas + delta);
+                document.getElementById('modal-mesa-sillas').textContent = m.sillas;
+                guardarMapaLocalStorage();
+                renderizarPlanoMesasActual();
+            }
+        };
+
+        window.cambiarOrientacionMesaSeleccionada = function(ori) {
+            if (!window.mesaSeleccionadaId) return;
+            const m = window.mesasGlobales.find(item => item.id === window.mesaSeleccionadaId);
+            if (m) {
+                m.orientacion = ori;
+                guardarMapaLocalStorage();
+                renderizarPlanoMesasActual();
+            }
+        };
+
+        window.guardarReservaMesa = function() {
+            if (!window.mesaSeleccionadaId) return;
+            const m = window.mesasGlobales.find(item => item.id === window.mesaSeleccionadaId);
+            if (!m) return;
+            const cliente = document.getElementById('res-cliente-nombre').value.trim();
+            m.reserva = cliente;
+            m.estado = cliente ? 'reservada' : 'disponible';
+            guardarMapaLocalStorage();
+            cerrarModalMesa();
+            renderizarPlanoMesasActual();
+            window.mostrarNotificacion(`Reserva guardada para ${cliente || m.nombre}.`, "exito");
+        };
+
+        window.crearPrecuentaDesdeMesa = function() {
+            if (!window.mesaSeleccionadaId) return;
+            const m = window.mesasGlobales.find(item => item.id === window.mesaSeleccionadaId);
+            if (!m) return;
+            m.estado = 'ocupada';
+            guardarMapaLocalStorage();
+
+            switchTab(1);
+            document.getElementById('input-mesa-id-vinculada').value = m.id;
+            document.getElementById('lbl-mesa-vinculada-desc').textContent = `${m.nombre} (${getNombreZonaFormateado(m.zona)})`;
+            document.getElementById('qty-adultos').value = m.sillas;
+            window.calcularTotalFormulario();
+            cerrarModalMesa();
+        };
+
+        window.liberarMesaSeleccionada = function() {
+            if (!window.mesaSeleccionadaId) return;
+            const m = window.mesasGlobales.find(item => item.id === window.mesaSeleccionadaId);
+            if (m) {
+                m.estado = 'disponible';
+                m.reserva = null;
+                m.unidaCon = null;
+                guardarMapaLocalStorage();
+                cerrarModalMesa();
+                renderizarPlanoMesasActual();
+                window.mostrarNotificacion(`${m.nombre} liberada.`, "info");
+            }
+        };
+
+        window.eliminarMesaSeleccionada = function() {
+            if (!window.mesaSeleccionadaId) return;
+            const id = window.mesaSeleccionadaId;
+            window.mesasGlobales = window.mesasGlobales.filter(item => item.id !== id);
+            guardarMapaLocalStorage();
+            cerrarModalMesa();
+            renderizarPlanoMesasActual();
+            window.mostrarNotificacion("Mesa eliminada.", "info");
+        };
+
+        window.abrirModalNuevaMesa = function() {
+            document.getElementById('modal-agregar-mesa').classList.remove('hidden');
+        };
+        window.cerrarModalAgregarMesa = function() {
+            document.getElementById('modal-agregar-mesa').classList.add('hidden');
+        };
+
+        window.confirmarAgregarNuevaMesa = function() {
+            const zona = document.getElementById('new-mesa-zona').value;
+            const orientacion = document.getElementById('new-mesa-orientacion').value;
+            const sillas = parseInt(document.getElementById('new-mesa-sillas').value) || 4;
+
+            const numSiguiente = window.mesasGlobales.length + 1;
+
+            const nueva = {
+                id: 'mesa-' + Date.now(),
+                zona: zona,
+                nombre: `Mesa ${numSiguiente}`,
+                x: 120, y: 120,
+                sillas: sillas,
+                orientacion: orientacion,
+                estado: 'disponible',
+                reserva: null,
+                unidaCon: null
+            };
+
+            window.mesasGlobales.push(nueva);
+            guardarMapaLocalStorage();
+            cerrarModalAgregarMesa();
+            switchZonaMesas(zona);
+            window.mostrarNotificacion(`${nueva.nombre} creada con éxito.`, "exito");
+        };
+
+        window.abrirModalNuevoLandmark = function() {
+            document.getElementById('new-lm-tipo-select').value = 'Escenario 🎭';
+            document.getElementById('contenedor-otro-landmark').classList.add('hidden');
+            document.getElementById('modal-agregar-landmark').classList.remove('hidden');
+        };
+        window.cerrarModalNuevoLandmark = function() {
+            document.getElementById('modal-agregar-landmark').classList.add('hidden');
+        };
+        window.confirmarAgregarLandmark = function() {
+            const tipoSel = document.getElementById('new-lm-tipo-select').value;
+            let tipo = tipoSel;
+            if (tipoSel === 'otro') {
+                tipo = document.getElementById('new-lm-nombre-custom').value.trim() || 'Elemento';
+            }
+            const orientacion = document.getElementById('new-lm-orientacion').value;
+            const nuevo = {
+                id: 'lm-' + Date.now(),
+                zona: window.zonaMesasActual,
+                nombre: tipo,
+                x: 200, y: 200,
+                orientacion: orientacion
+            };
+            window.landmarksGlobales.push(nuevo);
+            guardarMapaLocalStorage();
+            cerrarModalNuevoLandmark();
+            renderizarPlanoMesasActual();
+            window.mostrarNotificacion(`Elemento "${tipo}" añadido.`, "exito");
+        };
+
+        window.irABoletaVenta = function(id) {
+            switchTab(2);
+            ventaSeleccionadaBoletaId = id;
+            poblaciónSelectorVentasBoleta();
+            const sel = document.getElementById('selector-ventas-boleta');
+            if (sel) sel.value = id;
+            cargarVentaEnBoleta(id);
+        };
+
+        window.cargarVentaEnBoleta = function(id) {
+            if (!id) return;
+            ventaSeleccionadaBoletaId = id;
+            const v = (window.ventasGlobalesCache || []).find(item => item.id == id);
+            if (!v) return;
+
+            document.getElementById('bol-monto-propina').value = v.propina;
+            document.getElementById('bol-medio-pago').value = v.medioPago !== 'Pendiente' ? v.medioPago : 'Efectivo';
+            
+            const badge = document.getElementById('badge-estado-venta');
+            badge.className = v.cerrada ? "bg-green-100 text-green-800 px-2 py-0.5 rounded text-[10px] font-bold" : "bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-[10px] font-bold";
+            badge.textContent = v.cerrada ? "CERRADA Y COBRADA" : "PENDIENTE";
+
+            window.datosBoletaActual = {
+                adultos: v.adultos, ninos: v.ninos, chicos: v.chicos,
+                reserva: v.reserva || 0, extras: v.extras || [],
+                propinaMonto: v.propina, medioPago: v.medioPago,
+                mesaId: v.mesaId || null, mesaNombre: v.mesaNombre || null
+            };
+            renderBoletaTicket();
+        };
+
+        window.setPropinaDiezPorCiento = function() {
+            let sub = (window.datosBoletaActual.adultos * PRECIO_ADULTO) + (window.datosBoletaActual.ninos * PRECIO_NINO) + (window.datosBoletaActual.chicos * PRECIO_CHICO) + (window.datosBoletaActual.extras ? window.datosBoletaActual.extras.reduce((a,e)=>a+e.total,0):0);
+            document.getElementById('bol-monto-propina').value = Math.round(sub * 0.10);
+            actualizarBoletaManual();
+        };
+
+        window.actualizarBoletaManual = function() {
+            window.datosBoletaActual.propinaMonto = parseInt(document.getElementById('bol-monto-propina').value) || 0;
+            window.datosBoletaActual.medioPago = document.getElementById('bol-medio-pago').value;
+            renderBoletaTicket();
+        };
+
+        function renderBoletaTicket() {
+            let itemsHTML = '';
+            let cantP = window.datosBoletaActual.adultos + window.datosBoletaActual.ninos + window.datosBoletaActual.chicos;
+            let sub = 0;
+            if (window.datosBoletaActual.adultos > 0) { let t = window.datosBoletaActual.adultos * PRECIO_ADULTO; sub += t; itemsHTML += `<tr><td>${window.datosBoletaActual.adultos} ADULTOS</td><td style="text-align:right">$${formatMoney(t)}</td></tr>`; }
+            if (window.datosBoletaActual.ninos > 0) { let t = window.datosBoletaActual.ninos * PRECIO_NINO; sub += t; itemsHTML += `<tr><td>${window.datosBoletaActual.ninos} NIÑOS</td><td style="text-align:right">$${formatMoney(t)}</td></tr>`; }
+            if (window.datosBoletaActual.chicos > 0) { let t = window.datosBoletaActual.chicos * PRECIO_CHICO; sub += t; itemsHTML += `<tr><td>${window.datosBoletaActual.chicos} CHICOS</td><td style="text-align:right">$${formatMoney(t)}</td></tr>`; }
+            if (window.datosBoletaActual.extras) {
+                window.datosBoletaActual.extras.forEach(e => { sub += e.total; itemsHTML += `<tr><td>${e.cant} ${e.nombre}</td><td style="text-align:right">$${formatMoney(e.total)}</td></tr>`; });
+            }
+
+            const abono = window.datosBoletaActual.reserva || 0;
+            const prop = window.datosBoletaActual.propinaMonto || 0;
+            const tot = Math.max(0, sub - abono) + prop;
+
+            document.querySelectorAll('.ticket-items-body-val').forEach(el => el.innerHTML = itemsHTML || '<tr><td colspan="2">Sin items</td></tr>');
+            document.querySelectorAll('.ticket-cant-personas-val').forEach(el => el.textContent = cantP);
+            document.querySelectorAll('.ticket-subtotal-val').forEach(el => el.textContent = '$' + formatMoney(sub));
+            
+            const tagMesa = document.getElementById('ticket-cant-detalle-mesa');
+            if (tagMesa) {
+                if (window.datosBoletaActual.mesaNombre) {
+                    tagMesa.classList.remove('hidden');
+                    tagMesa.textContent = `CANT DETALLE MESA "${window.datosBoletaActual.mesaNombre.toUpperCase()}"`;
+                } else {
+                    tagMesa.classList.add('hidden');
+                }
+            }
+
+            const rRow = document.getElementById('ticket-reserva-row');
+            if (rRow) {
+                if (abono > 0) { rRow.style.display = 'flex'; document.querySelectorAll('.ticket-reserva-val').forEach(el => el.textContent = '-$' + formatMoney(abono)); }
+                else rRow.style.display = 'none';
+            }
+            document.querySelectorAll('.ticket-propina-val').forEach(el => el.textContent = '$' + formatMoney(prop));
+            document.querySelectorAll('.ticket-total-val').forEach(el => el.textContent = '$' + formatMoney(tot));
+
+            document.getElementById('cierre-lbl-subtotal').textContent = '$' + formatMoney(sub);
+            document.getElementById('cierre-lbl-propina').textContent = '$' + formatMoney(prop);
+            document.getElementById('cierre-lbl-total').textContent = '$' + formatMoney(tot);
+        }
+
+        window.cerrarYGuardarVentaFinal = async function() {
+            if (!ventaSeleccionadaBoletaId) { 
+                window.mostrarNotificacion("Seleccione una pre-cuenta para cobrar.", "error"); 
+                return; 
+            }
+            const v = (window.ventasGlobalesCache || []).find(item => item.id == ventaSeleccionadaBoletaId);
+            if (!v) return;
+
+            v.propina = parseInt(document.getElementById('bol-monto-propina').value) || 0;
+            v.medioPago = document.getElementById('bol-medio-pago').value;
+            v.total = Math.max(0, v.subtotal - (v.reserva || 0)) + v.propina;
+            v.cerrada = true;
+
+            const chkLiberar = document.getElementById('chk-liberar-mesa-cierre');
+            if (chkLiberar && chkLiberar.checked && v.mesaId) {
+                const mMesa = window.mesasGlobales.find(m => m.id === v.mesaId);
+                if (mMesa) {
+                    mMesa.estado = 'disponible';
+                    mMesa.reserva = null;
+                    guardarMapaLocalStorage();
+                    if (typeof window.guardarMapaCompletoEnNube === 'function') window.guardarMapaCompletoEnNube();
+                }
+            }
+
+            guardarVentasLocalStorage();
+            cargarDatosCajaDia(window.ventasGlobalesCache);
+            actualizarTextoCuadreTab3();
+            poblaciónSelectorVentasBoleta();
+            cargarVentaEnBoleta(v.id);
+            if (typeof window.guardarVentaEnNube === 'function') await window.guardarVentaEnNube(v);
+
+            window.mostrarNotificacion("✅ Venta cobrada y cerrada con éxito.", "exito");
         };
 
         window.actualizarTextoCuadreTab3 = function() {
             const ventas = (window.ventasGlobalesCache || []).filter(v => !v.anulada && v.cerrada);
-
-            let totNeto = 0;
-            let totPropina = 0;
-            let totReserva = 0;
-            let totTransf = 0;
-            let totEfectivo = 0;
-            let totDebito = 0;
-
-            let cantAdultos = 0;
-            let cantNinos = 0;
-            let cantChicos = 0;
-
+            let totNeto = 0, totPropina = 0, totReserva = 0, totTransf = 0, totEfectivo = 0, totDebito = 0, cantAd = 0, cantNi = 0, cantCh = 0;
             ventas.forEach(v => {
-                totNeto += v.subtotal;
-                totPropina += v.propina;
-                totReserva += (v.reserva || 0);
-
+                totNeto += v.subtotal; totPropina += v.propina; totReserva += (v.reserva || 0);
                 if (v.medioPago === 'Transferencia') totTransf += v.total;
                 else if (v.medioPago === 'Efectivo') totEfectivo += v.total;
                 else if (v.medioPago === 'Débito' || v.medioPago === 'Tarjeta') totDebito += v.total;
-
-                cantAdultos += (v.adultos || 0);
-                cantNinos += (v.ninos || 0);
-                cantChicos += (v.chicos || 0);
+                cantAd += (v.adultos || 0); cantNi += (v.ninos || 0); cantCh += (v.chicos || 0);
             });
-
-            let totConPropina = totNeto + totPropina;
-            let totPersonas = cantAdultos + cantNinos + cantChicos;
-
-            // Actualizar vista visual con emojis
             document.getElementById('visual-neto').textContent = '$' + formatMoney(totNeto);
             document.getElementById('visual-propina').textContent = '$' + formatMoney(totPropina);
-            document.getElementById('visual-con-propina').textContent = '$' + formatMoney(totConPropina);
+            document.getElementById('visual-con-propina').textContent = '$' + formatMoney(totNeto + totPropina);
             document.getElementById('visual-reserva').textContent = '-$' + formatMoney(totReserva);
             document.getElementById('visual-transf').textContent = '$' + formatMoney(totTransf);
             document.getElementById('visual-efectivo').textContent = '$' + formatMoney(totEfectivo);
             document.getElementById('visual-debito').textContent = '$' + formatMoney(totDebito);
-            document.getElementById('visual-asistencia').textContent = `${totPersonas} personas (${cantAdultos} Ad, ${cantNinos} Niñ, ${cantChicos} Chicos)`;
+            document.getElementById('visual-asistencia').textContent = `${cantAd + cantNi + cantCh} personas (${cantAd} Ad, ${cantNi} Niñ, ${cantCh} Chi)`;
 
-            // Plantilla de texto para WhatsApp
-            const plantilla = 
-`Total: ${formatMoney(totNeto)}
-Propina: ${formatMoney(totPropina)}
-Total con propina: ${formatMoney(totConPropina)}
-Abonos de reserva: ${formatMoney(totReserva)}
-Transferencia: ${formatMoney(totTransf)}
-Efectivo: ${formatMoney(totEfectivo)}
-Debito : ${formatMoney(totDebito)}
-
-Adultos: ${cantAdultos}
-Niños: ${cantNinos}
-Niños chicos: ${cantChicos}
-Total: ${totPersonas}`;
-
-            const box = document.getElementById('box-cuadre-texto');
-            if (box) box.value = plantilla;
+            document.getElementById('box-cuadre-texto').value = `Total: ${formatMoney(totNeto)}\nPropina: ${formatMoney(totPropina)}\nTotal con propina: ${formatMoney(totNeto + totPropina)}\nEfectivo: ${formatMoney(totEfectivo)}\nTransferencia: ${formatMoney(totTransf)}\nDébito: ${formatMoney(totDebito)}`;
         };
 
         window.copiarTextoCuadre = function() {
             actualizarTextoCuadreTab3();
             const box = document.getElementById('box-cuadre-texto');
-            if (!box) return;
-            box.classList.remove('hidden');
-            box.select();
-            document.execCommand('copy');
-            box.classList.add('hidden');
+            box.classList.remove('hidden'); box.select(); document.execCommand('copy'); box.classList.add('hidden');
+            const al = document.getElementById('alerta-copiado');
+            al.classList.remove('hidden'); setTimeout(() => al.classList.add('hidden'), 3000);
+            window.mostrarNotificacion("Cuadre copiado al portapapeles.", "exito");
+        };
 
-            const alerta = document.getElementById('alerta-copiado');
-            if (alerta) {
-                alerta.classList.remove('hidden');
-                setTimeout(() => alerta.classList.add('hidden'), 3000);
+        window.switchTab = function(num) {
+            for (let i = 1; i <= 4; i++) {
+                const tab = document.getElementById(`tab-${i}`);
+                const btn = document.getElementById(`btn-tab-${i}`);
+                if (tab) tab.classList.add('hidden');
+                if (btn) btn.className = "py-3 px-5 font-semibold text-sm border-b-2 border-transparent text-gray-500 hover:text-vitalia-green flex items-center gap-2 whitespace-nowrap transition-all";
+            }
+            const activeTab = document.getElementById(`tab-${num}`);
+            const activeBtn = document.getElementById(`btn-tab-${num}`);
+            if (activeTab) activeTab.classList.remove('hidden');
+            if (activeBtn) activeBtn.className = "py-3 px-5 font-bold text-sm border-b-2 border-vitalia-green text-vitalia-green flex items-center gap-2 whitespace-nowrap transition-all";
+
+            if (num === 2) poblaciónSelectorVentasBoleta();
+            if (num === 3) actualizarTextoCuadreTab3();
+            if (num === 4) renderizarPlanoMesasActual();
+        };
+
+        window.poblaciónSelectorVentasBoleta = function() {
+            const sel = document.getElementById('selector-ventas-boleta');
+            if (!sel) return;
+            const ventas = (window.ventasGlobalesCache || []).filter(v => !v.anulada);
+            sel.innerHTML = `<option value="">-- Seleccionar Pre-cuenta --</option>` +
+                ventas.map(v => `<option value="${v.id}">#${v.id} - ${v.mesaNombre || 'Mostrador'} ($${formatMoney(v.subtotal)}) [${v.cerrada ? 'CERRADA' : 'PENDIENTE'}]</option>`).join('');
+            if (ventaSeleccionadaBoletaId) sel.value = ventaSeleccionadaBoletaId;
+        };
+
+        function formatMoney(amount) {
+            return (amount || 0).toLocaleString('es-CL');
+        }
+
+        window.cambiarFechaTrabajo = function() {
+            const inputFecha = document.getElementById('fecha-trabajo');
+            if (inputFecha && inputFecha.value) {
+                fechaActual = inputFecha.value;
+                window.fechaActualGlobal = fechaActual;
+            }
+            actualizarLabelFecha();
+            cargarVentasLocalStorage();
+            if (typeof window.iniciarSincronizacionNube === 'function') window.iniciarSincronizacionNube();
+        };
+
+        function actualizarLabelFecha() {
+            if (!fechaActual) return;
+            const partes = fechaActual.split('-');
+            const fechaFormateada = `${partes[2]}/${partes[1]}/${partes[0]}`;
+            const badge = document.getElementById('badge-fecha-actual');
+            if (badge) badge.textContent = fechaFormateada;
+            document.querySelectorAll('.ticket-fecha-val').forEach(el => el.textContent = `Fecha: ${fechaFormateada}`);
+        }
+
+        window.cargarLogoLocal = function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('img-logo-header').src = e.target.result;
+                    localStorage.setItem('vitalia_logo_base64', e.target.result);
+                };
+                reader.readAsDataURL(file);
             }
         };
+
+        function cargarVentasLocalStorage() {
+            try {
+                const data = localStorage.getItem(`vitalia_ventas_${fechaActual}`);
+                if (data) {
+                    window.ventasGlobalesCache = JSON.parse(data);
+                } else {
+                    window.ventasGlobalesCache = [];
+                }
+                cargarDatosCajaDia(window.ventasGlobalesCache);
+            } catch(e) {
+                window.ventasGlobalesCache = [];
+                cargarDatosCajaDia([]);
+            }
+        }
+
+        function guardarVentasLocalStorage() {
+            try {
+                localStorage.setItem(`vitalia_ventas_${fechaActual}`, JSON.stringify(window.ventasGlobalesCache));
+            } catch(e) {}
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const yr = document.getElementById('year-copy');
+            if (yr) yr.textContent = new Date().getFullYear();
+            const inpFecha = document.getElementById('fecha-trabajo');
+            if (inpFecha) inpFecha.value = fechaActual;
+
+            actualizarLabelFecha();
+            cargarMapaLocalStorage();
+            cargarVentasLocalStorage();
+            window.calcularTotalFormulario();
+        });
+    </script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Configuración oficial de tu proyecto Firebase (vitalia-cuadre)
+        const userProvidedConfig = {
+            apiKey: "AIzaSyD81SdfCXLVF-zVRwqIui8wr_gxI5EVxIA",
+            authDomain: "vitalia-cuadre.firebaseapp.com",
+            projectId: "vitalia-cuadre",
+            storageBucket: "vitalia-cuadre.firebasestorage.app",
+            messagingSenderId: "923520470959",
+            appId: "1:923520470959:web:d33f549ae4bea0ffb8295a",
+            measurementId: "G-HJK285EM5G"
+        };
+
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : userProvidedConfig;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'vitalia-cuadre';
+
+        let app = null;
+        let auth = null;
+        let db = null;
+        let usuarioActual = null;
+        let desuscribirVentas = null;
+        let desuscribirMapa = null;
+
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+        } catch(err) {
+            console.error("Error al inicializar Firebase:", err);
+            window.actualizarEstadoNubeVisual(false, "Modo Local");
+        }
+
+        async function autenticarEnFirebase() {
+            if (!auth) return;
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    const cred = await signInWithCustomToken(auth, __initial_auth_token);
+                    usuarioActual = cred.user;
+                } else {
+                    const cred = await signInAnonymously(auth);
+                    usuarioActual = cred.user;
+                }
+                window.actualizarEstadoNubeVisual(true, "Firebase Conectado");
+                iniciarSincronizacionNube();
+            } catch (error) {
+                console.warn("Autenticación Firebase:", error);
+                window.actualizarEstadoNubeVisual(false, "Sincronización Local");
+            }
+        }
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                usuarioActual = user;
+                window.actualizarEstadoNubeVisual(true, "Firebase Conectado");
+            }
+        });
+
+        function iniciarSincronizacionNube() {
+            if (!db || !usuarioActual) return;
+            const fecha = window.fechaActualGlobal || new Date().toISOString().split('T')[0];
+
+            if (desuscribirVentas) {
+                desuscribirVentas();
+                desuscribirVentas = null;
+            }
+
+            // Escucha en tiempo real de ventas del día
+            const coleccionVentas = collection(db, 'artifacts', appId, 'public', 'data', `ventas_${fecha}`);
+            desuscribirVentas = onSnapshot(coleccionVentas, (snapshot) => {
+                if (snapshot.empty && window.ventasGlobalesCache.length > 0) {
+                    // Si la nube está vacía pero local tiene datos, respaldar a la nube
+                    window.ventasGlobalesCache.forEach(v => {
+                        window.guardarVentaEnNube(v);
+                    });
+                    return;
+                }
+
+                const listaVentas = [];
+                snapshot.forEach((docSnap) => {
+                    listaVentas.push(docSnap.data());
+                });
+
+                listaVentas.sort((a, b) => a.id - b.id);
+                window.ventasGlobalesCache = listaVentas;
+                localStorage.setItem(`vitalia_ventas_${fecha}`, JSON.stringify(listaVentas));
+                cargarDatosCajaDia(listaVentas);
+                actualizarTextoCuadreTab3();
+                poblaciónSelectorVentasBoleta();
+                window.actualizarEstadoNubeVisual(true, "Sincronizado");
+            }, (error) => {
+                console.error("Error en Snapshot de Ventas:", error);
+                window.actualizarEstadoNubeVisual(false, "Conexión limitada");
+            });
+
+            // Escucha en tiempo real del plano de mesas
+            if (!desuscribirMapa) {
+                const docMapaRef = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'mapa_mesas');
+                desuscribirMapa = onSnapshot(docMapaRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        if (data.mesas && Array.isArray(data.mesas)) window.mesasGlobales = data.mesas;
+                        if (data.landmarks && Array.isArray(data.landmarks)) window.landmarksGlobales = data.landmarks;
+                        if (data.paredes && Array.isArray(data.paredes)) window.paredesGlobales = data.paredes;
+                        guardarMapaLocalStorage();
+                        renderizarPlanoMesasActual();
+                    }
+                }, (error) => {
+                    console.error("Error en Snapshot de Mapa:", error);
+                });
+            }
+        }
+        window.iniciarSincronizacionNube = iniciarSincronizacionNube;
+
+        window.guardarVentaEnNube = async function(venta) {
+            if (!db || !usuarioActual) return;
+            const fecha = window.fechaActualGlobal || new Date().toISOString().split('T')[0];
+            try {
+                const docVentaRef = doc(db, 'artifacts', appId, 'public', 'data', `ventas_${fecha}`, String(venta.id));
+                await setDoc(docVentaRef, venta);
+            } catch(e) {
+                console.error("Error al guardar venta en Firebase:", e);
+            }
+        };
+
+        window.eliminarDiaEnNube = async function() {
+            if (!db || !usuarioActual) return;
+            const fecha = window.fechaActualGlobal || new Date().toISOString().split('T')[0];
+            try {
+                const colRef = collection(db, 'artifacts', appId, 'public', 'data', `ventas_${fecha}`);
+                const snapshot = await getDocs(colRef);
+                const batch = writeBatch(db);
+                snapshot.forEach(docSnap => {
+                    batch.delete(docSnap.ref);
+                });
+                await batch.commit();
+            } catch(e) {
+                console.error("Error al reiniciar día en Firebase:", e);
+            }
+        };
+
+        window.guardarMapaCompletoEnNube = async function() {
+            if (!db || !usuarioActual) {
+                window.mostrarNotificacion("Guardado local (iniciando conexión nube...)", "info");
+                return;
+            }
+            try {
+                const docMapaRef = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'mapa_mesas');
+                await setDoc(docMapaRef, {
+                    mesas: window.mesasGlobales,
+                    landmarks: window.landmarksGlobales,
+                    paredes: window.paredesGlobales,
+                    ultimaModificacion: new Date().toISOString()
+                });
+                window.mostrarNotificacion("Plano de mesas guardado en Firebase Nube.", "exito");
+            } catch(e) {
+                console.error("Error al guardar mapa en Firebase:", e);
+                window.mostrarNotificacion("Error al subir a Firebase. Guardado local.", "error");
+            }
+        };
+
+        // Iniciar la autenticación y enlace en la carga
+        autenticarEnFirebase();
     </script>
 </body>
 </html>
